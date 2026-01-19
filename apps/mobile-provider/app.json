@@ -1,0 +1,81 @@
+{
+  "expo": {
+    "name": "ServiçoApp",
+    "slug": "servico-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyCBZOxsRUQIZXhaZ6M74VcMWIKx8RSNQVY"
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Este app precisa da sua localização para encontrar prestadores próximos.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Este app precisa da sua localização para encontrar prestadores próximos.",
+        "NSCameraUsageDescription": "Este app precisa da câmera para validar serviços concluídos.",
+        "NSPhotoLibraryUsageDescription": "Este app precisa acessar suas fotos para validar serviços concluídos."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCBZOxsRUQIZXhaZ6M74VcMWIKx8RSNQVY"
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Este app precisa da sua localização para encontrar prestadores próximos."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Este app precisa acessar suas fotos para validar serviços concluídos.",
+          "cameraPermission": "Este app precisa da câmera para validar serviços concluídos."
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "scheme": "servico-app",
+    "extra": {
+      "googleSdkKey": "AIzaSyCBZOxsRUQIZXhaZ6M74VcMWIKx8RSNQVY",
+      "googleWebKey": "AIzaSyCBZOxsRUQIZXhaZ6M74VcMWIKx8RSNQVY",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "servico-app-project"
+      }
+    }
+  }
+}

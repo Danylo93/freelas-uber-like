@@ -1,0 +1,8 @@
+{
+  "name": "@freelas/shared-config",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
