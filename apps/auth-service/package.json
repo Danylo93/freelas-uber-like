@@ -1,0 +1,30 @@
+{
+  "name": "@freelas/auth-service",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "nodemon --exec tsx src/main.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@freelas/database": "workspace:*",
+    "@freelas/shared-config": "workspace:*",
+    "@freelas/shared-contracts": "workspace:*",
+    "@freelas/shared-errors": "workspace:*",
+    "@freelas/shared-kafka": "workspace:*",
+    "@freelas/shared-logger": "workspace:*",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "nodemon": "^3.0.2",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
