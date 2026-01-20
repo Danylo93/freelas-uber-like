@@ -12,14 +12,22 @@ const getAuthToken = async (): Promise<string | null> => {
 
 // Generic API client
 const apiClient = async (method: string, endpoint: string, data?: any, requiresAuth = false) => {
+  const url = `${CONFIG.API_URL}${endpoint}`;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
+
+  // Add ngrok bypass header if needed
+  if (CONFIG.API_URL.includes('ngrok')) {
+    headers['ngrok-skip-browser-warning'] = 'true';
+  }
 
   if (requiresAuth) {
     const token = await getAuthToken();
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      console.warn(`⚠️ [API] No token found for authenticated request: ${endpoint}`);
     }
   }
 
@@ -32,24 +40,45 @@ const apiClient = async (method: string, endpoint: string, data?: any, requiresA
     options.body = JSON.stringify(data);
   }
 
-  const res = await fetch(`${CONFIG.API_URL}${endpoint}`, options);
-  
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(errorData.message || `HTTP ${res.status}: ${res.statusText}`);
-  }
+  try {
+    console.log(`📤 [API] ${method} ${endpoint}`);
+    const res = await fetch(url, options);
+    
+    if (!res.ok) {
+      let errorMessage = `HTTP ${res.status}: ${res.statusText}`;
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.message || errorData.detail || errorMessage;
+        console.error(`❌ [API] Error response:`, errorData);
+      } catch (e) {
+        const text = await res.text().catch(() => '');
+        console.error(`❌ [API] Error response (text):`, text);
+        errorMessage = text || errorMessage;
+      }
+      throw new Error(errorMessage);
+    }
 
-  return res.json();
+    const responseData = await res.json();
+    console.log(`✅ [API] ${method} ${endpoint} - Success`);
+    return { data: responseData };
+  } catch (error: any) {
+    if (error.message && !error.message.includes('HTTP')) {
+      // Network error or other fetch error
+      console.error(`❌ [API] Network error for ${method} ${endpoint}:`, error.message);
+      throw new Error(`Erro de conexão: ${error.message}`);
+    }
+    throw error;
+  }
 };
 
 export const api = {
   // Auth
   login: async (email: string, password: string) => {
-    return apiClient('POST', '/auth/login', { email, password });
+    return apiClient('POST', '/auth/login', { email, password }, false);
   },
 
   register: async (userData: any) => {
-    return apiClient('POST', '/auth/register', userData);
+    return apiClient('POST', '/auth/register', userData, false);
   },
 
   // Categories
@@ -59,7 +88,7 @@ export const api = {
 
   // Providers
   getProviders: async () => {
-    return apiClient('GET', '/providers', undefined, true);
+    return apiClient('GET', '/providers', undefined, false); // Changed to false - providers list doesn't need auth
   },
 
   getProvider: async (providerId: string) => {
@@ -129,3 +158,5 @@ export const api = {
     return apiClient('DELETE', endpoint, undefined, requiresAuth);
   },
 };
+
+export default api;

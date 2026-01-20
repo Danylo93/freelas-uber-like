@@ -41,6 +41,7 @@ export const RegisterSchema = z.object({
   password: z.string().min(6),
   role: z.nativeEnum(UserRole),
   phone: z.string().optional(),
+  category: z.string().optional(), // Category for providers
 });
 
 export const CreateRequestSchema = z.object({

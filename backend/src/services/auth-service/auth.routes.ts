@@ -32,7 +32,8 @@ router.post('/register', async (req, res, next) => {
     if (user.role === UserRole.PROVIDER) {
       await prisma.providerProfile.create({
         data: {
-          userId: user.id
+          userId: user.id,
+          specialties: data.category ? [data.category] : [] // Save category as specialty
         }
       });
     }

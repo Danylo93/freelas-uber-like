@@ -16,6 +16,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Debug middleware
+app.use((req, res, next) => {
+    console.log(`🔍 [REQUESTS] ${req.method} ${req.path} - Mounted at /requests`);
+    next();
+});
+
 // Resolve dependencies
 const requestRepo = container.resolve<RequestRepository>('RequestRepository');
 const messageBroker = container.resolve<MessageBroker>('MessageBroker');
@@ -53,16 +59,8 @@ app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', service: 'request-service' });
 });
 
-app.post('/requests', async (req, res, next) => {
-    try {
-        const request = await createRequest.execute(req.body);
-        res.status(201).json(request);
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.get('/requests', async (req, res, next) => {
+// IMPORTANTE: GET / deve vir ANTES de GET /:id para evitar conflito
+app.get('/', async (req, res, next) => {
     try {
         // Support status filtering
         const { status } = req.query;
@@ -126,7 +124,7 @@ app.get('/requests', async (req, res, next) => {
     }
 });
 
-app.get('/requests/client/:clientId', async (req, res, next) => {
+app.get('/client/:clientId', async (req, res, next) => {
     try {
         const { status } = req.query;
         const statusFilter = status ? (status as string).split(',') : undefined;
@@ -155,7 +153,7 @@ app.get('/requests/client/:clientId', async (req, res, next) => {
     }
 });
 
-app.get('/requests/:id', async (req, res, next) => {
+app.get('/:id', async (req, res, next) => {
     try {
         const request = await getRequest.execute(req.params.id);
         res.json(request);
@@ -168,7 +166,7 @@ app.get('/requests/:id', async (req, res, next) => {
     }
 });
 
-app.get('/requests/:id/receipt', async (req, res, next) => {
+app.get('/:id/receipt', async (req, res, next) => {
     try {
         const request = await prisma.serviceRequest.findUnique({
             where: { id: req.params.id },
@@ -190,7 +188,7 @@ app.get('/requests/:id/receipt', async (req, res, next) => {
     }
 });
 
-app.put('/requests/:id/accept', async (req, res, next) => {
+app.put('/:id/accept', async (req, res, next) => {
     try {
         // Accept request - creates a Job
         const request = await prisma.serviceRequest.findUnique({
@@ -236,7 +234,7 @@ app.put('/requests/:id/accept', async (req, res, next) => {
     }
 });
 
-app.put('/requests/:id/update-status', async (req, res, next) => {
+app.put('/:id/update-status', async (req, res, next) => {
     try {
         const { status } = req.body;
         // status comes from frontend as: in_progress, near_client, started, completed
@@ -284,7 +282,7 @@ app.put('/requests/:id/update-status', async (req, res, next) => {
     }
 });
 
-app.post('/requests/:id/payment', async (req, res, next) => {
+app.post('/:id/payment', async (req, res, next) => {
     try {
         // Process payment (simplified)
         const request = await prisma.serviceRequest.findUnique({
@@ -307,7 +305,7 @@ app.post('/requests/:id/payment', async (req, res, next) => {
 });
 
 // Alias for review endpoint (mobile-customer uses PUT /requests/:id/review)
-app.put('/requests/:id/review', async (req, res, next) => {
+app.put('/:id/review', async (req, res, next) => {
     // Redirect to review service
     res.redirect(307, `/reviews`);
 });

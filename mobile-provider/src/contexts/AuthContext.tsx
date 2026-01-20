@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import api from '@/src/services/api';
+import api from '../services/api';
 
 interface User {
   id: string;
@@ -93,7 +93,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: RegisterData) => {
     try {
       console.log('📝 [AUTH] Tentando registrar usuário:', userData.email);
+      console.log('📝 [AUTH] api object:', typeof api, api);
+      console.log('📝 [AUTH] api.post:', typeof api?.post);
       setIsLoading(true);
+      if (!api || !api.post) {
+        throw new Error('API não está disponível. Verifique a importação.');
+      }
       const response = await api.post('/auth/register', userData);
 
       const { access_token, user_data } = response.data;

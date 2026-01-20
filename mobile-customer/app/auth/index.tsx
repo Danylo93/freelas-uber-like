@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   Keyboard,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../src/contexts/AuthContext';
@@ -134,7 +136,12 @@ const ClientRegisterView = ({
   const confirmPasswordInputRef = useRef<TextInput>(null);
 
   return (
-    <View style={styles.whiteContainer}>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <View style={styles.whiteContainer}>
         <View style={styles.navHeader}>
           <TouchableOpacity onPress={() => setCurrentView('client_login')}>
             <Ionicons name="arrow-back" size={24} color="#333" />
@@ -144,7 +151,7 @@ const ClientRegisterView = ({
         </View>
 
         <ScrollView 
-          contentContainerStyle={{ padding: 24, flexGrow: 1 }}
+          contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
           keyboardShouldPersistTaps="always"
           showsVerticalScrollIndicator={false}
           bounces={false}
@@ -228,6 +235,7 @@ const ClientRegisterView = ({
         </TouchableOpacity>
         </ScrollView>
       </View>
+    </KeyboardAvoidingView>
   );
 };
 

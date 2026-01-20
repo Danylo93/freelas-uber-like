@@ -137,13 +137,21 @@ export default function ProviderScreen() {
 
             // Sync with DB if online
             if (isOnline) {
-              await api.put('/provider/location', {
-                latitude: lat,
-                longitude: lng
-              });
+              try {
+                console.log('📍 [PROVIDER] Atualizando localização no backend...');
+                await api.put('/provider/location', {
+                  lat: lat,
+                  lng: lng,
+                  isOnline: isOnline
+                });
+                console.log('✅ [PROVIDER] Localização atualizada');
+              } catch (error: any) {
+                console.error('❌ [PROVIDER] Erro ao atualizar localização:', error.message);
+                // Não mostrar alerta - erro não crítico
+              }
             }
-          } catch (e) {
-             console.error('Error updating location', e);
+          } catch (e: any) {
+             console.error('❌ [PROVIDER] Erro geral na atualização de localização:', e.message);
           }
         }
       );
@@ -187,7 +195,10 @@ export default function ProviderScreen() {
   const loadRequests = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/requests');
+      console.log('📋 [PROVIDER] Carregando requests...');
+      const response = await api.get('/requests', true); // requiresAuth = true
+      console.log('✅ [PROVIDER] Requests carregados:', response.data?.length || 0);
+      
       const pending = response.data.filter((r: ServiceRequest) => r.status === 'pending');
       const active = response.data.find((r: ServiceRequest) =>
         ['accepted', 'in_progress', 'near_client', 'started'].includes(r.status)
@@ -205,8 +216,9 @@ export default function ProviderScreen() {
         setSelectedRequest(pending[0]);
       }
 
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      console.error('❌ [PROVIDER] Erro ao carregar requests:', e.message);
+      // Não mostrar alerta - pode ser que não haja requests ainda
     } finally {
       setLoading(false);
     }
