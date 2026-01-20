@@ -40,5 +40,17 @@ app.post('/reviews', async (req, res, next) => {
     }
 });
 
+// Alias for /ratings (mobile-customer uses POST /ratings)
+app.post('/ratings', async (req, res, next) => {
+    try {
+        const { request_id, jobId, rating, comment } = req.body;
+        const data = { jobId: request_id || jobId, rating, comment };
+        const review = await createReview.execute(data);
+        res.status(201).json(review);
+    } catch (err) {
+        next(err);
+    }
+});
+
 // Export the app
 export const reviewApp = app;

@@ -25,7 +25,7 @@ export class FindAndNotifyProviders {
         logger.info(`Found ${providerIds.length} providers for request ${data.requestId}`);
 
         for (const providerId of providerIds) {
-            await this.messageBroker.publish(KAFKA_TOPICS.MATCHING_OFFER_SENT, {
+            await this.messageBroker.publish(KAFKA_TOPICS.OFFER_CREATED, {
                 requestId: data.requestId,
                 providerId: providerId,
                 timeout: 30 // seconds

@@ -73,7 +73,7 @@ services:
       kafka:
         condition: service_started
     ports:
-      - "3000:3000"
+      - "5000:3000"
     environment:
       NODE_ENV: production
       PORT: 3000

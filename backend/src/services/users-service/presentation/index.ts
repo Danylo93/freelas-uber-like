@@ -37,7 +37,8 @@ app.get('/users/:id', async (req, res, next) => {
     }
 });
 
-app.get('/providers', async (req, res, next) => {
+// Providers routes - mounted at /providers in server.ts
+app.get('/', async (req, res, next) => {
     try {
         // List all providers (simplified - in production would have pagination/filters)
         const providers = await prisma.providerProfile.findMany({
@@ -58,7 +59,7 @@ app.get('/providers', async (req, res, next) => {
     }
 });
 
-app.get('/providers/:id', async (req, res, next) => {
+app.get('/:id', async (req, res, next) => {
     try {
         const profile = await getProvider.execute(req.params.id);
         res.json(profile);
@@ -67,9 +68,35 @@ app.get('/providers/:id', async (req, res, next) => {
     }
 });
 
-app.put('/providers/:id', async (req, res, next) => {
+app.put('/:id', async (req, res, next) => {
     try {
         const updated = await updateProvider.execute(req.params.id, req.body);
+        res.json(updated);
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Handle /provider/location (mobile apps call PUT /provider/location)
+// This will be mounted at /provider in server.ts
+app.put('/location', async (req, res, next) => {
+    try {
+        // Get provider from auth token
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        const token = authHeader.split(' ')[1];
+        const jwt = require('jsonwebtoken');
+        const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as any;
+        
+        const { lat, lng, isOnline } = req.body;
+        // Update provider location and online status
+        const updated = await updateProvider.execute(payload.userId, {
+            currentLat: lat,
+            currentLng: lng,
+            isOnline: isOnline !== undefined ? isOnline : undefined
+        });
         res.json(updated);
     } catch (err) {
         next(err);

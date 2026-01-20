@@ -64,7 +64,9 @@
           "cameraPermission": "Este app precisa da câmera para validar serviços concluídos."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font",
+      "expo-web-browser"
     ],
     "scheme": "servico-app",
     "extra": {

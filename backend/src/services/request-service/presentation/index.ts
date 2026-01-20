@@ -236,5 +236,11 @@ app.post('/requests/:id/payment', async (req, res, next) => {
     }
 });
 
+// Alias for review endpoint (mobile-customer uses PUT /requests/:id/review)
+app.put('/requests/:id/review', async (req, res, next) => {
+    // Redirect to review service
+    res.redirect(307, `/reviews`);
+});
+
 // Export the app
 export const requestApp = app;

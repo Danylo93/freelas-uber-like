@@ -23,7 +23,7 @@ app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', service: 'catalog-service' });
 });
 
-app.get('/categories', async (req, res, next) => {
+app.get('/', async (req, res, next) => {
     try {
         const categories = await getCategories.execute();
         res.json(categories);
@@ -32,7 +32,7 @@ app.get('/categories', async (req, res, next) => {
     }
 });
 
-app.get('/categories/:id', async (req, res, next) => {
+app.get('/:id', async (req, res, next) => {
     try {
         const category = await getCategory.execute(req.params.id);
         res.json(category);

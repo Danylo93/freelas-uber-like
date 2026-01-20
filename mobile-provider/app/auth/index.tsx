@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,9 @@ import {
   ImageBackground,
   Image,
   Dimensions,
-  Modal
+  Modal,
+  Keyboard,
+  TouchableWithoutFeedback
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../src/contexts/AuthContext';
@@ -37,7 +39,7 @@ const PROFESSIONS = [
 ];
 
 export default function AuthScreen() {
-  const [currentView, setCurrentView] = useState<AuthView>('client_login');
+  const [currentView, setCurrentView] = useState<AuthView>('provider_welcome');
   const [loading, setLoading] = useState(false);
   const { login, register } = useAuth();
 
@@ -50,6 +52,34 @@ export default function AuthScreen() {
     confirmPassword: '',
     profession: '' as string,
   });
+
+  // Refs para inputs (evita re-render)
+  const nameInputRef = useRef<TextInput>(null);
+  const emailInputRef = useRef<TextInput>(null);
+  const phoneInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+  const confirmPasswordInputRef = useRef<TextInput>(null);
+
+  // Memoizar handlers para evitar re-renders
+  const handleNameChange = useCallback((text: string) => {
+    setFormData(prev => ({ ...prev, name: text }));
+  }, []);
+
+  const handleEmailChange = useCallback((text: string) => {
+    setFormData(prev => ({ ...prev, email: text }));
+  }, []);
+
+  const handlePhoneChange = useCallback((text: string) => {
+    setFormData(prev => ({ ...prev, phone: text }));
+  }, []);
+
+  const handlePasswordChange = useCallback((text: string) => {
+    setFormData(prev => ({ ...prev, password: text }));
+  }, []);
+
+  const handleConfirmPasswordChange = useCallback((text: string) => {
+    setFormData(prev => ({ ...prev, confirmPassword: text }));
+  }, []);
 
   const handleLogin = async () => {
     if (!formData.email || !formData.password) {
@@ -72,14 +102,18 @@ export default function AuthScreen() {
       Alert.alert('Erro', 'Preencha todos os campos');
       return;
     }
+    if (formData.password !== formData.confirmPassword) {
+      Alert.alert('Erro', 'As senhas não coincidem');
+      return;
+    }
     setLoading(true);
     try {
       await register({
         name: formData.name,
         email: formData.email,
-        phone: formData.phone || '000000000',
+        phone: formData.phone || '',
         password: formData.password,
-        user_type: isProvider ? 1 : 2,
+        role: isProvider ? 'PROVIDER' : 'CUSTOMER',
         category: isProvider ? formData.profession : undefined
       });
       router.replace('/');
@@ -107,24 +141,35 @@ export default function AuthScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email</Text>
               <TextInput
+                ref={emailInputRef}
                 style={styles.input}
                 placeholder="Enter your email"
                 placeholderTextColor="#999"
                 value={formData.email}
-                onChangeText={t => setFormData({ ...formData, email: t })}
+                onChangeText={handleEmailChange}
                 autoCapitalize="none"
+                keyboardType="email-address"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
               <TextInput
+                ref={passwordInputRef}
                 style={styles.input}
                 placeholder="Enter your password"
                 placeholderTextColor="#999"
                 secureTextEntry
                 value={formData.password}
-                onChangeText={t => setFormData({ ...formData, password: t })}
+                onChangeText={handlePasswordChange}
+                returnKeyType="done"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => Keyboard.dismiss()}
               />
               <TouchableOpacity style={styles.forgotPass}>
                 <Text style={styles.forgotPassText}>Forgot password?</Text>
@@ -159,7 +204,11 @@ export default function AuthScreen() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={{ marginTop: 20 }} onPress={() => setCurrentView('provider_welcome')}>
+            <TouchableOpacity style={{ marginTop: 20 }} onPress={() => {
+              // Reset form when switching views
+              setFormData({ name: '', email: '', phone: '', password: '', confirmPassword: '', profession: '' });
+              setCurrentView('provider_welcome');
+            }}>
               <Text style={[styles.linkText, { fontSize: 12, textAlign: 'center' }]}>Are you a Service Pro?</Text>
             </TouchableOpacity>
           </View>
@@ -191,7 +240,11 @@ export default function AuthScreen() {
         <TouchableOpacity style={styles.primaryButton} onPress={() => setCurrentView('provider_register')}>
           <Text style={styles.primaryButtonText}>Sign Up as a Pro</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.secondaryButton, { marginTop: 12 }]} onPress={() => setCurrentView('client_login')}>
+        <TouchableOpacity style={[styles.secondaryButton, { marginTop: 12 }]} onPress={() => {
+          // Reset form for login
+          setFormData({ name: '', email: '', phone: '', password: '', confirmPassword: '', profession: '' });
+          setCurrentView('client_login');
+        }}>
           <Text style={styles.secondaryButtonText}>Log In</Text>
         </TouchableOpacity>
 
@@ -203,20 +256,31 @@ export default function AuthScreen() {
   );
 
   const ProviderRegisterView = () => (
-    <View style={styles.whiteContainer}>
-      <View style={styles.navHeader}>
-        <TouchableOpacity onPress={() => setCurrentView('provider_welcome')}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.navTitle}>Registration</Text>
-        <View style={{ width: 24 }} />
-      </View>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <View style={styles.whiteContainer}>
+        <View style={styles.navHeader}>
+          <TouchableOpacity onPress={() => setCurrentView('provider_welcome')}>
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+          <Text style={styles.navTitle}>Registration</Text>
+          <View style={{ width: 24 }} />
+        </View>
 
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: formData.profession ? '80%' : '40%' }]} />
-      </View>
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: formData.profession ? '80%' : '40%' }]} />
+        </View>
 
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
+        <ScrollView 
+          contentContainerStyle={{ padding: 24, flexGrow: 1 }}
+          keyboardShouldPersistTaps="always"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          keyboardDismissMode="none"
+        >
         {!formData.profession ? (
           <>
             <Text style={styles.stepTitle}>What is your specialty?</Text>
@@ -224,7 +288,13 @@ export default function AuthScreen() {
 
             <View style={styles.searchBox}>
               <Ionicons name="search" size={20} color="#999" />
-              <TextInput style={{ flex: 1, marginLeft: 10 }} placeholder="Search professions..." />
+              <TextInput 
+                style={{ flex: 1, marginLeft: 10 }} 
+                placeholder="Search professions..." 
+                blurOnSubmit={false}
+                editable={true}
+                returnKeyType="search"
+              />
             </View>
 
             <View style={styles.gridContainer}>
@@ -257,39 +327,86 @@ export default function AuthScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Full Name</Text>
-              <TextInput style={styles.input} value={formData.name} onChangeText={t => setFormData({ ...formData, name: t })} />
+              <TextInput 
+                ref={nameInputRef}
+                style={styles.input} 
+                value={formData.name} 
+                onChangeText={handleNameChange}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => emailInputRef.current?.focus()}
+              />
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email</Text>
-              <TextInput style={styles.input} value={formData.email} onChangeText={t => setFormData({ ...formData, email: t })} autoCapitalize="none" />
+          <TextInput 
+            ref={emailInputRef}
+            style={styles.input} 
+            value={formData.email} 
+            onChangeText={handleEmailChange} 
+            autoCapitalize="none"
+            keyboardType="email-address"
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
+          />
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Password</Text>
-              <TextInput style={styles.input} value={formData.password} onChangeText={t => setFormData({ ...formData, password: t })} secureTextEntry />
+              <TextInput 
+                ref={passwordInputRef}
+                style={styles.input} 
+                value={formData.password} 
+                onChangeText={handlePasswordChange} 
+                secureTextEntry
+                returnKeyType="next"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Confirm Password</Text>
+              <TextInput 
+                ref={confirmPasswordInputRef}
+                style={styles.input} 
+                value={formData.confirmPassword} 
+                onChangeText={handleConfirmPasswordChange} 
+                secureTextEntry
+                returnKeyType="done"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => Keyboard.dismiss()}
+              />
             </View>
           </>
         )}
       </ScrollView>
       <TouchableOpacity
-        style={[styles.primaryButton, (!formData.profession || (!!formData.profession && !formData.name)) && styles.disabledBtn]}
-        disabled={!formData.profession}
+        style={[styles.primaryButton, (!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))) && styles.disabledBtn]}
+        disabled={!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))}
         onPress={() => {
-          if (formData.profession && formData.name && formData.email) {
+          if (formData.profession && formData.name && formData.email && formData.password && formData.confirmPassword) {
+            if (formData.password !== formData.confirmPassword) {
+              Alert.alert('Erro', 'As senhas não coincidem');
+              return;
+            }
             setCurrentView('provider_documents');
           } else if (formData.profession) {
-            // The view automatically updates to show form inputs if profession is selected
-            // This is a simplified flow; in real app we'd have explicit step state
-            Alert.alert('Continue', 'Please fill in your details above.');
+            Alert.alert('Continue', 'Preencha todos os campos acima.');
           }
         }}
       >
         {loading ? <ActivityIndicator color="#fff" /> :
           <Text style={styles.primaryButtonText}>
-            {formData.profession && formData.email ? 'Continue' : 'Continue'}
+            {formData.profession && formData.email && formData.password ? 'Continue' : 'Continue'}
           </Text>
         }
       </TouchableOpacity>
-    </View>
+      </View>
+    </KeyboardAvoidingView>
   );
 
   const ProviderDocumentsView = () => (
@@ -306,7 +423,12 @@ export default function AuthScreen() {
         <View style={[styles.progressFill, { width: '60%' }]} />
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
+      <ScrollView 
+        contentContainerStyle={{ padding: 24, flexGrow: 1 }}
+        keyboardShouldPersistTaps="always"
+        showsVerticalScrollIndicator={false}
+        keyboardDismissMode="none"
+      >
         <Text style={styles.stepTitle}>Document Upload</Text>
         <Text style={styles.stepSubtitle}>We need a few documents to verify your identity and professional background.</Text>
 
@@ -341,7 +463,14 @@ export default function AuthScreen() {
       <View style={styles.bottomActions}>
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={() => setCurrentView('provider_pending')}
+          onPress={async () => {
+            try {
+              await handleRegister(true);
+            } catch (error) {
+              // Error already handled in handleRegister
+            }
+          }}
+          disabled={loading}
         >
           {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Submit for Review</Text>}
         </TouchableOpacity>
@@ -359,7 +488,12 @@ export default function AuthScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
+      <ScrollView 
+        contentContainerStyle={{ padding: 24, paddingBottom: 100, flexGrow: 1 }}
+        keyboardShouldPersistTaps="always"
+        showsVerticalScrollIndicator={false}
+        keyboardDismissMode="none"
+      >
         <View style={styles.statusCard}>
           <View style={styles.statusIconCircle}>
             <Ionicons name="clipboard" size={50} color="#007AFF" />
@@ -401,41 +535,105 @@ export default function AuthScreen() {
   );
 
   const ClientRegisterView = () => (
-    <View style={styles.whiteContainer}>
-      <View style={styles.navHeader}>
-        <TouchableOpacity onPress={() => setCurrentView('client_login')}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.navTitle}>Create Account</Text>
-        <View style={{ width: 24 }} />
-      </View>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <View style={styles.whiteContainer}>
+        <View style={styles.navHeader}>
+          <TouchableOpacity onPress={() => setCurrentView('client_login')}>
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+          <Text style={styles.navTitle}>Create Account</Text>
+          <View style={{ width: 24 }} />
+        </View>
 
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
+        <ScrollView 
+          contentContainerStyle={{ padding: 24 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
         <Text style={styles.stepTitle}>Join as a Customer</Text>
         <Text style={styles.stepSubtitle}>Find the best professionals for your needs.</Text>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Full Name</Text>
-          <TextInput style={styles.input} value={formData.name} onChangeText={t => setFormData({ ...formData, name: t })} />
+          <TextInput 
+            ref={nameInputRef}
+            style={styles.input} 
+            value={formData.name} 
+            onChangeText={handleNameChange}
+            returnKeyType="next"
+            blurOnSubmit={false}
+            onSubmitEditing={() => emailInputRef.current?.focus()}
+          />
         </View>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Email</Text>
-          <TextInput style={styles.input} value={formData.email} onChangeText={t => setFormData({ ...formData, email: t })} autoCapitalize="none" />
+          <TextInput 
+            ref={emailInputRef}
+            style={styles.input} 
+            value={formData.email} 
+            onChangeText={handleEmailChange} 
+            autoCapitalize="none"
+            keyboardType="email-address"
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => phoneInputRef.current?.focus()}
+          />
         </View>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Phone</Text>
-          <TextInput style={styles.input} value={formData.phone} onChangeText={t => setFormData({ ...formData, phone: t })} keyboardType="phone-pad" />
+          <TextInput 
+            ref={phoneInputRef}
+            style={styles.input} 
+            value={formData.phone} 
+            onChangeText={handlePhoneChange} 
+            keyboardType="phone-pad"
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
+          />
         </View>
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Password</Text>
-          <TextInput style={styles.input} value={formData.password} onChangeText={t => setFormData({ ...formData, password: t })} secureTextEntry />
+          <TextInput 
+            ref={passwordInputRef}
+            style={styles.input} 
+            value={formData.password} 
+            onChangeText={handlePasswordChange} 
+            secureTextEntry
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Confirm Password</Text>
+          <TextInput 
+            ref={confirmPasswordInputRef}
+            style={styles.input} 
+            value={formData.confirmPassword} 
+            onChangeText={handleConfirmPasswordChange} 
+            secureTextEntry
+            returnKeyType="done"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => Keyboard.dismiss()}
+          />
         </View>
 
         <TouchableOpacity style={styles.primaryButton} onPress={() => handleRegister(false)} disabled={loading}>
           {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Sign Up</Text>}
         </TouchableOpacity>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 
   return (

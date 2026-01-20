@@ -6,7 +6,7 @@
     "dev": "nodemon --exec tsx src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "start:wait": "sh docker-compose.wait.sh && node dist/server.js",
+    "start:wait": "node dist/server.js",
     "db:push": "prisma db push --schema=src/shared/database/prisma/schema.prisma",
     "db:studio": "prisma studio --schema=src/shared/database/prisma/schema.prisma",
     "db:generate": "prisma generate --schema=src/shared/database/prisma/schema.prisma",

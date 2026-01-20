@@ -10,6 +10,7 @@ export async function setupKafkaConsumers(io: Server) {
 
     kafka.connectConsumer('api-gateway-group', [
       KAFKA_TOPICS.MATCHING_OFFER_SENT,
+      KAFKA_TOPICS.OFFER_CREATED,
       KAFKA_TOPICS.JOB_ACCEPTED,
       KAFKA_TOPICS.JOB_STATUS_CHANGED,
       KAFKA_TOPICS.JOB_LOCATION_PINGED
@@ -23,6 +24,7 @@ export async function setupKafkaConsumers(io: Server) {
 
       switch (topic) {
         case KAFKA_TOPICS.MATCHING_OFFER_SENT:
+        case KAFKA_TOPICS.OFFER_CREATED:
           // Emit to specific provider
           const offer = data as OfferSentEvent;
           io.to(`provider:${offer.providerId}`).emit('request_offer', offer);

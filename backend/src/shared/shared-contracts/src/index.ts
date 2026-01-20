@@ -70,6 +70,7 @@ export const KAFKA_TOPICS = {
   PROVIDER_ONLINE_CHANGED: 'provider.online.changed',
   PROVIDER_LOCATION_UPDATED: 'provider.location.updated',
   MATCHING_OFFER_SENT: 'matching.offer.sent',
+  OFFER_CREATED: 'offer.created',
   JOB_ACCEPTED: 'job.accepted',
   JOB_STATUS_CHANGED: 'job.status.changed',
   JOB_LOCATION_PINGED: 'job.location.pinged',

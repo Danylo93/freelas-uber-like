@@ -28,7 +28,7 @@ interface RegisterData {
   email: string;
   phone: string;
   password: string;
-  user_type: number;
+  role: 'CUSTOMER' | 'PROVIDER' | 'ADMIN';
   category?: string;
 }
 
@@ -92,8 +92,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         created_at: userData.created_at || new Date().toISOString()
       });
 
-      await SecureStore.setItemAsync('auth_token', access_token);
-      await AsyncStorage.setItem('user', JSON.stringify(user_data));
+      await SecureStore.setItemAsync('auth_token', token);
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
 
     } catch (error: any) {
       console.error('❌ [AUTH] Erro no login:', error.response?.data || error.message);

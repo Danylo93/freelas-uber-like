@@ -32,14 +32,19 @@ app.get('/healthz', (req: Request, res: Response) => {
 app.use('/auth', authRoutes);
 app.use('/users', usersApp);
 app.use('/providers', usersApp);
-app.use('/', catalogApp); // Catalog routes are already prefixed with /categories
+// Mount earnings routes at /providers path too (for /providers/:id/wallet)
+app.use('/providers', earningsApp);
+app.use('/categories', catalogApp); // Mount catalog at /categories prefix
 app.use('/requests', requestApp);
 app.use('/offers', matchingApp);
 app.use('/matching', matchingApp);
 app.use('/jobs', trackingApp);
 app.use('/tracking', trackingApp);
 app.use('/reviews', reviewApp);
+app.use('/ratings', reviewApp); // Alias for /ratings
 app.use('/earnings', earningsApp);
+// Alias for /provider/location (mobile apps use /provider/location)
+app.use('/provider', usersApp);
 
 // Global Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

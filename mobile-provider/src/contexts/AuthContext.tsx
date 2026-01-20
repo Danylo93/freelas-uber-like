@@ -28,7 +28,7 @@ interface RegisterData {
   email: string;
   phone: string;
   password: string;
-  user_type: number;
+  role: 'CUSTOMER' | 'PROVIDER' | 'ADMIN';
   category?: string;
 }
 

@@ -16,7 +16,21 @@ app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', service: 'earnings-service' });
 });
 
-app.get('/providers/:id/earnings', async (req, res, next) => {
+// Wallet endpoint (mobile apps use /providers/:id/wallet)
+app.get('/:id/wallet', async (req, res, next) => {
+    try {
+        const earnings = await getProviderEarnings.execute(req.params.id);
+        res.json({
+            balance: earnings.total,
+            provider_id: earnings.providerId,
+            actions: [] // In a real app, this would be transaction history
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.get('/:id/earnings', async (req, res, next) => {
     try {
         const earnings = await getProviderEarnings.execute(req.params.id);
         res.json(earnings);
