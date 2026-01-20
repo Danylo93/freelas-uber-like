@@ -56,13 +56,13 @@ export default function WalletScreen() {
 
     const handleWithdraw = async () => {
         // Implement withdraw logic
-        alert('Withdrawal request sent!');
+        alert('Solicitação de saque enviada!');
     };
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Wallet</Text>
+                <Text style={styles.headerTitle}>Carteira</Text>
                 <TouchableOpacity style={styles.notifButton}>
                     <Ionicons name="notifications" size={20} color="#333" />
                     <View style={styles.badge} />
@@ -75,12 +75,12 @@ export default function WalletScreen() {
             >
                 <View style={styles.balanceCard}>
                     <View>
-                        <Text style={styles.balanceLabel}>Current Balance</Text>
-                        <Text style={styles.balanceValue}>${balance}</Text>
+                        <Text style={styles.balanceLabel}>Saldo Atual</Text>
+                        <Text style={styles.balanceValue}>R$ {balance}</Text>
                     </View>
                     <TouchableOpacity style={styles.withdrawButton} onPress={handleWithdraw}>
                         <Ionicons name="cash-outline" size={20} color="#1a1a1a" />
-                        <Text style={styles.withdrawText}>Withdraw Funds</Text>
+                        <Text style={styles.withdrawText}>Sacar Fundos</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.addButton}>
@@ -89,11 +89,11 @@ export default function WalletScreen() {
                 </View>
 
                 <View style={styles.tabs}>
-                    <TouchableOpacity style={[styles.tab, styles.activeTab]}><Text style={[styles.tabText, styles.activeTabText]}>Transaction History</Text></TouchableOpacity>
-                    <TouchableOpacity style={styles.tab}><Text style={styles.tabText}>Withdrawals</Text></TouchableOpacity>
+                    <TouchableOpacity style={[styles.tab, styles.activeTab]}><Text style={[styles.tabText, styles.activeTabText]}>Histórico</Text></TouchableOpacity>
+                    <TouchableOpacity style={styles.tab}><Text style={styles.tabText}>Saques</Text></TouchableOpacity>
                 </View>
 
-                <Text style={styles.sectionTitle}>RECENT ACTIVITY</Text>
+                <Text style={styles.sectionTitle}>ATIVIDADE RECENTE</Text>
 
                 {transactions.map((t) => (
                     <View key={t.id} style={styles.transactionRow}>
@@ -110,9 +110,9 @@ export default function WalletScreen() {
                         </View>
                         <View>
                             <Text style={[styles.transAmount, { color: t.type === 'earning' ? '#00E676' : '#666' }]}>
-                                {t.type === 'earning' ? '+' : ''}${Math.abs(t.amount).toFixed(2)}
+                                {t.type === 'earning' ? '+' : ''}R$ {Math.abs(t.amount).toFixed(2)}
                             </Text>
-                            {t.type === 'earning' && <Text style={styles.navEarned}>Net Earned</Text>}
+                            {t.type === 'earning' && <Text style={styles.navEarned}>Ganho Líquido</Text>}
                         </View>
                     </View>
                 ))}

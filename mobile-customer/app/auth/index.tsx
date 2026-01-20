@@ -1,31 +1,235 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   Alert,
   ActivityIndicator,
-  ImageBackground,
-  Image,
-  Dimensions,
-  Modal,
   Keyboard,
-  TouchableWithoutFeedback
+  Dimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../src/contexts/AuthContext';
-import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
+import { Ionicons } from '@expo/vector-icons';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 // --- TYPES & DATA ---
 type AuthView = 'client_login' | 'client_register';
+
+// --- SUB-COMPONENTS (Defined outside to prevent re-renders/keyboard issues) ---
+
+const ClientLoginView = ({
+  formData,
+  handleEmailChange,
+  handlePasswordChange,
+  handleLogin,
+  loading,
+  setCurrentView
+}: any) => {
+  const passwordInputRef = useRef<TextInput>(null);
+
+  return (
+    <View style={styles.backgroundImage}>
+      <View style={styles.overlay}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingBottom: 50 }}
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="none"
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.loginCard}>
+            <Text style={styles.loginTitle}>Ajuda a um toque de distância</Text>
+            <Text style={styles.loginSubtitle}>Entre para acessar serviços sob demanda</Text>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Digite seu email"
+                placeholderTextColor="#999"
+                value={formData.email}
+                onChangeText={handleEmailChange}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Senha</Text>
+              <TextInput
+                ref={passwordInputRef}
+                style={styles.input}
+                placeholder="Digite sua senha"
+                placeholderTextColor="#999"
+                secureTextEntry
+                value={formData.password}
+                onChangeText={handlePasswordChange}
+                returnKeyType="done"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => Keyboard.dismiss()}
+              />
+              <TouchableOpacity style={styles.forgotPass}>
+                <Text style={styles.forgotPassText}>Esqueceu a senha?</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Entrar</Text>}
+            </TouchableOpacity>
+
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OU CONTINUE COM</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <View style={styles.socialButtons}>
+              <TouchableOpacity style={styles.socialBtn}>
+                <Ionicons name="logo-google" size={20} color="#333" />
+                <Text style={styles.socialBtnText}>Google</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.socialBtn}>
+                <Ionicons name="logo-apple" size={20} color="#333" />
+                <Text style={styles.socialBtnText}>Apple</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.footerRow}>
+              <Text style={styles.footerText}>Não tem uma conta? </Text>
+              <TouchableOpacity onPress={() => setCurrentView('client_register')}>
+                <Text style={styles.linkText}>Criar uma conta</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+    </View>
+  );
+};
+
+const ClientRegisterView = ({
+  formData,
+  handleNameChange,
+  handleEmailChange,
+  handlePhoneChange,
+  handlePasswordChange,
+  handleConfirmPasswordChange,
+  handleRegister,
+  loading,
+  setCurrentView
+}: any) => {
+  const emailInputRef = useRef<TextInput>(null);
+  const phoneInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+  const confirmPasswordInputRef = useRef<TextInput>(null);
+
+  return (
+    <View style={styles.whiteContainer}>
+        <View style={styles.navHeader}>
+          <TouchableOpacity onPress={() => setCurrentView('client_login')}>
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+          <Text style={styles.navTitle}>Criar Conta</Text>
+          <View style={{ width: 24 }} />
+        </View>
+
+        <ScrollView 
+          contentContainerStyle={{ padding: 24, flexGrow: 1 }}
+          keyboardShouldPersistTaps="always"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          keyboardDismissMode="none"
+        >
+        <Text style={styles.stepTitle}>Junte-se como Cliente</Text>
+        <Text style={styles.stepSubtitle}>Encontre os melhores profissionais para suas necessidades.</Text>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nome Completo</Text>
+          <TextInput 
+            style={styles.input} 
+            value={formData.name} 
+            onChangeText={handleNameChange}
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => emailInputRef.current?.focus()}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput 
+            ref={emailInputRef}
+            style={styles.input} 
+            value={formData.email} 
+            onChangeText={handleEmailChange} 
+            autoCapitalize="none"
+            keyboardType="email-address"
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => phoneInputRef.current?.focus()}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Telefone</Text>
+          <TextInput 
+            ref={phoneInputRef}
+            style={styles.input} 
+            value={formData.phone} 
+            onChangeText={handlePhoneChange} 
+            keyboardType="phone-pad"
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Senha</Text>
+          <TextInput 
+            ref={passwordInputRef}
+            style={styles.input} 
+            value={formData.password} 
+            onChangeText={handlePasswordChange} 
+            secureTextEntry
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
+          />
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Confirmar Senha</Text>
+          <TextInput 
+            ref={confirmPasswordInputRef}
+            style={styles.input} 
+            value={formData.confirmPassword} 
+            onChangeText={handleConfirmPasswordChange} 
+            secureTextEntry
+            returnKeyType="done"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => Keyboard.dismiss()}
+          />
+        </View>
+
+        <TouchableOpacity style={styles.primaryButton} onPress={handleRegister} disabled={loading}>
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Cadastrar</Text>}
+        </TouchableOpacity>
+        </ScrollView>
+      </View>
+  );
+};
 
 export default function AuthScreen() {
   const [currentView, setCurrentView] = useState<AuthView>('client_login');
@@ -40,13 +244,6 @@ export default function AuthScreen() {
     password: '',
     confirmPassword: '',
   });
-
-  // Refs para inputs (evita re-render)
-  const nameInputRef = useRef<TextInput>(null);
-  const emailInputRef = useRef<TextInput>(null);
-  const phoneInputRef = useRef<TextInput>(null);
-  const passwordInputRef = useRef<TextInput>(null);
-  const confirmPasswordInputRef = useRef<TextInput>(null);
 
   // Memoizar handlers para evitar re-renders
   const handleNameChange = useCallback((text: string) => {
@@ -111,199 +308,32 @@ export default function AuthScreen() {
     }
   };
 
-  // --- SUB-COMPONENTS ---
-
-  const ClientLoginView = () => (
-    <View style={styles.backgroundImage}>
-      <View style={styles.overlay}>
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingBottom: 50 }}
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="none"
-          bounces={false}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.loginCard}>
-            <Text style={styles.loginTitle}>Help is just a tap away</Text>
-            <Text style={styles.loginSubtitle}>Log in to access on-demand services</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                ref={emailInputRef}
-                style={styles.input}
-                placeholder="Enter your email"
-                placeholderTextColor="#999"
-                value={formData.email}
-                onChangeText={handleEmailChange}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                returnKeyType="next"
-                blurOnSubmit={false}
-                editable={true}
-                onSubmitEditing={() => passwordInputRef.current?.focus()}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                ref={passwordInputRef}
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                value={formData.password}
-                onChangeText={handlePasswordChange}
-                returnKeyType="done"
-                blurOnSubmit={false}
-                editable={true}
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-              <TouchableOpacity style={styles.forgotPass}>
-                <Text style={styles.forgotPassText}>Forgot password?</Text>
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Login</Text>}
-            </TouchableOpacity>
-
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR CONTINUE WITH</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <View style={styles.socialButtons}>
-              <TouchableOpacity style={styles.socialBtn}>
-                <Ionicons name="logo-google" size={20} color="#333" />
-                <Text style={styles.socialBtnText}>Google</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialBtn}>
-                <Ionicons name="logo-apple" size={20} color="#333" />
-                <Text style={styles.socialBtnText}>Apple</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.footerRow}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => setCurrentView('client_register')}>
-                <Text style={styles.linkText}>Create an account</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      </View>
-    </View>
-  );
-
-
-  const ClientRegisterView = () => (
-    <View style={styles.whiteContainer}>
-        <View style={styles.navHeader}>
-          <TouchableOpacity onPress={() => setCurrentView('client_login')}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.navTitle}>Create Account</Text>
-          <View style={{ width: 24 }} />
-        </View>
-
-        <ScrollView 
-          contentContainerStyle={{ padding: 24, flexGrow: 1 }}
-          keyboardShouldPersistTaps="always"
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-          keyboardDismissMode="none"
-        >
-        <Text style={styles.stepTitle}>Join as a Customer</Text>
-        <Text style={styles.stepSubtitle}>Find the best professionals for your needs.</Text>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput 
-            ref={nameInputRef}
-            style={styles.input} 
-            value={formData.name} 
-            onChangeText={handleNameChange}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => emailInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput 
-            ref={emailInputRef}
-            style={styles.input} 
-            value={formData.email} 
-            onChangeText={handleEmailChange} 
-            autoCapitalize="none"
-            keyboardType="email-address"
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => phoneInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Phone</Text>
-          <TextInput 
-            ref={phoneInputRef}
-            style={styles.input} 
-            value={formData.phone} 
-            onChangeText={handlePhoneChange} 
-            keyboardType="phone-pad"
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => passwordInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput 
-            ref={passwordInputRef}
-            style={styles.input} 
-            value={formData.password} 
-            onChangeText={handlePasswordChange} 
-            secureTextEntry
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Confirm Password</Text>
-          <TextInput 
-            ref={confirmPasswordInputRef}
-            style={styles.input} 
-            value={formData.confirmPassword} 
-            onChangeText={handleConfirmPasswordChange} 
-            secureTextEntry
-            returnKeyType="done"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => Keyboard.dismiss()}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.primaryButton} onPress={handleRegister} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Sign Up</Text>}
-        </TouchableOpacity>
-        </ScrollView>
-      </View>
-    </View>
-  );
-
-  // Renderizar views diretamente sem memoização (pode causar problemas)
   if (currentView === 'client_login') {
-    return <ClientLoginView />;
+    return (
+      <ClientLoginView
+        formData={formData}
+        handleEmailChange={handleEmailChange}
+        handlePasswordChange={handlePasswordChange}
+        handleLogin={handleLogin}
+        loading={loading}
+        setCurrentView={setCurrentView}
+      />
+    );
   }
   if (currentView === 'client_register') {
-    return <ClientRegisterView />;
+    return (
+      <ClientRegisterView
+        formData={formData}
+        handleNameChange={handleNameChange}
+        handleEmailChange={handleEmailChange}
+        handlePhoneChange={handlePhoneChange}
+        handlePasswordChange={handlePasswordChange}
+        handleConfirmPasswordChange={handleConfirmPasswordChange}
+        handleRegister={handleRegister}
+        loading={loading}
+        setCurrentView={setCurrentView}
+      />
+    );
   }
   return null;
 }
@@ -341,10 +371,6 @@ const styles = StyleSheet.create({
 
   primaryButton: { backgroundColor: '#007AFF', borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
   primaryButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  disabledBtn: { backgroundColor: '#ccc' },
-
-  secondaryButton: { backgroundColor: '#f5f5f5', borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
-  secondaryButtonText: { color: '#333', fontSize: 16, fontWeight: 'bold' },
 
   dividerContainer: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
   dividerLine: { flex: 1, height: 1, backgroundColor: '#eee' },
@@ -361,76 +387,10 @@ const styles = StyleSheet.create({
   footerText: { color: '#666' },
   linkText: { color: '#007AFF', fontWeight: 'bold' },
 
-  // PROVIDER WELCOME
+  // GENERIC & SHARED
   whiteContainer: { flex: 1, backgroundColor: '#fff' },
-  closeButton: { position: 'absolute', top: 50, left: 24, zIndex: 10 },
-  welcomeContent: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40, paddingTop: 100 },
-  logoBadge: { width: 80, height: 80, borderRadius: 24, backgroundColor: '#E3F2FD', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
-  welcomeTitle: { fontSize: 26, fontWeight: 'bold', textAlign: 'center', color: '#1a1a1a', marginBottom: 12 },
-  welcomeSubtitle: { fontSize: 16, textAlign: 'center', color: '#666', lineHeight: 24 },
-  illustrationPlace: { marginTop: 60, opacity: 0.5 },
-  bottomActions: { padding: 24, paddingBottom: 50 },
-  termsText: { fontSize: 11, color: '#999', textAlign: 'center', marginTop: 16 },
-
-  // REGISTER
   navHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 60, paddingBottom: 20 },
   navTitle: { fontSize: 18, fontWeight: '600' },
-  progressBar: { height: 4, backgroundColor: '#f0f0f0', marginHorizontal: 24, borderRadius: 2, marginBottom: 24 },
-  progressFill: { height: '100%', backgroundColor: '#007AFF', borderRadius: 2 },
   stepTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 8, color: '#1a1a1a' },
   stepSubtitle: { fontSize: 15, color: '#666', marginBottom: 24, lineHeight: 22 },
-  searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f5f5f5', borderRadius: 12, padding: 12, marginBottom: 24 },
-  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  professionCard: {
-    width: (width - 48 - 12) / 2,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#eee',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    marginBottom: 0
-  },
-  professionCardSelected: { borderColor: '#007AFF', backgroundColor: '#F0F9FF' },
-  professionIcon: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#f5f5f5', alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
-  professionName: { fontSize: 14, fontWeight: '600', color: '#333' },
-  professionNameSelected: { color: '#007AFF' },
-  checkBadge: { position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: 10, backgroundColor: '#007AFF', alignItems: 'center', justifyContent: 'center' },
-
-  // DOCUMENTS
-  docSectionTitle: { fontSize: 14, fontWeight: 'bold', color: '#1a1a1a', marginBottom: 12, marginTop: 24 },
-  uploadCard: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    backgroundColor: '#F0F9FF', padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#B3E5FC'
-  },
-  fileName: { fontWeight: '600', color: '#333' },
-  fileSize: { fontSize: 12, color: '#666' },
-  replaceLink: { color: '#007AFF', fontWeight: '600', fontSize: 13 },
-  uploadPlaceholder: {
-    height: 120, alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: '#ddd', borderStyle: 'dashed', borderRadius: 12, backgroundColor: '#fafafa'
-  },
-  uploadText: { fontSize: 14, fontWeight: '600', color: '#007AFF', marginTop: 8 },
-  uploadSubtext: { fontSize: 12, color: '#999', marginTop: 4 },
-
-  // PENDING APPROVAL
-  statusCard: {
-    alignItems: 'center', backgroundColor: '#fff', borderRadius: 20, padding: 30, marginBottom: 30,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, elevation: 2, borderWidth: 1, borderColor: '#f0f0f0'
-  },
-  statusIconCircle: {
-    width: 100, height: 100, borderRadius: 50, backgroundColor: '#E3F2FD',
-    alignItems: 'center', justifyContent: 'center', marginBottom: 24
-  },
-  statusBadge: {
-    position: 'absolute', bottom: 0, right: 0, width: 32, height: 32, borderRadius: 16, backgroundColor: '#007AFF',
-    alignItems: 'center', justifyContent: 'center', borderWidth: 3, borderColor: '#fff'
-  },
-  statusTitle: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', color: '#1a1a1a', marginBottom: 12 },
-  statusDesc: { fontSize: 14, textAlign: 'center', color: '#666', lineHeight: 22 },
-  sectionHeader: { fontSize: 16, fontWeight: 'bold', color: '#1a1a1a', marginBottom: 16 },
-  stepItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f9f9f9', padding: 16, borderRadius: 16, marginBottom: 16 },
-  stepIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#E3F2FD', alignItems: 'center', justifyContent: 'center' },
-  stepTitleSmall: { fontSize: 14, fontWeight: '600', color: '#333' },
-  stepDescSmall: { fontSize: 12, color: '#666' }
 });
