@@ -11,32 +11,440 @@ import {
   Alert,
   ActivityIndicator,
   ImageBackground,
-  Image,
   Dimensions,
-  Modal,
   Keyboard,
-  TouchableWithoutFeedback
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { Ionicons, FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 // --- TYPES & DATA ---
-type AuthView = 'client_login' | 'provider_welcome' | 'provider_register' | 'client_register' | 'provider_documents' | 'provider_pending';
+type AuthView = 'login' | 'provider_welcome' | 'provider_register' | 'provider_documents' | 'provider_pending';
 
 const PROFESSIONS = [
-  { id: 'plumbing', name: 'Plumber', icon: 'tint', lib: 'FontAwesome5' },
-  { id: 'electrical', name: 'Electrical', icon: 'bolt', lib: 'FontAwesome5' },
-  { id: 'cleaning', name: 'Cleaning', icon: 'cleaning-services', lib: 'MaterialIcons' },
-  { id: 'hvac', name: 'HVAC', icon: 'fan', lib: 'FontAwesome5' },
-  { id: 'pest_control', name: 'Pest Control', icon: 'bug', lib: 'Ionicons' },
-  { id: 'painting', name: 'Painting', icon: 'paint-roller', lib: 'FontAwesome5' },
-  { id: 'handyman', name: 'Handyman', icon: 'tools', lib: 'FontAwesome5' },
-  { id: 'moving', name: 'Moving', icon: 'truck', lib: 'FontAwesome5' },
+  { id: 'plumbing', name: 'Encanador', icon: 'tint', lib: 'FontAwesome5' },
+  { id: 'electrical', name: 'Eletricista', icon: 'bolt', lib: 'FontAwesome5' },
+  { id: 'cleaning', name: 'Limpeza', icon: 'cleaning-services', lib: 'MaterialIcons' },
+  { id: 'hvac', name: 'Climatização', icon: 'fan', lib: 'FontAwesome5' },
+  { id: 'pest_control', name: 'Controle de Pragas', icon: 'bug', lib: 'Ionicons' },
+  { id: 'painting', name: 'Pintura', icon: 'paint-roller', lib: 'FontAwesome5' },
+  { id: 'handyman', name: 'Marido de Aluguel', icon: 'tools', lib: 'FontAwesome5' },
+  { id: 'moving', name: 'Mudanças', icon: 'truck', lib: 'FontAwesome5' },
 ];
+
+// --- SUB-COMPONENTS ---
+
+const LoginView = ({ formData, handleEmailChange, handlePasswordChange, handleLogin, loading, setCurrentView }: any) => {
+  const passwordInputRef = useRef<TextInput>(null);
+
+  return (
+    <ImageBackground
+      source={{ uri: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=1000&auto=format&fit=crop' }}
+      style={styles.backgroundImage}
+    >
+      <View style={styles.overlay}>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'center' }}>
+
+          <View style={styles.loginCard}>
+            <Text style={styles.loginTitle}>Login do Profissional</Text>
+            <Text style={styles.loginSubtitle}>Entre para gerenciar seus serviços</Text>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Digite seu email"
+                placeholderTextColor="#999"
+                value={formData.email}
+                onChangeText={handleEmailChange}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => passwordInputRef.current?.focus()}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Senha</Text>
+              <TextInput
+                ref={passwordInputRef}
+                style={styles.input}
+                placeholder="Digite sua senha"
+                placeholderTextColor="#999"
+                secureTextEntry
+                value={formData.password}
+                onChangeText={handlePasswordChange}
+                returnKeyType="done"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => Keyboard.dismiss()}
+              />
+              <TouchableOpacity style={styles.forgotPass}>
+                <Text style={styles.forgotPassText}>Esqueceu a senha?</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Entrar</Text>}
+            </TouchableOpacity>
+
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>OU CONTINUE COM</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <View style={styles.socialButtons}>
+              <TouchableOpacity style={styles.socialBtn}>
+                <Ionicons name="logo-google" size={20} color="#333" />
+                <Text style={styles.socialBtnText}>Google</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.socialBtn}>
+                <Ionicons name="logo-apple" size={20} color="#333" />
+                <Text style={styles.socialBtnText}>Apple</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.footerRow}>
+              <Text style={styles.footerText}>Não tem uma conta? </Text>
+              <TouchableOpacity onPress={() => setCurrentView('provider_register')}>
+                <Text style={styles.linkText}>Cadastre-se</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+        </KeyboardAvoidingView>
+      </View>
+    </ImageBackground>
+  );
+};
+
+const ProviderWelcomeView = ({ setCurrentView, setFormData }: any) => (
+  <View style={styles.whiteContainer}>
+    <TouchableOpacity style={styles.closeButton} onPress={() => setCurrentView('login')}>
+      <Ionicons name="close" size={24} color="#333" />
+    </TouchableOpacity>
+
+    <View style={styles.welcomeContent}>
+      <View style={styles.logoBadge}>
+        <Ionicons name="briefcase" size={40} color="#007AFF" />
+      </View>
+      <Text style={styles.welcomeTitle}>Junte-se à nossa rede de profissionais</Text>
+      <Text style={styles.welcomeSubtitle}>Expanda seu negócio, gerencie sua agenda e receba instantaneamente.</Text>
+
+      <View style={styles.illustrationPlace}>
+        <FontAwesome5 name="tools" size={80} color="#E3F2FD" />
+      </View>
+    </View>
+
+    <View style={styles.bottomActions}>
+      <TouchableOpacity style={styles.primaryButton} onPress={() => setCurrentView('provider_register')}>
+        <Text style={styles.primaryButtonText}>Cadastre-se como Profissional</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.secondaryButton, { marginTop: 12 }]} onPress={() => {
+        // Reset form for login
+        setFormData((prev: any) => ({ ...prev, name: '', email: '', phone: '', password: '', confirmPassword: '', profession: '' }));
+        setCurrentView('login');
+      }}>
+        <Text style={styles.secondaryButtonText}>Entrar</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.termsText}>
+        Ao continuar você concorda com nossos Termos de Serviço e Política de Privacidade.
+      </Text>
+    </View>
+  </View>
+);
+
+const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleEmailChange, handlePasswordChange, handleConfirmPasswordChange, setCurrentView, loading }: any) => {
+  const nameInputRef = useRef<TextInput>(null);
+  const emailInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+  const confirmPasswordInputRef = useRef<TextInput>(null);
+
+  return (
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <View style={styles.whiteContainer}>
+        <View style={styles.navHeader}>
+          <TouchableOpacity onPress={() => setCurrentView('provider_welcome')}>
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+          <Text style={styles.navTitle}>Cadastro</Text>
+          <View style={{ width: 24 }} />
+        </View>
+
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: formData.profession ? '80%' : '40%' }]} />
+        </View>
+
+        <ScrollView 
+          contentContainerStyle={{ padding: 24, flexGrow: 1 }}
+          keyboardShouldPersistTaps="always"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+          keyboardDismissMode="none"
+        >
+        {!formData.profession ? (
+          <>
+            <Text style={styles.stepTitle}>Qual é a sua especialidade?</Text>
+            <Text style={styles.stepSubtitle}>Escolha a categoria que melhor descreve seu trabalho.</Text>
+
+            <View style={styles.searchBox}>
+              <Ionicons name="search" size={20} color="#999" />
+              <TextInput 
+                style={{ flex: 1, marginLeft: 10 }} 
+                placeholder="Buscar profissões..."
+                blurOnSubmit={false}
+                editable={true}
+                returnKeyType="search"
+              />
+            </View>
+
+            <View style={styles.gridContainer}>
+              {PROFESSIONS.map(p => (
+                <TouchableOpacity
+                  key={p.id}
+                  style={[styles.professionCard, formData.profession === p.name && styles.professionCardSelected]}
+                  onPress={() => setFormData((prev: any) => ({ ...prev, profession: p.name }))}
+                >
+                  {formData.profession === p.name && (
+                    <View style={styles.checkBadge}>
+                      <Ionicons name="checkmark" size={10} color="#fff" />
+                    </View>
+                  )}
+
+                  <View style={[styles.professionIcon, formData.profession === p.name && { backgroundColor: '#fff' }]}>
+                    {p.lib === 'FontAwesome5' && <FontAwesome5 name={p.icon as any} size={24} color={formData.profession === p.name ? "#007AFF" : "#666"} />}
+                    {p.lib === 'Ionicons' && <Ionicons name={p.icon as any} size={24} color={formData.profession === p.name ? "#007AFF" : "#666"} />}
+                    {p.lib === 'MaterialIcons' && <MaterialIcons name={p.icon as any} size={24} color={formData.profession === p.name ? "#007AFF" : "#666"} />}
+                  </View>
+                  <Text style={[styles.professionName, formData.profession === p.name && styles.professionNameSelected]}>{p.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </>
+        ) : (
+          <>
+            <Text style={styles.stepTitle}>Crie suas credenciais</Text>
+            <Text style={styles.stepSubtitle}>Passo 2 de 2</Text>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Nome Completo</Text>
+              <TextInput 
+                ref={nameInputRef}
+                style={styles.input} 
+                value={formData.name} 
+                onChangeText={handleNameChange}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => emailInputRef.current?.focus()}
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Email</Text>
+          <TextInput 
+            ref={emailInputRef}
+            style={styles.input} 
+            value={formData.email} 
+            onChangeText={handleEmailChange} 
+            autoCapitalize="none"
+            keyboardType="email-address"
+            returnKeyType="next"
+            blurOnSubmit={false}
+            editable={true}
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
+          />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Senha</Text>
+              <TextInput 
+                ref={passwordInputRef}
+                style={styles.input} 
+                value={formData.password} 
+                onChangeText={handlePasswordChange} 
+                secureTextEntry
+                returnKeyType="next"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Confirmar Senha</Text>
+              <TextInput 
+                ref={confirmPasswordInputRef}
+                style={styles.input} 
+                value={formData.confirmPassword} 
+                onChangeText={handleConfirmPasswordChange} 
+                secureTextEntry
+                returnKeyType="done"
+                blurOnSubmit={false}
+                editable={true}
+                onSubmitEditing={() => Keyboard.dismiss()}
+              />
+            </View>
+          </>
+        )}
+      </ScrollView>
+      <TouchableOpacity
+        style={[styles.primaryButton, (!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))) && styles.disabledBtn]}
+        disabled={!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))}
+        onPress={() => {
+          if (formData.profession && formData.name && formData.email && formData.password && formData.confirmPassword) {
+            if (formData.password !== formData.confirmPassword) {
+              Alert.alert('Erro', 'As senhas não coincidem');
+              return;
+            }
+            setCurrentView('provider_documents');
+          } else if (formData.profession) {
+            Alert.alert('Continue', 'Preencha todos os campos acima.');
+          }
+        }}
+      >
+        {loading ? <ActivityIndicator color="#fff" /> :
+          <Text style={styles.primaryButtonText}>
+            {formData.profession && formData.email && formData.password ? 'Continuar' : 'Continuar'}
+          </Text>
+        }
+      </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
+  );
+};
+
+const ProviderDocumentsView = ({ setCurrentView, handleRegister, loading }: any) => (
+  <View style={styles.whiteContainer}>
+    <View style={styles.navHeader}>
+      <TouchableOpacity onPress={() => setCurrentView('provider_register')}>
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity>
+      <Text style={styles.navTitle}>Cadastro</Text>
+      <View style={{ width: 24 }} />
+    </View>
+
+    <View style={styles.progressBar}>
+      <View style={[styles.progressFill, { width: '60%' }]} />
+    </View>
+
+    <ScrollView
+      contentContainerStyle={{ padding: 24, flexGrow: 1 }}
+      keyboardShouldPersistTaps="always"
+      showsVerticalScrollIndicator={false}
+      keyboardDismissMode="none"
+    >
+      <Text style={styles.stepTitle}>Envio de Documentos</Text>
+      <Text style={styles.stepSubtitle}>Precisamos de alguns documentos para verificar sua identidade e experiência.</Text>
+
+      <Text style={styles.docSectionTitle}>RG ou CNH</Text>
+      <TouchableOpacity style={styles.uploadCard}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Ionicons name="document-text" size={32} color="#4CAF50" />
+          <View style={{ marginLeft: 12 }}>
+            <Text style={styles.fileName}>Frente_Documento.jpg</Text>
+            <Text style={styles.fileSize}>1.2 MB</Text>
+          </View>
+        </View>
+        <Text style={styles.replaceLink}>Trocar</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.docSectionTitle}>Licença/Certificação Profissional</Text>
+      <TouchableOpacity style={styles.uploadPlaceholder}>
+        <Ionicons name="camera" size={32} color="#007AFF" />
+        <Text style={styles.uploadText}>Enviar foto ou PDF</Text>
+        <Text style={styles.uploadSubtext}>Tamanho máximo: 5MB</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.docSectionTitle}>Atestado de Antecedentes Criminais</Text>
+      <TouchableOpacity style={styles.uploadPlaceholder}>
+        <Ionicons name="document" size={32} color="#007AFF" />
+        <Text style={styles.uploadText}>Enviar foto ou PDF</Text>
+        <Text style={styles.uploadSubtext}>Emitido nos últimos 3 meses</Text>
+      </TouchableOpacity>
+
+    </ScrollView>
+
+    <View style={styles.bottomActions}>
+      <TouchableOpacity
+        style={styles.primaryButton}
+        onPress={async () => {
+          try {
+            await handleRegister(true);
+          } catch (error) {
+            // Error already handled in handleRegister
+          }
+        }}
+        disabled={loading}
+      >
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Enviar para Análise</Text>}
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+const ProviderPendingView = ({ setCurrentView }: any) => (
+  <View style={styles.whiteContainer}>
+    <View style={styles.navHeader}>
+      <TouchableOpacity onPress={() => setCurrentView('provider_documents')}>
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity>
+      <Text style={styles.navTitle}>Status da Inscrição</Text>
+      <View style={{ width: 24 }} />
+    </View>
+
+    <ScrollView
+      contentContainerStyle={{ padding: 24, paddingBottom: 100, flexGrow: 1 }}
+      keyboardShouldPersistTaps="always"
+      showsVerticalScrollIndicator={false}
+      keyboardDismissMode="none"
+    >
+      <View style={styles.statusCard}>
+        <View style={styles.statusIconCircle}>
+          <Ionicons name="clipboard" size={50} color="#007AFF" />
+          <View style={styles.statusBadge}>
+            <Ionicons name="time" size={16} color="#fff" />
+          </View>
+        </View>
+
+        <Text style={styles.statusTitle}>Tudo pronto! Estamos analisando seu perfil</Text>
+        <Text style={styles.statusDesc}>
+          Nossa equipe está verificando seus documentos para garantir a segurança da comunidade. Este processo geralmente leva <Text style={{ color: '#007AFF', fontWeight: 'bold' }}>24-48 horas</Text>.
+        </Text>
+      </View>
+
+      <Text style={styles.sectionHeader}>Próximos Passos</Text>
+
+      <View style={styles.stepItem}>
+        <View style={styles.stepIcon}>
+          <Ionicons name="hourglass" size={20} color="#007AFF" />
+        </View>
+        <View style={{ flex: 1, marginLeft: 12 }}>
+          <Text style={styles.stepTitleSmall}>Validação de documentos</Text>
+          <Text style={styles.stepDescSmall}>Estamos verificando sua identidade e antecedentes.</Text>
+        </View>
+      </View>
+    </ScrollView>
+
+    <View style={styles.bottomActions}>
+      <TouchableOpacity style={styles.primaryButton}>
+        <Ionicons name="headset" size={20} color="#fff" style={{ marginRight: 8 }} />
+        <Text style={styles.primaryButtonText}>Falar com Suporte</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.secondaryButton, { marginTop: 12 }]} onPress={() => router.replace('/')}>
+        <Text style={styles.secondaryButtonText}>Navegar como Visitante</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
 
 export default function AuthScreen() {
   const [currentView, setCurrentView] = useState<AuthView>('provider_welcome');
@@ -52,13 +460,6 @@ export default function AuthScreen() {
     confirmPassword: '',
     profession: '' as string,
   });
-
-  // Refs para inputs (evita re-render)
-  const nameInputRef = useRef<TextInput>(null);
-  const emailInputRef = useRef<TextInput>(null);
-  const phoneInputRef = useRef<TextInput>(null);
-  const passwordInputRef = useRef<TextInput>(null);
-  const confirmPasswordInputRef = useRef<TextInput>(null);
 
   // Memoizar handlers para evitar re-renders
   const handleNameChange = useCallback((text: string) => {
@@ -124,528 +525,43 @@ export default function AuthScreen() {
     }
   };
 
-  // --- SUB-COMPONENTS ---
+  if (currentView === 'login') {
+    return (
+      <LoginView
+        formData={formData}
+        handleEmailChange={handleEmailChange}
+        handlePasswordChange={handlePasswordChange}
+        handleLogin={handleLogin}
+        loading={loading}
+        setCurrentView={setCurrentView}
+      />
+    );
+  }
+  if (currentView === 'provider_welcome') {
+    return <ProviderWelcomeView setCurrentView={setCurrentView} setFormData={setFormData} />;
+  }
+  if (currentView === 'provider_register') {
+    return (
+      <ProviderRegisterView
+        formData={formData}
+        setFormData={setFormData}
+        handleNameChange={handleNameChange}
+        handleEmailChange={handleEmailChange}
+        handlePasswordChange={handlePasswordChange}
+        handleConfirmPasswordChange={handleConfirmPasswordChange}
+        setCurrentView={setCurrentView}
+        loading={loading}
+      />
+    );
+  }
+  if (currentView === 'provider_documents') {
+    return <ProviderDocumentsView setCurrentView={setCurrentView} handleRegister={handleRegister} loading={loading} />;
+  }
+  if (currentView === 'provider_pending') {
+    return <ProviderPendingView setCurrentView={setCurrentView} />;
+  }
 
-  const ClientLoginView = () => (
-    <ImageBackground
-      source={{ uri: 'https://images.unsplash.com/photo-1556740758-90de374c12ad?q=80&w=1000&auto=format&fit=crop' }}
-      style={styles.backgroundImage}
-    >
-      <View style={styles.overlay}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'center' }}>
-
-          <View style={styles.loginCard}>
-            <Text style={styles.loginTitle}>Help is just a tap away</Text>
-            <Text style={styles.loginSubtitle}>Log in to access on-demand services</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                ref={emailInputRef}
-                style={styles.input}
-                placeholder="Enter your email"
-                placeholderTextColor="#999"
-                value={formData.email}
-                onChangeText={handleEmailChange}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                returnKeyType="next"
-                blurOnSubmit={false}
-                editable={true}
-                onSubmitEditing={() => passwordInputRef.current?.focus()}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput
-                ref={passwordInputRef}
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="#999"
-                secureTextEntry
-                value={formData.password}
-                onChangeText={handlePasswordChange}
-                returnKeyType="done"
-                blurOnSubmit={false}
-                editable={true}
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-              <TouchableOpacity style={styles.forgotPass}>
-                <Text style={styles.forgotPassText}>Forgot password?</Text>
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Login</Text>}
-            </TouchableOpacity>
-
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR CONTINUE WITH</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <View style={styles.socialButtons}>
-              <TouchableOpacity style={styles.socialBtn}>
-                <Ionicons name="logo-google" size={20} color="#333" />
-                <Text style={styles.socialBtnText}>Google</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialBtn}>
-                <Ionicons name="logo-apple" size={20} color="#333" />
-                <Text style={styles.socialBtnText}>Apple</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.footerRow}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => setCurrentView('client_register')}>
-                <Text style={styles.linkText}>Create an account</Text>
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={{ marginTop: 20 }} onPress={() => {
-              // Reset form when switching views
-              setFormData({ name: '', email: '', phone: '', password: '', confirmPassword: '', profession: '' });
-              setCurrentView('provider_welcome');
-            }}>
-              <Text style={[styles.linkText, { fontSize: 12, textAlign: 'center' }]}>Are you a Service Pro?</Text>
-            </TouchableOpacity>
-          </View>
-
-        </KeyboardAvoidingView>
-      </View>
-    </ImageBackground>
-  );
-
-  const ProviderWelcomeView = () => (
-    <View style={styles.whiteContainer}>
-      <TouchableOpacity style={styles.closeButton} onPress={() => setCurrentView('client_login')}>
-        <Ionicons name="close" size={24} color="#333" />
-      </TouchableOpacity>
-
-      <View style={styles.welcomeContent}>
-        <View style={styles.logoBadge}>
-          <Ionicons name="briefcase" size={40} color="#007AFF" />
-        </View>
-        <Text style={styles.welcomeTitle}>Join our network of professionals</Text>
-        <Text style={styles.welcomeSubtitle}>Grow your business, manage your schedule, and get paid instantly.</Text>
-
-        <View style={styles.illustrationPlace}>
-          <FontAwesome5 name="tools" size={80} color="#E3F2FD" />
-        </View>
-      </View>
-
-      <View style={styles.bottomActions}>
-        <TouchableOpacity style={styles.primaryButton} onPress={() => setCurrentView('provider_register')}>
-          <Text style={styles.primaryButtonText}>Sign Up as a Pro</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.secondaryButton, { marginTop: 12 }]} onPress={() => {
-          // Reset form for login
-          setFormData({ name: '', email: '', phone: '', password: '', confirmPassword: '', profession: '' });
-          setCurrentView('client_login');
-        }}>
-          <Text style={styles.secondaryButtonText}>Log In</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.termsText}>
-          By continuing you agree to our Terms of Service and Privacy Policy.
-        </Text>
-      </View>
-    </View>
-  );
-
-  const ProviderRegisterView = () => (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
-      <View style={styles.whiteContainer}>
-        <View style={styles.navHeader}>
-          <TouchableOpacity onPress={() => setCurrentView('provider_welcome')}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.navTitle}>Registration</Text>
-          <View style={{ width: 24 }} />
-        </View>
-
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: formData.profession ? '80%' : '40%' }]} />
-        </View>
-
-        <ScrollView 
-          contentContainerStyle={{ padding: 24, flexGrow: 1 }}
-          keyboardShouldPersistTaps="always"
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-          keyboardDismissMode="none"
-        >
-        {!formData.profession ? (
-          <>
-            <Text style={styles.stepTitle}>What is your specialty?</Text>
-            <Text style={styles.stepSubtitle}>Choose the service category that best describes the work you do.</Text>
-
-            <View style={styles.searchBox}>
-              <Ionicons name="search" size={20} color="#999" />
-              <TextInput 
-                style={{ flex: 1, marginLeft: 10 }} 
-                placeholder="Search professions..." 
-                blurOnSubmit={false}
-                editable={true}
-                returnKeyType="search"
-              />
-            </View>
-
-            <View style={styles.gridContainer}>
-              {PROFESSIONS.map(p => (
-                <TouchableOpacity
-                  key={p.id}
-                  style={[styles.professionCard, formData.profession === p.name && styles.professionCardSelected]}
-                  onPress={() => setFormData({ ...formData, profession: p.name })}
-                >
-                  {formData.profession === p.name && (
-                    <View style={styles.checkBadge}>
-                      <Ionicons name="checkmark" size={10} color="#fff" />
-                    </View>
-                  )}
-
-                  <View style={[styles.professionIcon, formData.profession === p.name && { backgroundColor: '#fff' }]}>
-                    {p.lib === 'FontAwesome5' && <FontAwesome5 name={p.icon as any} size={24} color={formData.profession === p.name ? "#007AFF" : "#666"} />}
-                    {p.lib === 'Ionicons' && <Ionicons name={p.icon as any} size={24} color={formData.profession === p.name ? "#007AFF" : "#666"} />}
-                    {p.lib === 'MaterialIcons' && <MaterialIcons name={p.icon as any} size={24} color={formData.profession === p.name ? "#007AFF" : "#666"} />}
-                  </View>
-                  <Text style={[styles.professionName, formData.profession === p.name && styles.professionNameSelected]}>{p.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </>
-        ) : (
-          <>
-            <Text style={styles.stepTitle}>Create your credentials</Text>
-            <Text style={styles.stepSubtitle}>Step 2 of 2</Text>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput 
-                ref={nameInputRef}
-                style={styles.input} 
-                value={formData.name} 
-                onChangeText={handleNameChange}
-                returnKeyType="next"
-                blurOnSubmit={false}
-                editable={true}
-                onSubmitEditing={() => emailInputRef.current?.focus()}
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-          <TextInput 
-            ref={emailInputRef}
-            style={styles.input} 
-            value={formData.email} 
-            onChangeText={handleEmailChange} 
-            autoCapitalize="none"
-            keyboardType="email-address"
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => passwordInputRef.current?.focus()}
-          />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
-              <TextInput 
-                ref={passwordInputRef}
-                style={styles.input} 
-                value={formData.password} 
-                onChangeText={handlePasswordChange} 
-                secureTextEntry
-                returnKeyType="next"
-                blurOnSubmit={false}
-                editable={true}
-                onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Confirm Password</Text>
-              <TextInput 
-                ref={confirmPasswordInputRef}
-                style={styles.input} 
-                value={formData.confirmPassword} 
-                onChangeText={handleConfirmPasswordChange} 
-                secureTextEntry
-                returnKeyType="done"
-                blurOnSubmit={false}
-                editable={true}
-                onSubmitEditing={() => Keyboard.dismiss()}
-              />
-            </View>
-          </>
-        )}
-      </ScrollView>
-      <TouchableOpacity
-        style={[styles.primaryButton, (!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))) && styles.disabledBtn]}
-        disabled={!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))}
-        onPress={() => {
-          if (formData.profession && formData.name && formData.email && formData.password && formData.confirmPassword) {
-            if (formData.password !== formData.confirmPassword) {
-              Alert.alert('Erro', 'As senhas não coincidem');
-              return;
-            }
-            setCurrentView('provider_documents');
-          } else if (formData.profession) {
-            Alert.alert('Continue', 'Preencha todos os campos acima.');
-          }
-        }}
-      >
-        {loading ? <ActivityIndicator color="#fff" /> :
-          <Text style={styles.primaryButtonText}>
-            {formData.profession && formData.email && formData.password ? 'Continue' : 'Continue'}
-          </Text>
-        }
-      </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
-  );
-
-  const ProviderDocumentsView = () => (
-    <View style={styles.whiteContainer}>
-      <View style={styles.navHeader}>
-        <TouchableOpacity onPress={() => setCurrentView('provider_register')}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.navTitle}>Registration</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: '60%' }]} />
-      </View>
-
-      <ScrollView 
-        contentContainerStyle={{ padding: 24, flexGrow: 1 }}
-        keyboardShouldPersistTaps="always"
-        showsVerticalScrollIndicator={false}
-        keyboardDismissMode="none"
-      >
-        <Text style={styles.stepTitle}>Document Upload</Text>
-        <Text style={styles.stepSubtitle}>We need a few documents to verify your identity and professional background.</Text>
-
-        <Text style={styles.docSectionTitle}>National ID or Passport</Text>
-        <TouchableOpacity style={styles.uploadCard}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="document-text" size={32} color="#4CAF50" />
-            <View style={{ marginLeft: 12 }}>
-              <Text style={styles.fileName}>ID_Front_Scan.jpg</Text>
-              <Text style={styles.fileSize}>1.2 MB</Text>
-            </View>
-          </View>
-          <Text style={styles.replaceLink}>Replace</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.docSectionTitle}>Professional License/Certification</Text>
-        <TouchableOpacity style={styles.uploadPlaceholder}>
-          <Ionicons name="camera" size={32} color="#007AFF" />
-          <Text style={styles.uploadText}>Upload photo or PDF</Text>
-          <Text style={styles.uploadSubtext}>Maximum file size: 5MB</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.docSectionTitle}>Criminal Record Check</Text>
-        <TouchableOpacity style={styles.uploadPlaceholder}>
-          <Ionicons name="document" size={32} color="#007AFF" />
-          <Text style={styles.uploadText}>Upload photo or PDF</Text>
-          <Text style={styles.uploadSubtext}>Issued within the last 3 months</Text>
-        </TouchableOpacity>
-
-      </ScrollView>
-
-      <View style={styles.bottomActions}>
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={async () => {
-            try {
-              await handleRegister(true);
-            } catch (error) {
-              // Error already handled in handleRegister
-            }
-          }}
-          disabled={loading}
-        >
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Submit for Review</Text>}
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const ProviderPendingView = () => (
-    <View style={styles.whiteContainer}>
-      <View style={styles.navHeader}>
-        <TouchableOpacity onPress={() => setCurrentView('provider_documents')}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.navTitle}>Application Status</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
-      <ScrollView 
-        contentContainerStyle={{ padding: 24, paddingBottom: 100, flexGrow: 1 }}
-        keyboardShouldPersistTaps="always"
-        showsVerticalScrollIndicator={false}
-        keyboardDismissMode="none"
-      >
-        <View style={styles.statusCard}>
-          <View style={styles.statusIconCircle}>
-            <Ionicons name="clipboard" size={50} color="#007AFF" />
-            <View style={styles.statusBadge}>
-              <Ionicons name="time" size={16} color="#fff" />
-            </View>
-          </View>
-
-          <Text style={styles.statusTitle}>Everything is set! We are reviewing your profile</Text>
-          <Text style={styles.statusDesc}>
-            Our team is currently verifying your documents to ensure the safety of our community. This process usually takes <Text style={{ color: '#007AFF', fontWeight: 'bold' }}>24-48 hours</Text>.
-          </Text>
-        </View>
-
-        <Text style={styles.sectionHeader}>Next Steps</Text>
-
-        <View style={styles.stepItem}>
-          <View style={styles.stepIcon}>
-            <Ionicons name="hourglass" size={20} color="#007AFF" />
-          </View>
-          <View style={{ flex: 1, marginLeft: 12 }}>
-            <Text style={styles.stepTitleSmall}>Document validation</Text>
-            <Text style={styles.stepDescSmall}>We're checking your ID and background</Text>
-          </View>
-        </View>
-      </ScrollView>
-
-      <View style={styles.bottomActions}>
-        <TouchableOpacity style={styles.primaryButton}>
-          <Ionicons name="headset" size={20} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.primaryButtonText}>Contact Support</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={[styles.secondaryButton, { marginTop: 12 }]} onPress={() => router.replace('/')}>
-          <Text style={styles.secondaryButtonText}>Browse App as Guest</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  const ClientRegisterView = () => (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
-      <View style={styles.whiteContainer}>
-        <View style={styles.navHeader}>
-          <TouchableOpacity onPress={() => setCurrentView('client_login')}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-          <Text style={styles.navTitle}>Create Account</Text>
-          <View style={{ width: 24 }} />
-        </View>
-
-        <ScrollView 
-          contentContainerStyle={{ padding: 24 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          bounces={false}
-        >
-        <Text style={styles.stepTitle}>Join as a Customer</Text>
-        <Text style={styles.stepSubtitle}>Find the best professionals for your needs.</Text>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Full Name</Text>
-          <TextInput 
-            ref={nameInputRef}
-            style={styles.input} 
-            value={formData.name} 
-            onChangeText={handleNameChange}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            onSubmitEditing={() => emailInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput 
-            ref={emailInputRef}
-            style={styles.input} 
-            value={formData.email} 
-            onChangeText={handleEmailChange} 
-            autoCapitalize="none"
-            keyboardType="email-address"
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => phoneInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Phone</Text>
-          <TextInput 
-            ref={phoneInputRef}
-            style={styles.input} 
-            value={formData.phone} 
-            onChangeText={handlePhoneChange} 
-            keyboardType="phone-pad"
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => passwordInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput 
-            ref={passwordInputRef}
-            style={styles.input} 
-            value={formData.password} 
-            onChangeText={handlePasswordChange} 
-            secureTextEntry
-            returnKeyType="next"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
-          />
-        </View>
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Confirm Password</Text>
-          <TextInput 
-            ref={confirmPasswordInputRef}
-            style={styles.input} 
-            value={formData.confirmPassword} 
-            onChangeText={handleConfirmPasswordChange} 
-            secureTextEntry
-            returnKeyType="done"
-            blurOnSubmit={false}
-            editable={true}
-            onSubmitEditing={() => Keyboard.dismiss()}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.primaryButton} onPress={() => handleRegister(false)} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Sign Up</Text>}
-        </TouchableOpacity>
-        </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
-  );
-
-  return (
-    <>
-      {currentView === 'client_login' && <ClientLoginView />}
-      {currentView === 'provider_welcome' && <ProviderWelcomeView />}
-      {currentView === 'provider_register' && <ProviderRegisterView />}
-      {currentView === 'provider_documents' && <ProviderDocumentsView />}
-      {currentView === 'provider_pending' && <ProviderPendingView />}
-      {currentView === 'client_register' && <ClientRegisterView />}
-    </>
-  );
+  return null;
 }
 
 const styles = StyleSheet.create({

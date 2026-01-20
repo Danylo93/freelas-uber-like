@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../src/contexts/AuthContext';
 import AuthScreen from './auth/index';
-import ClientHome from './client/index';
+// import ClientHome from './client/index'; // Não deve ser acessível
 import ProviderHome from './provider/index';
 
 export default function Index() {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoading, isAuthenticated, logout } = useAuth();
   const [showSplash, setShowSplash] = useState(true);
 
   // Animações da splash
   const scaleAnim = new Animated.Value(0);
-  const rotateAnim = new Animated.Value(0);
   const fadeAnim = new Animated.Value(0);
 
   useEffect(() => {
@@ -60,7 +59,7 @@ export default function Index() {
         </Animated.View>
 
         <Animated.View style={[styles.textContainer, { opacity: fadeAnim }]}>
-          <Text style={styles.appName}>ServiçoApp</Text>
+          <Text style={styles.appName}>Freelas Profissional</Text>
           <Text style={styles.tagline}>🔧 Conectando você aos melhores profissionais</Text>
         </Animated.View>
       </View>
@@ -69,29 +68,36 @@ export default function Index() {
 
   // Mostrar splash screen enquanto está carregando ou durante animação
   if (isLoading || showSplash) {
-    console.log('🔄 [INDEX] Mostrando splash screen');
     return <SplashScreen />;
   }
 
   if (!isAuthenticated || !user) {
-    console.log('❌ [INDEX] Usuário não autenticado, mostrando AuthScreen');
     return <AuthScreen />;
   }
 
-  console.log('✅ [INDEX] Usuário autenticado:', user.name, 'Tipo:', user.user_type);
-
   // Redirect based on user type
-  if (user.user_type === 1) {
-    console.log('👷 [INDEX] Redirecionando para ProviderHome');
+  if (user.user_type === 1) { // PROVIDER
     return <ProviderHome />;
-  } else if (user.user_type === 2) {
-    console.log('👤 [INDEX] Redirecionando para ClientHome');
-    return <ClientHome />;
+  } else if (user.user_type === 2) { // CUSTOMER
+    return (
+      <View style={styles.container}>
+        <Ionicons name="warning" size={64} color="#F44336" />
+        <Text style={styles.errorTitle}>Acesso Restrito</Text>
+        <Text style={styles.errorText}>Esta conta é de cliente.</Text>
+        <Text style={styles.errorText}>Por favor, use o aplicativo Freelas Cliente.</Text>
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+          <Text style={styles.logoutButtonText}>Sair</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.errorText}>Erro: Tipo de usuário inválido</Text>
+      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+        <Text style={styles.logoutButtonText}>Sair</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -102,6 +108,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
   splashContainer: {
     flex: 1,
@@ -140,21 +147,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     lineHeight: 22,
   },
-  loadingDots: {
-    position: 'absolute',
-    bottom: 100,
-  },
-  dotsContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#007AFF',
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 20,
+    marginBottom: 10,
   },
   errorText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  logoutButton: {
+    marginTop: 30,
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 30,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  errorTextSmall: {
     fontSize: 16,
     color: '#F44336',
   },

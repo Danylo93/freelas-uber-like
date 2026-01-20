@@ -411,12 +411,12 @@ export default function ProviderScreen() {
         {/* Top Info Pills */}
         <View style={styles.navStatsPill}>
           <View style={styles.navStatItem}>
-            <Text style={styles.navStatLabel}>ARRIVAL</Text>
+            <Text style={styles.navStatLabel}>CHEGADA</Text>
             <Text style={styles.navStatValue}>10:15</Text>
           </View>
           <View style={styles.navStatDivider} />
           <View style={styles.navStatItem}>
-            <Text style={styles.navStatLabel}>DURATION</Text>
+            <Text style={styles.navStatLabel}>DURAÇÃO</Text>
             <Text style={styles.navStatValueBlue}>8 min</Text>
           </View>
           <View style={styles.navStatDivider} />
@@ -432,8 +432,8 @@ export default function ProviderScreen() {
             <Ionicons name="arrow-forward" size={32} color="#fff" />
           </View>
           <View style={{ flex: 1, marginLeft: 16 }}>
-            <Text style={styles.turnDist}>NEXT TURN IN 450M</Text>
-            <Text style={styles.turnInstruction}>Turn right on Main Street</Text>
+            <Text style={styles.turnDist}>PRÓXIMA CURVA EM 450M</Text>
+            <Text style={styles.turnInstruction}>Vire à direita na Rua Principal</Text>
           </View>
           <TouchableOpacity><Ionicons name="volume-high" size={24} color="#666" /></TouchableOpacity>
         </View>
@@ -481,7 +481,7 @@ export default function ProviderScreen() {
             if (activeRequest?.status === 'started') setShowServiceModal(true);
             else if (nextStatus) handleStatusUpdate(nextStatus);
           }}>
-            {activeRequest?.status === 'started' ? 'SLIDE TO FINISH' : 'SLIDE TO ARRIVE'}
+            {activeRequest?.status === 'started' ? 'DESLIZE PARA FINALIZAR' : 'DESLIZE PARA CHEGAR'}
           </Text>
         </View>
       </View>

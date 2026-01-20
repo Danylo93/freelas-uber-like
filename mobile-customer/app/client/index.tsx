@@ -331,7 +331,7 @@ export default function ClientScreen() {
             <TouchableOpacity style={styles.roundBtnSmall}><Ionicons name="chevron-back" size={24} color="#333" /></TouchableOpacity>
             <View style={styles.statusPill}>
               <View style={[styles.statusDot, { backgroundColor: '#007AFF' }]} />
-              <Text style={styles.statusPillText}>{currentRequest.provider_name.split(' ')[0]} is 1.2 miles away</Text>
+              <Text style={styles.statusPillText}>{currentRequest.provider_name.split(' ')[0]} está a 2km</Text>
             </View>
             <TouchableOpacity style={styles.roundBtnSmall}><Ionicons name="help-circle-outline" size={24} color="#333" /></TouchableOpacity>
           </View>
@@ -414,10 +414,10 @@ export default function ClientScreen() {
 
         {/* Arriving Header */}
         <View style={styles.arrivingHeader}>
-          <Text style={styles.arrivingLabel}>ARRIVING IN</Text>
+          <Text style={styles.arrivingLabel}>CHEGANDO EM</Text>
           <View style={styles.arrivingRow}>
             <Text style={styles.arrivingTime}>8 mins</Text>
-            <Text style={styles.arrivingDistance}>1.2 miles</Text>
+            <Text style={styles.arrivingDistance}>2 km</Text>
           </View>
         </View>
 
@@ -428,10 +428,10 @@ export default function ClientScreen() {
           <Image source={{ uri: `https://ui-avatars.com/api/?name=${currentRequest?.provider_name}` }} style={styles.proAvatarMock} />
           <View style={{ flex: 1, marginLeft: 16 }}>
             <Text style={styles.proNameMock}>{currentRequest?.provider_name}</Text>
-            <Text style={styles.proJobMock}>Licensed {currentRequest?.category}</Text>
+            <Text style={styles.proJobMock}>Licenciado em {currentRequest?.category}</Text>
             <View style={styles.verifiedRow}>
               <Ionicons name="checkmark-circle" size={14} color="#00E676" />
-              <Text style={styles.verifiedText}>Verified Pro</Text>
+              <Text style={styles.verifiedText}>Profissional Verificado</Text>
             </View>
           </View>
           <View style={styles.ratingBadgeMock}>
@@ -444,7 +444,7 @@ export default function ClientScreen() {
         <View style={styles.actionButtonsRowNew}>
           <TouchableOpacity style={styles.messageButtonMain}>
             <Ionicons name="chatbubble" size={20} color="#fff" style={{ marginRight: 8 }} />
-            <Text style={styles.messageButtonText}>Message</Text>
+            <Text style={styles.messageButtonText}>Mensagem</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.shareButton}>
             <Ionicons name="share-social" size={24} color="#333" />
