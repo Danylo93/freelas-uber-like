@@ -100,11 +100,34 @@ export default function ClientScreen() {
   // Filter providers when category changes
   useEffect(() => {
     if (selectedCategory) {
-      const filtered = providers.filter(p =>
-        p.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
-        (selectedCategory === 'Canalizador' && p.category.toLowerCase().includes('plumber')) ||
-        (selectedCategory === 'Eletricista' && p.category.toLowerCase().includes('electric'))
-      );
+      const filtered = providers.filter(p => {
+        if (!p.category) return false;
+        const categoryLower = p.category.toLowerCase();
+        const selectedLower = selectedCategory.toLowerCase();
+        
+        // Map category names (provider uses "Encanador", customer uses "Canalizador")
+        const categoryMappings: Record<string, string[]> = {
+          'canalizador': ['canalizador', 'encanador', 'plumber', 'plumbing'],
+          'eletricista': ['eletricista', 'electrical', 'electric'],
+          'limpeza': ['limpeza', 'cleaning', 'clean'],
+          'pintura': ['pintura', 'painting', 'paint'],
+          'mudanças': ['mudanças', 'moving', 'move'],
+          'jardinagem': ['jardinagem', 'gardening', 'garden']
+        };
+        
+        // Check direct match
+        if (categoryLower.includes(selectedLower) || selectedLower.includes(categoryLower)) {
+          return true;
+        }
+        
+        // Check mapped categories
+        const mappings = categoryMappings[selectedLower];
+        if (mappings) {
+          return mappings.some(m => categoryLower.includes(m));
+        }
+        
+        return false;
+      });
       setFilteredProviders(filtered);
 
       // Animate Provider List Up
@@ -146,9 +169,27 @@ export default function ClientScreen() {
     try {
       setLoading(true);
       const response = await api.get('/providers');
-      setProviders(response.data);
+      console.log('📋 [PROVIDERS] Resposta do backend:', response);
+      // Map backend response to app format
+      const mappedProviders = (response.data || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        category: p.category || 'Geral',
+        price: p.price || 50,
+        description: p.description || `Serviço profissional`,
+        latitude: p.latitude || p.currentLat || 0,
+        longitude: p.longitude || p.currentLng || 0,
+        address: p.address || '',
+        status: p.status || (p.isOnline ? 'online' : 'offline'),
+        rating: p.rating || 0,
+        distance: 0, // Will be calculated based on user location
+        user_id: p.user_id,
+        phone: p.phone || ''
+      }));
+      console.log('📋 [PROVIDERS] Providers mapeados:', mappedProviders.length);
+      setProviders(mappedProviders);
     } catch (e) {
-      console.error(e);
+      console.error('❌ [PROVIDERS] Erro ao carregar:', e);
     } finally { setLoading(false); }
   };
 

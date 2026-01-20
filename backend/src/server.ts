@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import { logger } from './shared/shared-logger/src/index';
 import { AppError } from './shared/shared-errors/src/index';
 import { CONFIG } from './shared/shared-config/src/index';
+import { prisma } from './shared/database/src/index';
 
 // Import all service routes
 import authRoutes from './services/auth-service/auth.routes';
@@ -35,7 +36,56 @@ app.use('/providers', usersApp);
 // Mount earnings routes at /providers path too (for /providers/:id/wallet)
 app.use('/providers', earningsApp);
 app.use('/categories', catalogApp); // Mount catalog at /categories prefix
-app.use('/requests', requestApp);
+
+// SOLUTION: Handle GET /requests BEFORE mounting requestApp
+// We'll mount requestApp but exclude GET /requests from it
+app.get('/requests', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    logger.info('📋 [SERVER] GET /requests - Direct handler called');
+    const requests = await prisma.serviceRequest.findMany({
+      include: { 
+        customer: true, 
+        job: { 
+          include: { provider: true } 
+        } 
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    const mappedRequests = requests.map((r: any) => ({
+      id: r.id,
+      provider_id: r.job?.providerId,
+      status: r.status,
+      provider_name: r.job?.provider?.name || '',
+      provider_phone: r.job?.provider?.phone || '',
+      category: r.categoryId,
+      price: r.price || 0,
+      description: r.description,
+      client_latitude: r.pickupLat,
+      client_longitude: r.pickupLng,
+      client_name: r.customer?.name || '',
+      client_phone: r.customer?.phone || '',
+      client_address: r.address || '',
+      created_at: r.createdAt?.toISOString() || new Date().toISOString()
+    }));
+    logger.info(`✅ [SERVER] Retornando ${mappedRequests.length} requests`);
+    return res.json(mappedRequests);
+  } catch (err) {
+    logger.error('❌ [SERVER] Error in GET /requests:', err);
+    return next(err);
+  }
+});
+
+// Mount requestApp with a condition to skip GET /requests
+// This ensures other routes like POST /requests, GET /requests/:id work
+app.use('/requests', (req: Request, res: Response, next: NextFunction) => {
+  // Skip if it's GET /requests (already handled above)
+  if (req.method === 'GET' && req.path === '/requests' && req.originalUrl === '/requests') {
+    return next('route'); // Skip this middleware
+  }
+  // Otherwise, forward to requestApp
+  requestApp(req, res, next);
+});
+
 app.use('/offers', matchingApp);
 app.use('/matching', matchingApp);
 app.use('/jobs', trackingApp);

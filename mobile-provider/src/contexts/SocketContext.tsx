@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import { Alert } from 'react-native';
+import { CONFIG } from '../config';
 
 interface SocketContextType {
   socket: Socket | null;
@@ -30,13 +31,16 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (user && token) {
       console.log('🔌 [SOCKET] Iniciando conexão Socket.io...');
-      console.log('🔌 [SOCKET] URL:', process.env.EXPO_PUBLIC_BACKEND_URL);
       console.log('🔌 [SOCKET] User:', user.name, 'Type:', user.user_type);
 
       try {
-        // Socket.io conecta no mesmo servidor da API mas não precisa do /api prefix
-        const socketUrl = process.env.EXPO_PUBLIC_BACKEND_URL!;
+        // Socket.io conecta no mesmo servidor da API
+        const socketUrl = CONFIG.SOCKET_URL || CONFIG.API_URL;
         console.log('🔌 [SOCKET] Conectando em:', socketUrl);
+        
+        if (!socketUrl) {
+          throw new Error('SOCKET_URL não está configurado');
+        }
 
         const newSocket = io(socketUrl, {
           auth: {
@@ -45,7 +49,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             token: token,
           },
           transports: ['polling'], // Apenas polling por enquanto para debug - alterar para ['websocket']
-          path: socketUrl.endsWith('/') ? '/socket.io' : '/socket.io',
+          path: '/socket.io',
           forceNew: true,
           timeout: 20000,
           reconnection: true,

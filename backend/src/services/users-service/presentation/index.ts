@@ -44,17 +44,26 @@ app.get('/', async (req, res, next) => {
         const providers = await prisma.providerProfile.findMany({
             include: { user: true }
         });
-        res.json(providers.map((p: any) => ({
+        
+        const mappedProviders = providers.map((p: any) => ({
             id: p.id,
             user_id: p.userId,
             name: p.user.name,
+            category: p.specialties && p.specialties.length > 0 ? p.specialties[0] : 'Geral', // Use first specialty as category
+            price: 50, // Default price - should come from provider settings or category
+            description: `Profissional especializado em ${p.specialties && p.specialties.length > 0 ? p.specialties.join(', ') : 'serviços gerais'}`,
+            latitude: p.currentLat || 0,
+            longitude: p.currentLng || 0,
+            address: '', // Provider address not stored yet
+            status: p.isOnline ? 'online' : 'offline',
             rating: p.rating,
-            isOnline: p.isOnline,
-            specialties: p.specialties,
-            currentLat: p.currentLat,
-            currentLng: p.currentLng
-        })));
+            distance: 0, // Calculate on client side based on user location
+            phone: p.user.phone || ''
+        }));
+        
+        res.json(mappedProviders);
     } catch (err) {
+        console.error('Error fetching providers:', err);
         next(err);
     }
 });

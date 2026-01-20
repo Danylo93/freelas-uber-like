@@ -144,7 +144,7 @@ export default function ClientScreen() {
   const loadProviders = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/providers');
+      const response = await api.get('/providers', true);
       setProviders(response.data);
     } catch (e) {
       console.error(e);

@@ -186,7 +186,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
         </View>
 
         <ScrollView 
-          contentContainerStyle={{ padding: 24, flexGrow: 1 }}
+          contentContainerStyle={{ padding: 24, paddingBottom: 150 }}
           keyboardShouldPersistTaps="always"
           showsVerticalScrollIndicator={false}
           bounces={false}
