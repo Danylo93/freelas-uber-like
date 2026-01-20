@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@freelas/database": ["./src/shared/database/src"],
+      "@freelas/shared-config": ["./src/shared/shared-config/src"],
+      "@freelas/shared-contracts": ["./src/shared/shared-contracts/src"],
+      "@freelas/shared-errors": ["./src/shared/shared-errors/src"],
+      "@freelas/shared-kafka": ["./src/shared/shared-kafka/src"],
+      "@freelas/shared-logger": ["./src/shared/shared-logger/src"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "services", "shared"]
+}

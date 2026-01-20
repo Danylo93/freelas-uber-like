@@ -1,8 +1,0 @@
-{
-  "name": "@freelas/shared-contracts",
-  "version": "1.0.0",
-  "main": "src/index.ts",
-  "dependencies": {
-    "zod": "^3.22.4"
-  }
-}

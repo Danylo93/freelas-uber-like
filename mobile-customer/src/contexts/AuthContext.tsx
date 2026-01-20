@@ -73,11 +73,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const response = await api.post('/auth/login', { email, password });
 
-      const { access_token, user_data } = response.data;
-      console.log('✅ [AUTH] Login bem-sucedido:', user_data.name);
+      // Handle both response formats
+      const token = response.data.token || response.data.access_token;
+      const userData = response.data.user_data || response.data.user;
+      
+      if (!token || !userData) {
+        throw new Error('Invalid response format');
+      }
+      
+      console.log('✅ [AUTH] Login bem-sucedido:', userData.name);
 
-      setToken(access_token);
-      setUser(user_data);
+      setToken(token);
+      setUser({
+        ...userData,
+        user_type: userData.user_type || (userData.role === 'PROVIDER' ? 1 : 2),
+        phone: userData.phone || '',
+        is_active: userData.is_active !== undefined ? userData.is_active : true,
+        created_at: userData.created_at || new Date().toISOString()
+      });
 
       await SecureStore.setItemAsync('auth_token', access_token);
       await AsyncStorage.setItem('user', JSON.stringify(user_data));

@@ -1,9 +1,0 @@
-{
-  "name": "@freelas/shared-kafka",
-  "version": "1.0.0",
-  "main": "src/index.ts",
-  "dependencies": {
-    "kafkajs": "^2.2.4",
-    "@freelas/shared-logger": "file:../shared-logger"
-  }
-}
