@@ -2,7 +2,8 @@
 
 ## Architecture
 
-Monorepo using `pnpm` workspaces.
+Microservices architecture using Node.js + TypeScript.
+Projects are organized in a single repository but run independently (No Monorepo Workspace tooling).
 
 ### Microservices (Node.js + TypeScript)
 - **api-gateway** (Port 3000): Entry point, Proxy, Socket.io Server.
@@ -21,46 +22,56 @@ Monorepo using `pnpm` workspaces.
 - **Kafka**: Event Bus.
 - **Zookeeper**: Kafka coordination.
 
+### Shared Logic
+- **shared/**: Contains shared libraries (config, contracts, etc.). Services reference these via local file paths.
+
 ### Frontend
-- **apps/mobile-customer**: React Native (Expo).
-- **apps/mobile-provider**: React Native (Expo).
+- **mobile-customer**: React Native (Expo).
+- **mobile-provider**: React Native (Expo).
 
 ## How to Run
 
-1. **Install Dependencies**
-   ```bash
-   pnpm install
-   ```
+1.  **Install Dependencies**
+    You can install dependencies for all services and shared packages using the helper script in the root:
+    ```bash
+    yarn install:all
+    ```
+    Or manually in each folder:
+    ```bash
+    cd api-gateway && yarn install
+    cd ../auth-service && yarn install
+    # ... repeat for all services
+    ```
 
-2. **Start Infrastructure**
-   ```bash
-   docker-compose up -d
-   ```
-   Wait for Kafka and Postgres to be ready.
+2.  **Start Infrastructure**
+    ```bash
+    docker compose up -d
+    ```
+    Wait for Kafka and Postgres to be ready.
 
-3. **Database Migration**
-   ```bash
-   pnpm --filter @freelas/database db:push
-   ```
+3.  **Database Migration**
+    ```bash
+    cd shared/database
+    yarn prisma db push
+    ```
 
-4. **Start Services**
-   You can start all services using `pnpm` or individually.
-   ```bash
-   # In separate terminals:
-   pnpm --filter @freelas/api-gateway dev
-   pnpm --filter @freelas/auth-service dev
-   pnpm --filter @freelas/users-service dev
-   pnpm --filter @freelas/catalog-service dev
-   pnpm --filter @freelas/request-service dev
-   pnpm --filter @freelas/matching-service dev
-   pnpm --filter @freelas/tracking-service dev
-   ```
+4.  **Start Services**
+    Start services individually in separate terminals:
+    ```bash
+    cd api-gateway && yarn dev
+    cd auth-service && yarn dev
+    cd users-service && yarn dev
+    cd catalog-service && yarn dev
+    cd request-service && yarn dev
+    cd matching-service && yarn dev
+    cd tracking-service && yarn dev
+    ```
 
-5. **Start Frontend**
-   ```bash
-   cd apps/mobile-customer && npx expo start
-   cd apps/mobile-provider && npx expo start
-   ```
+5.  **Start Frontend**
+    ```bash
+    cd mobile-customer && npx expo start
+    cd mobile-provider && npx expo start
+    ```
 
 ## Key Events (Kafka)
 
