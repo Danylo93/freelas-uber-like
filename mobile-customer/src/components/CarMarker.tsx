@@ -40,7 +40,7 @@ export default function CarMarker({ position, duration = 800, onStep, mapRef }: 
 
   return (
     <MarkerAnimated coordinate={region} anchor={{ x: 0.5, y: 0.5 }} flat rotation={rotation} tracksViewChanges={false}>
-      <Image source={require('../assets/car-top.png')} style={{ width: 36, height: 36 }} resizeMode="contain" />
+      <Image source={require('../../assets/car-top.png')} style={{ width: 36, height: 36 }} resizeMode="contain" />
     </MarkerAnimated>
   );
 }

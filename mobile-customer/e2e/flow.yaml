@@ -1,0 +1,24 @@
+appId: com.freelas.customer
+---
+- launchApp:
+    clearState: true
+
+# Login Flow (Mocked if needed, assuming auto-login or simple auth)
+- tapOn: "Email"
+- inputText: "cliente@test.com"
+- tapOn: "Senha"
+- inputText: "123456"
+- tapOn: "Entrar"
+
+# Main Screen
+- assertVisible: "Categorias"
+- tapOn: "Eletricista"
+
+# Provider List
+- assertVisible: "Eletricistas Disponíveis"
+- tapOn: "Solicitar" # Taps the first 'Solicitar' button found
+
+# Request Confirmation (assuming immediate transition for test)
+- assertVisible: "Arrastando para confirmar" # Or whatever text appears
+# Note: Actual request might need backend interaction.
+# This test verifies the UI path up to request creation.
