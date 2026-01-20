@@ -6,6 +6,7 @@ import {
   Platform, ScrollView
 } from 'react-native';
 import CustomMapView, { LatLng } from '@/src/components/CustomMapView';
+import CarMarker from '@/src/components/CarMarker';
 import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useAuth } from '../../src/contexts/AuthContext';
@@ -154,27 +155,30 @@ export default function ClientScreen() {
   const setupSocketListeners = () => {
     if (!socket) return;
 
-    socket.on('request_accepted', (data) => {
+    socket.on('job_accepted', (data) => {
+      console.log('✅ [SOCKET] job_accepted:', data);
       setCurrentRequest(prev => prev ? {
         ...prev,
         status: 'accepted',
-        provider_latitude: data.provider_latitude,
-        provider_longitude: data.provider_longitude,
-        estimated_time: data.estimated_time,
+        // Backend sends providerId, etc. We might need to fetch full details or map it.
+        // Assuming data contains minimal info or full update.
       } : null);
     });
 
-    socket.on('provider_location_update', (data) => {
+    socket.on('location_update', (data) => {
+      // data: { jobId, providerId, lat, lng }
       if (!currentRequest) return;
+      // Filter by jobId if possible, but currentRequest is our active job.
       setCurrentRequest(prev => prev ? {
         ...prev,
-        provider_latitude: data.provider_latitude,
-        provider_longitude: data.provider_longitude,
-        estimated_time: data.estimated_time
+        provider_latitude: data.lat,
+        provider_longitude: data.lng,
+        // estimated_time: data.estimated_time // Calculate based on new location?
       } : null);
     });
 
-    socket.on('status_updated', (data) => {
+    socket.on('job_status_update', (data) => {
+       // data: { jobId, status }
       if (!currentRequest) return;
       setCurrentRequest(prev => prev ? { ...prev, status: data.status } : null);
       if (data.status === 'completed') {
@@ -212,6 +216,10 @@ export default function ClientScreen() {
         price: provider.price,
         estimated_time: undefined
       });
+
+      // Join the job room
+      socket?.emit('join_job', response.data.id);
+
       setSelectedProvider(null);
       setSelectedCategory(null);
     } catch (e) {
@@ -305,9 +313,14 @@ export default function ClientScreen() {
             </View>
           </Marker>
         ))}
-      </CustomMapView>
 
-      {/* --- HOME OVERLAYS --- */}
+        {/* Active Provider Car Marker */}
+        {currentRequest && currentRequest.provider_latitude && currentRequest.provider_longitude && (
+          <CarMarker
+            position={{ latitude: currentRequest.provider_latitude, longitude: currentRequest.provider_longitude }}
+          />
+        )}
+      </CustomMapView>
 
       {/* --- HOME OVERLAYS --- */}
 

@@ -1,0 +1,24 @@
+appId: com.freelas.provider
+---
+- launchApp:
+    clearState: true
+
+# Login Flow
+- tapOn: "Email"
+- inputText: "provider@test.com"
+- tapOn: "Senha"
+- inputText: "123456"
+- tapOn: "Entrar"
+
+# Dashboard
+- assertVisible: "Status do Sistema"
+- tapOn: "OFFLINE"
+- assertVisible: "ONLINE"
+
+# Verify Tabs/Cards
+- tapOn: "Ganhos de Hoje"
+- assertVisible: "Histórico"
+- back
+
+# Interaction check
+- tapOn: "Atualizar Area"

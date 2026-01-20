@@ -31,7 +31,7 @@ const { width, height } = Dimensions.get('window');
 
 // Types
 interface ServiceRequest {
-  id: string;
+  id: string; // This corresponds to jobId in backend
   client_name: string;
   client_phone: string;
   category: string;
@@ -66,6 +66,13 @@ export default function ProviderScreen() {
   // Animations
   const slideAnim = useRef(new Animated.Value(height)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // Active Request Ref for location watcher
+  const activeRequestRef = useRef<ServiceRequest | null>(null);
+
+  useEffect(() => {
+    activeRequestRef.current = activeRequest;
+  }, [activeRequest]);
 
   useEffect(() => {
     getCurrentLocation();
@@ -113,15 +120,31 @@ export default function ProviderScreen() {
       Location.watchPositionAsync(
         { accuracy: Location.Accuracy.Highest, timeInterval: 2000, distanceInterval: 10 },
         async (loc) => {
+          const lat = loc.coords.latitude;
+          const lng = loc.coords.longitude;
+
           // Update local state if needed or just sync to backend
           try {
+            // Send to Socket if Active Request (for real-time tracking)
+            if (activeRequestRef.current && socket) {
+               console.log('📍 [PROVIDER] Sending location ping via socket');
+               socket.emit('location_ping', {
+                 jobId: activeRequestRef.current.id,
+                 lat,
+                 lng
+               });
+            }
+
+            // Sync with DB if online
             if (isOnline) {
               await api.put('/provider/location', {
-                latitude: loc.coords.latitude,
-                longitude: loc.coords.longitude
+                latitude: lat,
+                longitude: lng
               });
             }
-          } catch (e) { }
+          } catch (e) {
+             console.error('Error updating location', e);
+          }
         }
       );
     } catch (error) {
@@ -131,11 +154,17 @@ export default function ProviderScreen() {
 
   const setupSocketListeners = () => {
     if (!socket) return;
-    socket.on('new_request', (data) => {
+
+    // Updated Event Name: request_offer (from backend)
+    socket.on('request_offer', (data) => {
+      console.log('🔔 [SOCKET] request_offer received:', data);
       loadRequests();
       // Auto-select the first new request for the "Incoming" UI flow
       // In a real app, we might queue them.
       // For now, we assume one request comes in and we show it.
+
+      // If we received a request_offer, we might want to fetch it directly or rely on loadRequests
+      // For better UX, we could construct a partial request object from data if API is slow
     });
 
     socket.on('request_cancelled', (data) => {
@@ -147,6 +176,11 @@ export default function ProviderScreen() {
       if (selectedRequest?.id === data.request_id) {
         setSelectedRequest(null);
       }
+    });
+
+    socket.on('job_accepted', (data) => {
+       // Confirmation that job was accepted
+       console.log('✅ [SOCKET] Job accepted confirmed:', data);
     });
   };
 
@@ -160,7 +194,11 @@ export default function ProviderScreen() {
       );
 
       setRequests(pending);
-      if (active) setActiveRequest(active);
+      if (active) {
+        setActiveRequest(active);
+        // Join the job room
+        if (socket) socket.emit('join_job', active.id);
+      }
 
       // If we are online and have pending requests but none selected, select the first one to show the "Incoming" screen
       if (pending.length > 0 && !selectedRequest && !active) {
@@ -184,6 +222,9 @@ export default function ProviderScreen() {
     try {
       await api.put(`/requests/${selectedRequest.id}/accept`, {});
       setActiveRequest(selectedRequest);
+      // Join job room
+      if (socket) socket.emit('join_job', selectedRequest.id);
+
       setSelectedRequest(null);
     } catch (e) {
       Alert.alert('Erro', 'Não foi possível aceitar.');
