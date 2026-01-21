@@ -29,16 +29,8 @@ app.get('/healthz', (req: Request, res: Response) => {
   res.json({ status: 'ok', service: 'backend', timestamp: new Date().toISOString() });
 });
 
-// Mount all service routes
-app.use('/auth', authRoutes);
-app.use('/users', usersApp);
-app.use('/providers', usersApp);
-// Mount earnings routes at /providers path too (for /providers/:id/wallet)
-app.use('/providers', earningsApp);
-app.use('/categories', catalogApp); // Mount catalog at /categories prefix
-
-// SOLUTION: Handle GET /requests BEFORE mounting requestApp
-// We'll mount requestApp but exclude GET /requests from it
+// CRITICAL: GET /requests MUST be registered FIRST, before ANY app.use
+// This ensures absolute priority - Express processes routes in order
 app.get('/requests', async (req: Request, res: Response, next: NextFunction) => {
   try {
     logger.info('📋 [SERVER] GET /requests - Direct handler called');
@@ -75,16 +67,18 @@ app.get('/requests', async (req: Request, res: Response, next: NextFunction) => 
   }
 });
 
-// Mount requestApp with a condition to skip GET /requests
-// This ensures other routes like POST /requests, GET /requests/:id work
-app.use('/requests', (req: Request, res: Response, next: NextFunction) => {
-  // Skip if it's GET /requests (already handled above)
-  if (req.method === 'GET' && req.path === '/requests' && req.originalUrl === '/requests') {
-    return next('route'); // Skip this middleware
-  }
-  // Otherwise, forward to requestApp
-  requestApp(req, res, next);
-});
+// Mount all service routes
+app.use('/auth', authRoutes);
+app.use('/users', usersApp);
+app.use('/providers', usersApp);
+// Mount earnings routes at /providers path too (for /providers/:id/wallet)
+app.use('/providers', earningsApp);
+app.use('/categories', catalogApp); // Mount catalog at /categories prefix
+
+// Mount requestApp AFTER the specific GET /requests route above
+// This ensures GET /requests is handled by the direct handler
+// Other routes like POST /requests, GET /requests/:id will be handled by requestApp
+app.use('/requests', requestApp);
 
 app.use('/offers', matchingApp);
 app.use('/matching', matchingApp);

@@ -37,7 +37,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         // Socket.io conecta no mesmo servidor da API
         const socketUrl = CONFIG.SOCKET_URL || CONFIG.API_URL;
         console.log('🔌 [SOCKET] Conectando em:', socketUrl);
-        
+
         if (!socketUrl) {
           throw new Error('SOCKET_URL não está configurado');
         }
@@ -48,7 +48,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             user_type: user.user_type,
             token: token,
           },
-          transports: ['polling'], // Apenas polling por enquanto para debug - alterar para ['websocket']
+          transports: ['websocket'], // Use websocket for better stability on mobile
           path: '/socket.io',
           forceNew: true,
           timeout: 20000,

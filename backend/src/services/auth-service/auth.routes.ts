@@ -11,6 +11,10 @@ const router = express.Router();
 
 router.post('/register', async (req, res, next) => {
   try {
+    // Transform role to uppercase if it exists
+    if (req.body.role && typeof req.body.role === 'string') {
+      req.body.role = req.body.role.toUpperCase();
+    }
     const data = RegisterSchema.parse(req.body);
 
     const existing = await prisma.user.findUnique({ where: { email: data.email } });
@@ -41,13 +45,13 @@ router.post('/register', async (req, res, next) => {
     const token = jwt.sign({ userId: user.id, role: user.role }, CONFIG.JWT_SECRET, { expiresIn: '7d' });
 
     // Return format compatible with mobile app
-    res.json({ 
-      token, 
+    res.json({
+      token,
       access_token: token, // Alias for compatibility
-      user: { 
-        id: user.id, 
-        name: user.name, 
-        email: user.email, 
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
         role: user.role,
         phone: user.phone || '',
         user_type: user.role === UserRole.PROVIDER ? 1 : 2,
@@ -55,9 +59,9 @@ router.post('/register', async (req, res, next) => {
         created_at: user.createdAt?.toISOString() || new Date().toISOString()
       },
       user_data: { // Alias for compatibility
-        id: user.id, 
-        name: user.name, 
-        email: user.email, 
+        id: user.id,
+        name: user.name,
+        email: user.email,
         role: user.role,
         phone: user.phone || '',
         user_type: user.role === UserRole.PROVIDER ? 1 : 2,
@@ -82,13 +86,13 @@ router.post('/login', async (req, res, next) => {
     const token = jwt.sign({ userId: user.id, role: user.role }, CONFIG.JWT_SECRET, { expiresIn: '7d' });
 
     // Return format compatible with mobile app
-    res.json({ 
-      token, 
+    res.json({
+      token,
       access_token: token, // Alias for compatibility
-      user: { 
-        id: user.id, 
-        name: user.name, 
-        email: user.email, 
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
         role: user.role,
         phone: user.phone || '',
         user_type: user.role === UserRole.PROVIDER ? 1 : 2,
@@ -96,9 +100,9 @@ router.post('/login', async (req, res, next) => {
         created_at: user.createdAt?.toISOString() || new Date().toISOString()
       },
       user_data: { // Alias for compatibility
-        id: user.id, 
-        name: user.name, 
-        email: user.email, 
+        id: user.id,
+        name: user.name,
+        email: user.email,
         role: user.role,
         phone: user.phone || '',
         user_type: user.role === UserRole.PROVIDER ? 1 : 2,

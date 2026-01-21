@@ -25,30 +25,30 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { user, token } = useAuth();
-  
+
   console.log('🔍 [SOCKET] Estado atual:', { user: user?.name, token: !!token, isConnected });
 
   useEffect(() => {
     if (user && token) {
       console.log('🔌 [SOCKET] Iniciando conexão Socket.io...');
       console.log('🔌 [SOCKET] User:', user.name, 'Type:', user.user_type);
-      
+
       try {
         // Socket.io conecta no mesmo servidor da API
         const socketUrl = CONFIG.SOCKET_URL || CONFIG.API_URL;
         console.log('🔌 [SOCKET] Conectando em:', socketUrl);
-        
+
         if (!socketUrl) {
           throw new Error('SOCKET_URL não está configurado');
         }
-        
+
         const newSocket = io(socketUrl, {
           auth: {
             user_id: user.id,
             user_type: user.user_type,
             token: token,
           },
-          transports: ['polling'], // Apenas polling por enquanto para debug - alterar para ['websocket']
+          transports: ['websocket'], // Use websocket for better stability on mobile
           path: '/socket.io',
           forceNew: true,
           timeout: 20000,

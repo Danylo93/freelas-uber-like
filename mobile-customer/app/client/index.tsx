@@ -66,6 +66,7 @@ export default function ClientScreen() {
   const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [currentRequest, setCurrentRequest] = useState<ServiceRequest | null>(null);
   const [userLocation, setUserLocation] = useState<LatLng | null>(null);
@@ -104,7 +105,7 @@ export default function ClientScreen() {
         if (!p.category) return false;
         const categoryLower = p.category.toLowerCase();
         const selectedLower = selectedCategory.toLowerCase();
-        
+
         // Map category names (provider uses "Encanador", customer uses "Canalizador")
         const categoryMappings: Record<string, string[]> = {
           'canalizador': ['canalizador', 'encanador', 'plumber', 'plumbing'],
@@ -114,18 +115,18 @@ export default function ClientScreen() {
           'mudanças': ['mudanças', 'moving', 'move'],
           'jardinagem': ['jardinagem', 'gardening', 'garden']
         };
-        
+
         // Check direct match
         if (categoryLower.includes(selectedLower) || selectedLower.includes(categoryLower)) {
           return true;
         }
-        
+
         // Check mapped categories
         const mappings = categoryMappings[selectedLower];
         if (mappings) {
           return mappings.some(m => categoryLower.includes(m));
         }
-        
+
         return false;
       });
       setFilteredProviders(filtered);
@@ -168,6 +169,7 @@ export default function ClientScreen() {
   const loadProviders = async () => {
     try {
       setLoading(true);
+      setErrorMsg(null);
       const response = await api.get('/providers');
       console.log('📋 [PROVIDERS] Resposta do backend:', response);
       // Map backend response to app format
@@ -188,8 +190,14 @@ export default function ClientScreen() {
       }));
       console.log('📋 [PROVIDERS] Providers mapeados:', mappedProviders.length);
       setProviders(mappedProviders);
-    } catch (e) {
+    } catch (e: any) {
       console.error('❌ [PROVIDERS] Erro ao carregar:', e);
+      const status = e.response?.status;
+      if (status === 503) {
+        setErrorMsg('Servidor indisponível temporariamente (503). Tente novamente.');
+      } else {
+        setErrorMsg('Não foi possível carregar os prestadores. Verifique sua conexão.');
+      }
     } finally { setLoading(false); }
   };
 
@@ -219,7 +227,7 @@ export default function ClientScreen() {
     });
 
     socket.on('job_status_update', (data) => {
-       // data: { jobId, status }
+      // data: { jobId, status }
       if (!currentRequest) return;
       setCurrentRequest(prev => prev ? { ...prev, status: data.status } : null);
       if (data.status === 'completed') {
@@ -441,8 +449,15 @@ export default function ClientScreen() {
             contentContainerStyle={{ paddingBottom: 40 }}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
-              <View style={{ alignItems: 'center', marginTop: 40 }}>
-                <Text style={{ color: '#666' }}>Nenhum profissional encontrado.</Text>
+              <View style={{ alignItems: 'center', marginTop: 40, paddingHorizontal: 20 }}>
+                <Text style={{ color: errorMsg ? '#F44336' : '#666', textAlign: 'center', marginBottom: 10 }}>
+                  {errorMsg || 'Nenhum profissional encontrado.'}
+                </Text>
+                {errorMsg && (
+                  <TouchableOpacity onPress={loadProviders} style={{ paddingHorizontal: 20, paddingVertical: 10, backgroundColor: '#E3F2FD', borderRadius: 8 }}>
+                    <Text style={{ color: '#007AFF', fontWeight: 'bold' }}>Tentar Novamente</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           />

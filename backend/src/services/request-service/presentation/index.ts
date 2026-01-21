@@ -59,6 +59,29 @@ app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', service: 'request-service' });
 });
 
+app.post('/', async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const token = authHeader.split(' ')[1];
+        const jwt = require('jsonwebtoken');
+        // Use process.env.JWT_SECRET to match other routes, though CONFIG.JWT_SECRET is better
+        const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as any;
+
+        const result = await createRequest.execute({
+            ...req.body,
+            customerId: payload.userId
+        });
+
+        res.status(201).json(result);
+    } catch (err) {
+        next(err);
+    }
+});
+
 // IMPORTANTE: GET / deve vir ANTES de GET /:id para evitar conflito
 app.get('/', async (req, res, next) => {
     try {
@@ -71,11 +94,11 @@ app.get('/', async (req, res, next) => {
             where: {
                 ...(statusFilter && { status: { in: statusFilter as any[] } })
             },
-            include: { 
-                customer: true, 
-                job: { 
-                    include: { provider: true } 
-                } 
+            include: {
+                customer: true,
+                job: {
+                    include: { provider: true }
+                }
             },
             orderBy: { createdAt: 'desc' }
         });
@@ -128,7 +151,7 @@ app.get('/client/:clientId', async (req, res, next) => {
     try {
         const { status } = req.query;
         const statusFilter = status ? (status as string).split(',') : undefined;
-        
+
         const requests = await prisma.serviceRequest.findMany({
             where: {
                 customerId: req.params.clientId,
@@ -137,7 +160,7 @@ app.get('/client/:clientId', async (req, res, next) => {
             include: { job: { include: { provider: true } } },
             orderBy: { createdAt: 'desc' }
         });
-        
+
         res.json(requests.map((r: any) => ({
             id: r.id,
             provider_id: r.job?.providerId,
@@ -197,17 +220,17 @@ app.put('/:id/accept', async (req, res, next) => {
         if (!request) {
             return res.status(404).json({ message: 'Request not found' });
         }
-        
+
         // Get provider from auth token (simplified)
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
-        
+
         const token = authHeader.split(' ')[1];
         const jwt = require('jsonwebtoken');
         const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as any;
-        
+
         // Create Job
         const job = await prisma.job.create({
             data: {
@@ -217,13 +240,13 @@ app.put('/:id/accept', async (req, res, next) => {
             },
             include: { provider: true, request: true }
         });
-        
+
         // Update request status
         await prisma.serviceRequest.update({
             where: { id: request.id },
             data: { status: 'ACCEPTED' }
         });
-        
+
         res.json({
             id: request.id,
             status: 'ACCEPTED',
@@ -256,7 +279,7 @@ app.put('/:id/update-status', async (req, res, next) => {
         });
 
         if (!job) {
-             return res.status(404).json({ message: 'Job not found for this request' });
+            return res.status(404).json({ message: 'Job not found for this request' });
         }
 
         const updateData: any = { status: jobStatus };
@@ -291,13 +314,13 @@ app.post('/:id/payment', async (req, res, next) => {
         if (!request) {
             return res.status(404).json({ message: 'Request not found' });
         }
-        
+
         // Update request status to completed
         // Note: RequestStatus doesn't have COMPLETED, so we might keep it as ACCEPTED or OFFERED?
         // Or assume the enum was updated. If not, we can't update.
         // For now, let's assume we don't update RequestStatus to COMPLETED if it doesn't exist.
         // We will just return success.
-        
+
         res.json({ success: true, message: 'Payment processed' });
     } catch (err) {
         next(err);
