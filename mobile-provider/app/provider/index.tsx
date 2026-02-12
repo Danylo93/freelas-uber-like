@@ -15,6 +15,8 @@ import {
   Image,
   SafeAreaView,
   Platform,
+  ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
@@ -420,7 +422,7 @@ export default function ProviderScreen() {
           </View>
         </View>
 
-        <View style={styles.requestInfoContainer}>
+        <ScrollView contentContainerStyle={styles.requestInfoContainer} showsVerticalScrollIndicator={false}>
           <Text style={styles.requestCategory}>{selectedRequest?.category}</Text>
 
           <View style={styles.ratingContainer}>
@@ -458,7 +460,7 @@ export default function ProviderScreen() {
           <TouchableOpacity style={styles.declineLink} onPress={handleDecline}>
             <Text style={styles.declineText}>Recusar Solicitação</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       </View>
     </Animated.View>
   );
@@ -568,40 +570,42 @@ export default function ProviderScreen() {
 
       {/* Service Completion Modal */}
       <Modal visible={showServiceModal} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.modalOverlay}>
           <View style={styles.serviceModal}>
-            <Text style={styles.serviceModalTitle}>Concluir Serviço</Text>
-            <Text style={styles.serviceModalSubtitle}>Adicione uma foto do trabalho realizado</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={styles.serviceModalTitle}>Concluir Serviço</Text>
+              <Text style={styles.serviceModalSubtitle}>Adicione uma foto do trabalho realizado</Text>
 
-            <TouchableOpacity style={styles.photoButton} onPress={pickImage}>
-              {servicePhoto ? (
-                <Image source={{ uri: servicePhoto }} style={{ width: '100%', height: 150, borderRadius: 12 }} />
-              ) : (
-                <View style={styles.photoPlaceholder}>
-                  <Ionicons name="camera" size={40} color="#007AFF" />
-                  <Text style={styles.photoPlaceholderText}>Adicionar Foto</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-
-            <TextInput
-              style={styles.descriptionInput}
-              placeholder="Descrição (opcional)"
-              value={serviceDescription}
-              onChangeText={setServiceDescription}
-              multiline
-            />
-
-            <View style={styles.serviceModalButtons}>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setShowServiceModal(false)}>
-                <Text style={styles.cancelButtonText}>Voltar</Text>
+              <TouchableOpacity style={styles.photoButton} onPress={pickImage}>
+                {servicePhoto ? (
+                  <Image source={{ uri: servicePhoto }} style={{ width: '100%', height: 150, borderRadius: 12 }} />
+                ) : (
+                  <View style={styles.photoPlaceholder}>
+                    <Ionicons name="camera" size={40} color="#007AFF" />
+                    <Text style={styles.photoPlaceholderText}>Adicionar Foto</Text>
+                  </View>
+                )}
               </TouchableOpacity>
-              <TouchableOpacity style={styles.completeServiceButton} onPress={handleCompleteService}>
-                <Text style={styles.completeServiceButtonText}>Finalizar</Text>
-              </TouchableOpacity>
-            </View>
+
+              <TextInput
+                style={styles.descriptionInput}
+                placeholder="Descrição (opcional)"
+                value={serviceDescription}
+                onChangeText={setServiceDescription}
+                multiline
+              />
+
+              <View style={styles.serviceModalButtons}>
+                <TouchableOpacity style={styles.cancelButton} onPress={() => setShowServiceModal(false)}>
+                  <Text style={styles.cancelButtonText}>Voltar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.completeServiceButton} onPress={handleCompleteService}>
+                  <Text style={styles.completeServiceButtonText}>Finalizar</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import {
   View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, Alert,
   ActivityIndicator, Animated, Dimensions, StatusBar, TextInput, Image,
@@ -59,6 +59,8 @@ const CATEGORIES = [
 
 export default function ClientScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const paymentConfirmed = params.payment_confirmed === 'true';
   const { user, logout } = useAuth();
   const { socket, isConnected } = useSocket();
 
@@ -253,6 +255,9 @@ export default function ClientScreen() {
       const currentJobId = currentRequest.job_id || currentRequest.id;
       if (data.jobId && data.jobId !== currentJobId) return;
       setCurrentRequest(prev => prev ? { ...prev, status: data.status } : null);
+      if (data.status === 'near_client') {
+        router.push({ pathname: '/client/payment', params: { request_id: currentRequest.id, amount: currentRequest.price?.toString() || '0' } });
+      }
       if (data.status === 'completed') {
         router.push({ pathname: '/client/payment', params: { request_id: currentRequest.id, amount: currentRequest.price?.toString() || '0' } });
       }
@@ -488,6 +493,12 @@ export default function ClientScreen() {
       <Animated.View style={[styles.activeRequestCard, { transform: [{ translateY: activeRequestAnim }] }]}>
         <View style={styles.dragHandle} />
 
+        {paymentConfirmed && (
+            <View style={styles.paymentConfirmedBadge}>
+                 <Text style={styles.paymentConfirmedText}>PAGAMENTO CONFIRMADO</Text>
+            </View>
+        )}
+
         {/* Arriving Header */}
         <View style={styles.arrivingHeader}>
           <Text style={styles.arrivingLabel}>CHEGANDO EM</Text>
@@ -683,6 +694,23 @@ const styles = StyleSheet.create({
   commentInput: { width: '100%', borderWidth: 1, borderColor: '#eee', borderRadius: 12, padding: 12, height: 80, textAlignVertical: 'top', marginBottom: 20 },
   submitRatingBtn: { backgroundColor: '#007AFF', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 12 },
   submitRatingText: { color: '#fff', fontWeight: 'bold' },
+
+  paymentConfirmedBadge: {
+    backgroundColor: '#E8F5E9',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignSelf: 'center',
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#4CAF50'
+  },
+  paymentConfirmedText: {
+    color: '#4CAF50',
+    fontWeight: 'bold',
+    fontSize: 12,
+    letterSpacing: 1
+  }
 });
 
 // Fixing TouchableOpity Typo
