@@ -13,9 +13,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../src/contexts/AuthContext';
+import { useRouter } from 'expo-router';
 import axios from 'axios';
 
-export default function ProfileScreen({ onBack }: { onBack: () => void }) {
+export default function ProfileScreen() {
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -137,7 +139,7 @@ export default function ProfileScreen({ onBack }: { onBack: () => void }) {
           }
         ]}
       >
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Meu Perfil</Text>

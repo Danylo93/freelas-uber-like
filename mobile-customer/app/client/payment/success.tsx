@@ -12,7 +12,7 @@ export default function PaymentSuccessScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                <TouchableOpacity onPress={() => router.replace('/client')} style={styles.closeButton}>
+                <TouchableOpacity onPress={() => router.push({ pathname: '/client', params: { payment_confirmed: 'true' } })} style={styles.closeButton}>
                     <Ionicons name="close" size={24} color="#333" />
                 </TouchableOpacity>
 
@@ -43,9 +43,9 @@ export default function PaymentSuccessScreen() {
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.homeButton} onPress={() => router.push({ pathname: '/client/review', params: { requestId: request_id, providerName: 'Home Cleaners Inc.' } })}>
-                    <Text style={styles.homeButtonText}>Rate & Finish</Text>
-                    <Ionicons name="star" size={18} color="#fff" style={{ marginLeft: 8 }} />
+                <TouchableOpacity style={styles.homeButton} onPress={() => router.push({ pathname: '/client', params: { payment_confirmed: 'true' } })}>
+                    <Text style={styles.homeButtonText}>Back to Map</Text>
+                    <Ionicons name="map" size={18} color="#fff" style={{ marginLeft: 8 }} />
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.receiptButton} onPress={() => router.push({ pathname: '/client/receipt', params: { request_id } })}>
