@@ -8,7 +8,7 @@ import api from '@/src/services/api';
 type ServiceRequest = {
     id: string;
     category: string;
-    price: float;
+    price: number;
     status: string;
     timestamp?: string; // Mocking date for now if backend doesn't have it
     provider_id?: string;
@@ -32,12 +32,12 @@ export default function ServiceHistoryScreen() {
             setLoading(true);
             if (!user) return;
 
-            // Fetch Ongoing (pending, accepted, in_progress)
-            const ongoingRes = await api.get(`/requests/client/${user.id}?status=pending,accepted,in_progress`);
+            // Fetch Ongoing (PENDING, ACCEPTED)
+            const ongoingRes = await api.get(`/requests/client/${user.id}?status=PENDING,ACCEPTED`);
             setActiveRequests(ongoingRes.data);
 
-            // Fetch Completed (completed, cancelled)
-            const completedRes = await api.get(`/requests/client/${user.id}?status=completed,cancelled`);
+            // Fetch Completed (CANCELED, EXPIRED)
+            const completedRes = await api.get(`/requests/client/${user.id}?status=CANCELED,EXPIRED`);
             setCompletedRequests(completedRes.data);
 
         } catch (error) {
@@ -47,18 +47,27 @@ export default function ServiceHistoryScreen() {
         }
     };
 
+    const normalizeStatus = (status: string) => {
+        const s = (status || '').toUpperCase();
+        if (s === 'CANCELED') return 'canceled';
+        if (s === 'ACCEPTED') return 'accepted';
+        if (s === 'PENDING') return 'pending';
+        return s.toLowerCase();
+    };
+
     const getStatusColor = (status: string) => {
-        switch (status) {
+        switch (normalizeStatus(status)) {
             case 'completed': return '#4CAF50';
-            case 'cancelled': return '#FF5252';
+            case 'canceled': return '#FF5252';
             case 'in_progress': return '#2196F3';
             case 'accepted': return '#FF9800';
+            case 'pending': return '#999';
             default: return '#999';
         }
     };
 
     const renderCard = (req: ServiceRequest) => (
-        <View key={req.id} style={styles.card}>
+            <View key={req.id} style={styles.card}>
             <Image
                 source={{ uri: 'https://images.unsplash.com/photo-1581578731117-104f2a8d467e?w=500' }} // Mock image based on category in real app
                 style={styles.cardImage}
@@ -66,9 +75,9 @@ export default function ServiceHistoryScreen() {
             <View style={styles.cardContent}>
                 <View style={styles.cardHeader}>
                     <View style={[styles.statusBadge, { backgroundColor: getStatusColor(req.status) + '20' }]}>
-                        <Text style={[styles.statusText, { color: getStatusColor(req.status) }]}>{req.status.toUpperCase()}</Text>
+                        <Text style={[styles.statusText, { color: getStatusColor(req.status) }]}>{normalizeStatus(req.status).toUpperCase()}</Text>
                     </View>
-                    <Text style={styles.priceText}>${req.price.toFixed(2)}</Text>
+                    <Text style={styles.priceText}>$ {Number(req.price || 0).toFixed(2)}</Text>
                 </View>
 
                 <Text style={styles.serviceTitle}>{req.category} Service</Text>

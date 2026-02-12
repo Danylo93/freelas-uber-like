@@ -55,13 +55,19 @@ const apiClient = async (method: string, endpoint: string, data?: any, requiresA
         console.error(`❌ [API] Error response (text):`, text);
         errorMessage = text || errorMessage;
       }
-      throw new Error(errorMessage);
+      const apiError: any = new Error(errorMessage);
+      apiError.isApiError = true;
+      apiError.status = res.status;
+      throw apiError;
     }
 
     const responseData = await res.json();
     console.log(`✅ [API] ${method} ${endpoint} - Success`);
     return { data: responseData };
   } catch (error: any) {
+    if (error?.isApiError) {
+      throw error;
+    }
     if (error.message && !error.message.includes('HTTP')) {
       // Network error or other fetch error
       console.error(`❌ [API] Network error for ${method} ${endpoint}:`, error.message);
@@ -113,7 +119,7 @@ export const api = {
   },
 
   acceptOffer: async (token: string, requestId: string, providerId: string) => {
-     const res = await fetch(`${CONFIG.API_URL}/matching/offers/${requestId}/accept`, {
+     const res = await fetch(`${CONFIG.API_URL}/matching/${requestId}/accept`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,7 +132,7 @@ export const api = {
   },
 
   sendPing: async (token: string, jobId: string, lat: number, lng: number, providerId: string) => {
-      const res = await fetch(`${CONFIG.API_URL}/tracking/jobs/${jobId}/location`, {
+      const res = await fetch(`${CONFIG.API_URL}/tracking/${jobId}/location`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ lat, lng, providerId })

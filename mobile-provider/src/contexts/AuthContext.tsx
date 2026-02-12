@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('🔑 [AUTH] Tentando login para:', email);
       setIsLoading(true);
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.login(email, password);
 
       const { access_token, user_data } = response.data;
       console.log('✅ [AUTH] Login bem-sucedido:', user_data.name);
@@ -83,8 +83,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await AsyncStorage.setItem('user', JSON.stringify(user_data));
 
     } catch (error: any) {
-      console.error('❌ [AUTH] Erro no login:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.detail || 'Erro ao fazer login');
+      console.error('❌ [AUTH] Erro no login:', error.message);
+      throw new Error(error.message || 'Erro ao fazer login');
     } finally {
       setIsLoading(false);
     }
@@ -93,13 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: RegisterData) => {
     try {
       console.log('📝 [AUTH] Tentando registrar usuário:', userData.email);
-      console.log('📝 [AUTH] api object:', typeof api, api);
-      console.log('📝 [AUTH] api.post:', typeof api?.post);
       setIsLoading(true);
-      if (!api || !api.post) {
-        throw new Error('API não está disponível. Verifique a importação.');
-      }
-      const response = await api.post('/auth/register', userData);
+      const response = await api.register(userData);
 
       const { access_token, user_data } = response.data;
       console.log('✅ [AUTH] Registro bem-sucedido:', user_data.name);
@@ -111,8 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await AsyncStorage.setItem('user', JSON.stringify(user_data));
 
     } catch (error: any) {
-      console.error('❌ [AUTH] Erro no registro:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.detail || 'Erro ao fazer registro');
+      console.error('❌ [AUTH] Erro no registro:', error.message);
+      throw new Error(error.message || 'Erro ao fazer registro');
     } finally {
       setIsLoading(false);
     }

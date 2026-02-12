@@ -94,6 +94,12 @@ export interface OfferSentEvent {
   requestId: string;
   providerId: string;
   timeout: number;
+  offerId?: string;
+  customerId?: string;
+  proposedPrice?: number;
+  message?: string;
+  providerName?: string;
+  forCustomer?: boolean;
 }
 
 export interface JobAcceptedEvent {

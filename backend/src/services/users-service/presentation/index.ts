@@ -7,6 +7,10 @@ import { GetUser } from '../application/usecases/getUser';
 import { GetProvider } from '../application/usecases/getProvider';
 import { UpdateProvider } from '../application/usecases/updateProvider';
 import { prisma } from '../../../shared/database/src/index';
+import { KafkaClient } from '../../../shared/shared-kafka/src/index';
+import { CONFIG } from '../../../shared/shared-config/src/index';
+import { KAFKA_TOPICS } from '../../../shared/shared-contracts/src/index';
+import { logger } from '../../../shared/shared-logger/src/index';
 
 const app = express();
 app.use(cors());
@@ -19,6 +23,11 @@ const providerRepo = container.resolve<ProviderRepository>('ProviderRepository')
 const getUser = new GetUser(userRepo);
 const getProvider = new GetProvider(providerRepo);
 const updateProvider = new UpdateProvider(providerRepo);
+
+const kafkaProducer = new KafkaClient('users-service-producer', CONFIG.KAFKA.BROKERS);
+kafkaProducer.connectProducer().catch((err) => {
+    logger.error('Failed to connect users-service Kafka producer', err);
+});
 
 app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', service: 'users-service' });
@@ -68,24 +77,6 @@ app.get('/', async (req, res, next) => {
     }
 });
 
-app.get('/:id', async (req, res, next) => {
-    try {
-        const profile = await getProvider.execute(req.params.id);
-        res.json(profile);
-    } catch (err) {
-        next(err);
-    }
-});
-
-app.put('/:id', async (req, res, next) => {
-    try {
-        const updated = await updateProvider.execute(req.params.id, req.body);
-        res.json(updated);
-    } catch (err) {
-        next(err);
-    }
-});
-
 // Handle /provider/location (mobile apps call PUT /provider/location)
 // This will be mounted at /provider in server.ts
 app.put('/location', async (req, res, next) => {
@@ -106,6 +97,33 @@ app.put('/location', async (req, res, next) => {
             currentLng: lng,
             isOnline: isOnline !== undefined ? isOnline : undefined
         });
+
+        if (lat !== undefined && lng !== undefined) {
+            await kafkaProducer.publish(KAFKA_TOPICS.PROVIDER_LOCATION_UPDATED, {
+                providerId: payload.userId,
+                lat,
+                lng
+            });
+        }
+
+        res.json(updated);
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.get('/:id', async (req, res, next) => {
+    try {
+        const profile = await getProvider.execute(req.params.id);
+        res.json(profile);
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.put('/:id', async (req, res, next) => {
+    try {
+        const updated = await updateProvider.execute(req.params.id, req.body);
         res.json(updated);
     } catch (err) {
         next(err);

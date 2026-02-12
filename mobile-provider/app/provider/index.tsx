@@ -31,7 +31,9 @@ const { width, height } = Dimensions.get('window');
 
 // Types
 interface ServiceRequest {
-  id: string; // This corresponds to jobId in backend
+  id: string; // Request id
+  job_id?: string;
+  provider_id?: string;
   client_name: string;
   client_phone: string;
   category: string;
@@ -44,6 +46,8 @@ interface ServiceRequest {
   client_longitude: number;
   created_at: string;
 }
+
+const ACTIVE_REQUEST_STATUSES = ['accepted', 'in_progress', 'near_client', 'started'];
 
 export default function ProviderScreen() {
   const router = useRouter();
@@ -103,6 +107,12 @@ export default function ProviderScreen() {
     }
   }, [selectedRequest]);
 
+  useEffect(() => {
+    if (user?.id) {
+      loadRequests();
+    }
+  }, [user?.id]);
+
   const getCurrentLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -126,13 +136,14 @@ export default function ProviderScreen() {
           // Update local state if needed or just sync to backend
           try {
             // Send to Socket if Active Request (for real-time tracking)
-            if (activeRequestRef.current && socket) {
-               console.log('📍 [PROVIDER] Sending location ping via socket');
-               socket.emit('location_ping', {
-                 jobId: activeRequestRef.current.id,
-                 lat,
-                 lng
-               });
+            const jobId = activeRequestRef.current?.job_id;
+            if (jobId && socket) {
+              console.log('???? [PROVIDER] Sending location ping via socket');
+              socket.emit('location_ping', {
+                jobId,
+                lat,
+                lng
+              });
             }
 
             // Sync with DB if online
@@ -199,22 +210,35 @@ export default function ProviderScreen() {
       const response = await api.get('/requests', true); // requiresAuth = true
       console.log('✅ [PROVIDER] Requests carregados:', response.data?.length || 0);
       
-      const pending = response.data.filter((r: ServiceRequest) => r.status === 'pending');
-      const active = response.data.find((r: ServiceRequest) =>
-        ['accepted', 'in_progress', 'near_client', 'started'].includes(r.status)
+      const normalized = (response.data || []).map((r: ServiceRequest) => ({
+        ...r,
+        status: (r.status || '').toLowerCase(),
+        job_id: (r as any).job_id ?? (r as any).jobId,
+        provider_id: (r as any).provider_id ?? (r as any).providerId
+      }));
+
+      const pending = normalized.filter((r: ServiceRequest) => r.status === 'pending');
+      const active = normalized.find((r: ServiceRequest) =>
+        ACTIVE_REQUEST_STATUSES.includes(r.status) &&
+        !!user?.id &&
+        String(r.provider_id || '') === String(user.id)
       );
 
       setRequests(pending);
+      setActiveRequest(active || null);
+
       if (active) {
-        setActiveRequest(active);
         // Join the job room
-        if (socket) socket.emit('join_job', active.id);
+        if (socket && active.job_id) socket.emit('join_job', active.job_id);
+      } else {
+        setShowServiceModal(false);
       }
 
-      // If we are online and have pending requests but none selected, select the first one to show the "Incoming" screen
-      if (pending.length > 0 && !selectedRequest && !active) {
-        setSelectedRequest(pending[0]);
-      }
+      setSelectedRequest((prev) => {
+        if (active || !isOnline || pending.length === 0) return null;
+        if (!prev) return pending[0];
+        return pending.find((r) => r.id === prev.id) || pending[0];
+      });
 
     } catch (e: any) {
       console.error('❌ [PROVIDER] Erro ao carregar requests:', e.message);
@@ -224,18 +248,33 @@ export default function ProviderScreen() {
     }
   };
 
-  const handleToggleOnline = () => {
-    setIsOnline(!isOnline);
-    // In a real app, calls backend to toggle availability
+  const handleToggleOnline = async () => {
+    const nextOnline = !isOnline;
+    setIsOnline(nextOnline);
+    if (!nextOnline) setSelectedRequest(null);
+    if (nextOnline) loadRequests();
+
+    if (!userLocation) return;
+
+    try {
+      await api.put('/provider/location', {
+        lat: userLocation.latitude,
+        lng: userLocation.longitude,
+        isOnline: nextOnline
+      });
+    } catch (e: any) {
+      console.error('[PROVIDER] Failed to update online status:', e.message);
+    }
   };
 
   const handleAccept = async () => {
     if (!selectedRequest) return;
     try {
-      await api.put(`/requests/${selectedRequest.id}/accept`, {});
-      setActiveRequest(selectedRequest);
+      const response = await api.put(`/requests/${selectedRequest.id}/accept`, {});
+      const jobId = response.data?.job_id ?? response.data?.jobId;
+      setActiveRequest({ ...selectedRequest, status: 'accepted', job_id: jobId });
       // Join job room
-      if (socket) socket.emit('join_job', selectedRequest.id);
+      if (socket && jobId) socket.emit('join_job', jobId);
 
       setSelectedRequest(null);
     } catch (e) {
@@ -408,6 +447,13 @@ export default function ProviderScreen() {
               <Text style={styles.acceptText}>ACEITAR</Text>
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity
+            style={styles.proposeLink}
+            onPress={() => router.push({ pathname: '/provider/propose', params: { requestId: selectedRequest?.id, suggestedPrice: selectedRequest?.price?.toString() || '' } })}
+          >
+            <Text style={styles.proposeText}>Propor valor</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity style={styles.declineLink} onPress={handleDecline}>
             <Text style={styles.declineText}>Recusar Solicitação</Text>
@@ -663,6 +709,9 @@ const styles = StyleSheet.create({
     shadowColor: '#007AFF', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 16, elevation: 10
   },
   acceptText: { color: '#fff', fontWeight: 'bold', fontSize: 12 },
+  proposeLink: { marginTop: 12 },
+  proposeText: { color: '#007AFF', fontWeight: '600' },
+
   declineLink: { marginTop: 24 },
   declineText: { color: '#f44336', fontWeight: '600' },
 

@@ -11,6 +11,9 @@ import { CONFIG } from '../../../shared/shared-config/src/index';
 import { KAFKA_TOPICS } from '../../../shared/shared-contracts/src/index';
 import { logger } from '../../../shared/shared-logger/src/index';
 import { prisma } from '../../../shared/database/src/index';
+import { CreateReview } from '../../review-service/application/usecases/createReview';
+import { PrismaReviewRepository } from '../../review-service/infrastructure/repositories/prismaReviewRepository';
+import { KafkaMessageBroker as ReviewKafkaMessageBroker } from '../../review-service/infrastructure/messaging/kafkaMessageBroker';
 
 const app = express();
 app.use(cors());
@@ -29,6 +32,15 @@ const messageBroker = container.resolve<MessageBroker>('MessageBroker');
 const createRequest = new CreateRequest(requestRepo, messageBroker);
 const getRequest = new GetRequest(requestRepo);
 const processJobAccepted = new ProcessJobAccepted(requestRepo);
+
+const kafkaProducer = new KafkaClient('request-producer', CONFIG.KAFKA.BROKERS);
+kafkaProducer.connectProducer().catch((err) => {
+    logger.error('Failed to connect request-service Kafka producer', err);
+});
+
+const reviewRepo = new PrismaReviewRepository();
+const reviewBroker = new ReviewKafkaMessageBroker();
+const createReview = new CreateReview(reviewRepo, reviewBroker);
 
 // --- Kafka Consumer Setup ---
 async function startConsumer() {
@@ -122,6 +134,7 @@ app.get('/', async (req, res, next) => {
             return {
                 id: r.id,
                 provider_id: r.job?.providerId,
+                job_id: r.job?.id,
                 status: mappedStatus,
 
                 // Client Info (Critical for Provider)
@@ -164,6 +177,7 @@ app.get('/client/:clientId', async (req, res, next) => {
         res.json(requests.map((r: any) => ({
             id: r.id,
             provider_id: r.job?.providerId,
+            job_id: r.job?.id,
             status: r.status,
             provider_name: r.job?.provider?.name || '',
             provider_phone: r.job?.provider?.phone || '',
@@ -245,6 +259,13 @@ app.put('/:id/accept', async (req, res, next) => {
         await prisma.serviceRequest.update({
             where: { id: request.id },
             data: { status: 'ACCEPTED' }
+        });
+
+        await kafkaProducer.publish(KAFKA_TOPICS.JOB_ACCEPTED, {
+            requestId: request.id,
+            jobId: job.id,
+            providerId: payload.userId,
+            customerId: request.customerId
         });
 
         res.json({
@@ -329,8 +350,21 @@ app.post('/:id/payment', async (req, res, next) => {
 
 // Alias for review endpoint (mobile-customer uses PUT /requests/:id/review)
 app.put('/:id/review', async (req, res, next) => {
-    // Redirect to review service
-    res.redirect(307, `/reviews`);
+    try {
+        const job = await prisma.job.findUnique({
+            where: { requestId: req.params.id }
+        });
+        if (!job) {
+            return res.status(404).json({ message: 'Job not found for this request' });
+        }
+        const review = await createReview.execute({
+            ...req.body,
+            jobId: job.id
+        });
+        res.status(201).json(review);
+    } catch (err) {
+        next(err);
+    }
 });
 
 // Export the app

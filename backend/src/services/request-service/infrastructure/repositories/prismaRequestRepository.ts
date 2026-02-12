@@ -52,7 +52,6 @@ export class PrismaRequestRepository implements RequestRepository {
     async update(id: string, data: Partial<Request>): Promise<Request> {
         const updateData: any = {};
         if (data.status) updateData.status = data.status;
-        if ((data as any).providerId) updateData.providerId = (data as any).providerId;
         
         const res = await prisma.serviceRequest.update({
             where: { id },

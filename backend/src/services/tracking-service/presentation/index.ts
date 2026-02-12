@@ -58,7 +58,7 @@ app.get('/healthz', (req, res) => {
 });
 
 // Fallback HTTP Ping / Post Location
-app.post('/jobs/:jobId/location', async (req, res, next) => {
+app.post('/:jobId/location', async (req, res, next) => {
     try {
         await publishLocationPing.execute({
             jobId: req.params.jobId,
@@ -72,7 +72,7 @@ app.post('/jobs/:jobId/location', async (req, res, next) => {
     }
 });
 
-app.get('/jobs/:jobId/history', async (req, res, next) => {
+app.get('/:jobId/history', async (req, res, next) => {
     try {
         const history = await getLocationHistory.execute(req.params.jobId);
         res.json(history);

@@ -27,7 +27,11 @@ export async function setupKafkaConsumers(io: Server) {
         case KAFKA_TOPICS.OFFER_CREATED:
           // Emit to specific provider
           const offer = data as OfferSentEvent;
-          io.to(`provider:${offer.providerId}`).emit('request_offer', offer);
+          if (offer.forCustomer && offer.customerId) {
+            io.to(`customer:${offer.customerId}`).emit('offer_received', offer);
+          } else {
+            io.to(`provider:${offer.providerId}`).emit('request_offer', offer);
+          }
           break;
 
         case KAFKA_TOPICS.JOB_ACCEPTED:

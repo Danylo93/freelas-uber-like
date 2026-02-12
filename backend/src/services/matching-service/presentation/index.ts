@@ -11,6 +11,7 @@ import { KafkaClient } from '../../../shared/shared-kafka/src/index';
 import { CONFIG } from '../../../shared/shared-config/src/index';
 import { KAFKA_TOPICS } from '../../../shared/shared-contracts/src/index';
 import { logger } from '../../../shared/shared-logger/src/index';
+import { prisma } from '../../../shared/database/src/index';
 
 const app = express();
 app.use(cors());
@@ -23,7 +24,7 @@ const messageBroker = container.resolve<MessageBroker>('MessageBroker');
 
 const updateProviderLocation = new UpdateProviderLocation(geoRepo);
 const findAndNotifyProviders = new FindAndNotifyProviders(geoRepo, messageBroker);
-const acceptOffer = new AcceptOffer(matchingRepo, messageBroker);
+const acceptOffer = new AcceptOffer(matchingRepo);
 
 // --- Kafka Consumer Setup ---
 async function startConsumer() {
@@ -71,14 +72,77 @@ app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', service: 'matching-service' });
 });
 
-app.post('/offers/:requestId/accept', async (req, res, next) => {
+app.post('/:requestId/accept', async (req, res, next) => {
     try {
-        const { providerId } = req.body;
+        const offerId = req.params.requestId;
+        const offer = await prisma.offer.findUnique({
+            where: { id: offerId },
+            include: { request: { select: { customerId: true } } }
+        });
+        const isProposalAccept = Boolean(offer);
+
+        const requestId = isProposalAccept ? offer!.requestId : req.params.requestId;
+        const providerId = isProposalAccept ? offer!.providerId : req.body.providerId;
+
+        if (!providerId) {
+            return res.status(400).json({ message: 'providerId is required' });
+        }
+
+        if (offer && offer.status !== 'PENDING') {
+            return res.status(409).json({ message: 'Offer is no longer available' });
+        }
+
+        const request = isProposalAccept ? offer!.request : await prisma.serviceRequest.findUnique({
+            where: { id: requestId },
+            select: { customerId: true }
+        });
+        if (!request) {
+            return res.status(404).json({ message: 'Request not found' });
+        }
         const result = await acceptOffer.execute({
-            requestId: req.params.requestId,
+            requestId,
             providerId
         });
-        res.json(result);
+
+        const existingJob = await prisma.job.findUnique({
+            where: { requestId }
+        });
+        if (existingJob) {
+            return res.json({ status: 'accepted', job_id: existingJob.id });
+        }
+
+        const job = await prisma.job.create({
+            data: {
+                requestId,
+                providerId,
+                status: 'ACCEPTED'
+            }
+        });
+
+        await prisma.serviceRequest.update({
+            where: { id: requestId },
+            data: { status: 'ACCEPTED' }
+        });
+
+        if (offer) {
+            await prisma.offer.update({
+                where: { id: offer.id },
+                data: { status: 'ACCEPTED' }
+            });
+            await prisma.offer.updateMany({
+                where: { requestId, id: { not: offer.id } },
+                data: { status: 'REJECTED' }
+            });
+        }
+
+        await messageBroker.publish(KAFKA_TOPICS.JOB_ACCEPTED, {
+            requestId,
+            jobId: job.id,
+            providerId,
+            customerId: request.customerId
+        });
+
+        res.json({ ...result, job_id: job.id });
     } catch (err) {
         // Basic error mapping
         if ((err as Error).message.includes('Offer no longer available')) {
@@ -86,6 +150,97 @@ app.post('/offers/:requestId/accept', async (req, res, next) => {
         } else {
             next(err);
         }
+    }
+});
+
+app.post('/:requestId/propose', async (req, res, next) => {
+    try {
+        const { providerId, proposedPrice, message } = req.body || {};
+        if (!providerId || !proposedPrice) {
+            return res.status(400).json({ message: 'providerId and proposedPrice are required' });
+        }
+
+        const request = await prisma.serviceRequest.findUnique({
+            where: { id: req.params.requestId },
+            select: { customerId: true, status: true }
+        });
+        if (!request) {
+            return res.status(404).json({ message: 'Request not found' });
+        }
+        if (request.status === 'ACCEPTED' || request.status === 'CANCELED' || request.status === 'EXPIRED') {
+            return res.status(409).json({ message: 'Request is not available' });
+        }
+
+        const provider = await prisma.user.findUnique({
+            where: { id: providerId },
+            select: { name: true }
+        });
+
+        const offer = await prisma.offer.create({
+            data: {
+                requestId: req.params.requestId,
+                providerId,
+                proposedPrice: Number(proposedPrice),
+                message
+            }
+        });
+
+        if (request.status === 'PENDING') {
+            await prisma.serviceRequest.update({
+                where: { id: req.params.requestId },
+                data: { status: 'OFFERED' }
+            });
+        }
+
+        await messageBroker.publish(KAFKA_TOPICS.OFFER_CREATED, {
+            requestId: offer.requestId,
+            providerId: offer.providerId,
+            timeout: 30,
+            offerId: offer.id,
+            proposedPrice: offer.proposedPrice,
+            message: offer.message,
+            customerId: request.customerId,
+            providerName: provider?.name || 'Prestador',
+            forCustomer: true
+        });
+
+        res.status(201).json({
+            status: 'created',
+            offer: {
+                id: offer.id,
+                requestId: offer.requestId,
+                providerId: offer.providerId,
+                providerName: provider?.name || 'Prestador',
+                proposedPrice: offer.proposedPrice,
+                message: offer.message,
+                createdAt: offer.createdAt
+            }
+        });
+    } catch (err) {
+        next(err);
+    }
+});
+
+app.get('/:requestId', async (req, res, next) => {
+    try {
+        const offers = await prisma.offer.findMany({
+            where: { requestId: req.params.requestId },
+            orderBy: { createdAt: 'desc' },
+            include: { provider: { select: { name: true } } }
+        });
+        res.json({
+            offers: offers.map((offer) => ({
+                id: offer.id,
+                providerId: offer.providerId,
+                providerName: offer.provider?.name || 'Prestador',
+                proposedPrice: offer.proposedPrice,
+                message: offer.message,
+                createdAt: offer.createdAt,
+                status: offer.status
+            }))
+        });
+    } catch (err) {
+        next(err);
     }
 });
 

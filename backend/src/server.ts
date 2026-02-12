@@ -43,22 +43,35 @@ app.get('/requests', async (req: Request, res: Response, next: NextFunction) => 
       },
       orderBy: { createdAt: 'desc' }
     });
-    const mappedRequests = requests.map((r: any) => ({
-      id: r.id,
-      provider_id: r.job?.providerId,
-      status: r.status,
-      provider_name: r.job?.provider?.name || '',
-      provider_phone: r.job?.provider?.phone || '',
-      category: r.categoryId,
-      price: r.price || 0,
-      description: r.description,
-      client_latitude: r.pickupLat,
-      client_longitude: r.pickupLng,
-      client_name: r.customer?.name || '',
-      client_phone: r.customer?.phone || '',
-      client_address: r.address || '',
-      created_at: r.createdAt?.toISOString() || new Date().toISOString()
-    }));
+    const mappedRequests = requests.map((r: any) => {
+      let mappedStatus = (r.status || '').toLowerCase();
+      const jobStatus = r.job?.status;
+
+      if (jobStatus === 'ACCEPTED') mappedStatus = 'accepted';
+      else if (jobStatus === 'ON_THE_WAY') mappedStatus = 'in_progress';
+      else if (jobStatus === 'ARRIVED') mappedStatus = 'near_client';
+      else if (jobStatus === 'STARTED') mappedStatus = 'started';
+      else if (jobStatus === 'COMPLETED') mappedStatus = 'completed';
+      else if (jobStatus === 'CANCELED') mappedStatus = 'canceled';
+
+      return {
+        id: r.id,
+        provider_id: r.job?.providerId,
+        job_id: r.job?.id,
+        status: mappedStatus,
+        provider_name: r.job?.provider?.name || '',
+        provider_phone: r.job?.provider?.phone || '',
+        category: r.categoryId,
+        price: r.price || 0,
+        description: r.description,
+        client_latitude: r.pickupLat,
+        client_longitude: r.pickupLng,
+        client_name: r.customer?.name || '',
+        client_phone: r.customer?.phone || '',
+        client_address: r.address || '',
+        created_at: r.createdAt?.toISOString() || new Date().toISOString()
+      };
+    });
     logger.info(`✅ [SERVER] Retornando ${mappedRequests.length} requests`);
     return res.json(mappedRequests);
   } catch (err) {

@@ -18,14 +18,22 @@ export class PrismaProviderRepository implements ProviderRepository {
     }
 
     async update(userId: string, data: Partial<ProviderProfile>): Promise<ProviderProfile> {
-        const updated = await prisma.providerProfile.update({
+        const updated = await prisma.providerProfile.upsert({
             where: { userId },
-            data: {
+            update: {
                 // vehicleType and documentStatus not in Prisma schema - ignoring
                 // lat/lng are usually updated via tracking service, but maybe editable here too?
                 // Let's allow updating what's passed
                 currentLat: data.currentLat,
-                currentLng: data.currentLng
+                currentLng: data.currentLng,
+                ...(data.isOnline !== undefined ? { isOnline: data.isOnline } : {})
+            },
+            create: {
+                userId,
+                specialties: [],
+                currentLat: data.currentLat,
+                currentLng: data.currentLng,
+                isOnline: data.isOnline ?? false
             }
         });
         return {

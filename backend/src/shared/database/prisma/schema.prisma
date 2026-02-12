@@ -26,6 +26,7 @@ model User {
   providerProfile ProviderProfile?
   requests        ServiceRequest[]
   jobs            Job[]
+  offers          Offer[]
 }
 
 model ProviderProfile {
@@ -64,6 +65,12 @@ enum RequestStatus {
   EXPIRED
 }
 
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model ServiceRequest {
   id          String   @id @default(uuid())
   customerId  String
@@ -78,6 +85,19 @@ model ServiceRequest {
   createdAt   DateTime @default(now())
 
   job         Job?
+  offers      Offer[]
+}
+
+model Offer {
+  id            String   @id @default(uuid())
+  requestId     String
+  request       ServiceRequest @relation(fields: [requestId], references: [id])
+  providerId    String
+  provider      User     @relation(fields: [providerId], references: [id])
+  proposedPrice Float
+  message       String?
+  status        OfferStatus @default(PENDING)
+  createdAt     DateTime @default(now())
 }
 
 enum JobStatus {

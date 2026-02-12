@@ -36,8 +36,9 @@ export default function WalletScreen() {
             // Mock ID for now if user.id not available (though it should be)
             const providerId = user?.id || 'provider_123';
             const response = await api.get(`/providers/${providerId}/wallet`);
-            setBalance(response.data.balance.toFixed(2));
-            setTransactions(response.data.transactions);
+            const actions = response.data.actions || response.data.transactions || [];
+            setBalance(Number(response.data.balance || 0).toFixed(2));
+            setTransactions(actions);
         } catch (e) {
             // Fallback demo data
             setBalance('2,840.50');

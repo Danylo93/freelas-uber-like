@@ -1,0 +1,4 @@
+
+> @freelas/backend@1.0.0 dev
+> nodemon --exec tsx src/server.ts
+

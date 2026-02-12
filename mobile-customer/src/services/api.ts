@@ -55,13 +55,19 @@ const apiClient = async (method: string, endpoint: string, data?: any, requiresA
         console.error(`❌ [API] Error response (text):`, text);
         errorMessage = text || errorMessage;
       }
-      throw new Error(errorMessage);
+      const apiError: any = new Error(errorMessage);
+      apiError.isApiError = true;
+      apiError.status = res.status;
+      throw apiError;
     }
 
     const responseData = await res.json();
     console.log(`✅ [API] ${method} ${endpoint} - Success`);
     return { data: responseData };
   } catch (error: any) {
+    if (error?.isApiError) {
+      throw error;
+    }
     if (error.message && !error.message.includes('HTTP')) {
       // Network error or other fetch error
       console.error(`❌ [API] Network error for ${method} ${endpoint}:`, error.message);
@@ -123,7 +129,7 @@ export const api = {
 
   // Reviews
   createReview: async (requestId: string, rating: number, comment?: string) => {
-    return apiClient('POST', `/reviews`, { jobId: requestId, rating, comment }, true);
+    return apiClient('PUT', `/requests/${requestId}/review`, { rating, comment }, true);
   },
 
   // Payments

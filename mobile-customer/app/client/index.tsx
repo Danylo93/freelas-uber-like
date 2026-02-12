@@ -35,6 +35,7 @@ interface Provider {
 
 interface ServiceRequest {
   id: string;
+  job_id?: string;
   provider_id: string;
   status: string;
   provider_name: string;
@@ -85,6 +86,11 @@ export default function ClientScreen() {
   const categoriesAnim = useRef(new Animated.Value(200)).current;
   const providerListAnim = useRef(new Animated.Value(height)).current;
   const activeRequestAnim = useRef(new Animated.Value(height)).current;
+  const currentRequestRef = useRef<ServiceRequest | null>(null);
+
+  useEffect(() => {
+    currentRequestRef.current = currentRequest;
+  }, [currentRequest]);
 
   useEffect(() => {
     getCurrentLocation();
@@ -204,20 +210,35 @@ export default function ClientScreen() {
   const setupSocketListeners = () => {
     if (!socket) return;
 
+    socket.on('offer_received', (data) => {
+      const activeRequest = currentRequestRef.current;
+      const status = (activeRequest?.status || '').toLowerCase();
+      if (status && status !== 'pending' && status !== 'offered') return;
+      if (data.requestId && activeRequest && data.requestId !== activeRequest.id) return;
+      const requestId = activeRequest?.id || data.requestId;
+      if (!requestId) return;
+      router.push({ pathname: '/client/offers', params: { requestId } });
+    });
+
     socket.on('job_accepted', (data) => {
       console.log('✅ [SOCKET] job_accepted:', data);
       setCurrentRequest(prev => prev ? {
         ...prev,
         status: 'accepted',
-        // Backend sends providerId, etc. We might need to fetch full details or map it.
-        // Assuming data contains minimal info or full update.
+        job_id: data.jobId || data.job_id,
+        provider_id: data.providerId || prev.provider_id
       } : null);
+
+      if (data.jobId) {
+        socket.emit('join_job', data.jobId);
+      }
     });
 
     socket.on('location_update', (data) => {
       // data: { jobId, providerId, lat, lng }
       if (!currentRequest) return;
-      // Filter by jobId if possible, but currentRequest is our active job.
+      const currentJobId = currentRequest.job_id || currentRequest.id;
+      if (data.jobId && data.jobId !== currentJobId) return;
       setCurrentRequest(prev => prev ? {
         ...prev,
         provider_latitude: data.lat,
@@ -229,6 +250,8 @@ export default function ClientScreen() {
     socket.on('job_status_update', (data) => {
       // data: { jobId, status }
       if (!currentRequest) return;
+      const currentJobId = currentRequest.job_id || currentRequest.id;
+      if (data.jobId && data.jobId !== currentJobId) return;
       setCurrentRequest(prev => prev ? { ...prev, status: data.status } : null);
       if (data.status === 'completed') {
         router.push({ pathname: '/client/payment', params: { request_id: currentRequest.id, amount: currentRequest.price?.toString() || '0' } });
@@ -247,12 +270,12 @@ export default function ClientScreen() {
     setRequestLoading(true);
     try {
       const response = await api.post('/requests', {
-        provider_id: provider.user_id,
-        category: provider.category,
-        description: `Solicitação via App`,
-        client_latitude: userLocation.latitude,
-        client_longitude: userLocation.longitude,
-        price: provider.price
+        categoryId: provider.category || selectedCategory || 'general',
+        description: 'Solicitacao via App',
+        pickupLat: userLocation.latitude,
+        pickupLng: userLocation.longitude,
+        price: provider.price,
+        address: ''
       });
 
       setCurrentRequest({
@@ -266,9 +289,6 @@ export default function ClientScreen() {
         estimated_time: undefined
       });
 
-      // Join the job room
-      socket?.emit('join_job', response.data.id);
-
       setSelectedProvider(null);
       setSelectedCategory(null);
     } catch (e) {
@@ -281,7 +301,7 @@ export default function ClientScreen() {
   const handleRatingSubmit = async () => {
     if (!currentRequest) return;
     try {
-      await api.post('/ratings', { request_id: currentRequest.id, rating, comment: ratingComment });
+      await api.put(`/requests/${currentRequest.id}/review`, { rating, comment: ratingComment });
       Alert.alert('Obrigado!', 'Avaliação enviada.');
       setShowRatingModal(false);
       setCurrentRequest(null);
@@ -506,6 +526,13 @@ export default function ClientScreen() {
             <Ionicons name="share-social" size={24} color="#333" />
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity
+          style={styles.offersButton}
+          onPress={() => router.push({ pathname: '/client/offers', params: { requestId: currentRequest?.id } })}
+        >
+          <Text style={styles.offersButtonText}>Ver propostas</Text>
+        </TouchableOpacity>
       </Animated.View>
 
       {/* RATING MODAL */}
@@ -629,6 +656,8 @@ const styles = StyleSheet.create({
   messageButtonMain: { flex: 1, backgroundColor: '#00B0FF', borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 56 },
   messageButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   shareButton: { width: 56, height: 56, backgroundColor: '#f5f5f5', borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  offersButton: { marginTop: 12, backgroundColor: '#E3F2FD', paddingVertical: 12, borderRadius: 12, alignItems: 'center' },
+  offersButtonText: { color: '#007AFF', fontWeight: '600' },
 
   // Floating Controls
   floatingTopBar: { position: 'absolute', top: 50, left: 20, right: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 },

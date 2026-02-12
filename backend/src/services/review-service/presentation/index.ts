@@ -18,39 +18,23 @@ app.get('/healthz', (req, res) => {
     res.json({ status: 'ok', service: 'review-service' });
 });
 
-app.post('/jobs/:jobId/reviews', async (req, res, next) => {
+const createReviewHandler = async (req: Request, res: Response, next: Function) => {
     try {
-        const data = { ...req.body, jobId: req.params.jobId };
+        const jobId = req.params.jobId || req.body.jobId || req.body.request_id;
+        const { rating, comment, tags } = req.body;
+        const data = { jobId, rating, comment, tags };
         const review = await createReview.execute(data);
         res.status(201).json(review);
     } catch (err) {
         next(err);
     }
-});
+};
 
-// Alternative endpoint for compatibility
-app.post('/reviews', async (req, res, next) => {
-    try {
-        const { jobId, rating, comment } = req.body;
-        const data = { jobId, rating, comment };
-        const review = await createReview.execute(data);
-        res.status(201).json(review);
-    } catch (err) {
-        next(err);
-    }
-});
+app.post('/jobs/:jobId/reviews', createReviewHandler);
 
-// Alias for /ratings (mobile-customer uses POST /ratings)
-app.post('/ratings', async (req, res, next) => {
-    try {
-        const { request_id, jobId, rating, comment } = req.body;
-        const data = { jobId: request_id || jobId, rating, comment };
-        const review = await createReview.execute(data);
-        res.status(201).json(review);
-    } catch (err) {
-        next(err);
-    }
-});
+// Compatibility endpoints (mounts at /reviews and /ratings)
+app.post('/', createReviewHandler);
+app.put('/', createReviewHandler);
 
 // Export the app
 export const reviewApp = app;

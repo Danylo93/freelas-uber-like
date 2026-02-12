@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+﻿import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 import { Alert } from 'react-native';
@@ -21,32 +21,35 @@ export const useSocket = () => {
 };
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  console.log('🚀 [SOCKET] SocketProvider inicializado');
+  console.log('ðŸš€ [SOCKET] SocketProvider inicializado');
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
 
-  console.log('🔍 [SOCKET] Estado atual:', { user: user?.name, token: !!token, isConnected });
+  console.log('ðŸ” [SOCKET] Estado atual:', { user: user?.name, token: !!token, isConnected });
 
   useEffect(() => {
     if (user && token) {
-      console.log('🔌 [SOCKET] Iniciando conexão Socket.io...');
-      console.log('🔌 [SOCKET] User:', user.name, 'Type:', user.user_type);
+      console.log('ðŸ”Œ [SOCKET] Iniciando conexÃ£o Socket.io...');
+      console.log('ðŸ”Œ [SOCKET] User:', user.name, 'Type:', user.user_type);
 
       try {
         // Socket.io conecta no mesmo servidor da API
         const socketUrl = CONFIG.SOCKET_URL || CONFIG.API_URL;
-        console.log('🔌 [SOCKET] Conectando em:', socketUrl);
+        console.log('ðŸ”Œ [SOCKET] Conectando em:', socketUrl);
 
         if (!socketUrl) {
-          throw new Error('SOCKET_URL não está configurado');
+          throw new Error('SOCKET_URL nao esta configurado');
+        }
+
+        const normalizedToken = String(token).replace(/^Bearer\s+/i, '').trim();
+        if (!normalizedToken) {
+          throw new Error('Token invalido para Socket.io');
         }
 
         const newSocket = io(socketUrl, {
           auth: {
-            user_id: user.id,
-            user_type: user.user_type,
-            token: token,
+            token: normalizedToken,
           },
           transports: ['websocket'], // Use websocket for better stability on mobile
           path: '/socket.io',
@@ -58,96 +61,92 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         });
 
         newSocket.on('connect', () => {
-          console.log('✅ [SOCKET] Conectado com ID:', newSocket.id);
+          console.log('âœ… [SOCKET] Conectado com ID:', newSocket.id);
           setIsConnected(true);
         });
 
         newSocket.on('disconnect', (reason) => {
-          console.log('❌ [SOCKET] Desconectado. Motivo:', reason);
+          console.log('âŒ [SOCKET] Desconectado. Motivo:', reason);
           setIsConnected(false);
         });
 
         newSocket.on('connect_error', (error) => {
-          console.error('❌ [SOCKET] Erro de conexão:', error.message);
-          console.error('❌ [SOCKET] Detalhes do erro:', error);
+          console.error('âŒ [SOCKET] Erro de conexÃ£o:', error.message);
+          console.error('âŒ [SOCKET] Detalhes do erro:', error);
           setIsConnected(false);
+          if (error?.message?.includes('Authentication error')) {
+            void logout();
+          }
         });
 
         newSocket.on('reconnect', (attemptNumber) => {
-          console.log('🔄 [SOCKET] Reconectado após', attemptNumber, 'tentativas');
+          console.log('ðŸ”„ [SOCKET] Reconectado apÃ³s', attemptNumber, 'tentativas');
           setIsConnected(true);
         });
 
         newSocket.on('reconnect_error', (error) => {
-          console.error('❌ [SOCKET] Erro de reconexão:', error.message);
+          console.error('âŒ [SOCKET] Erro de reconexÃ£o:', error.message);
         });
 
         newSocket.on('reconnect_failed', () => {
-          console.error('❌ [SOCKET] Falha na reconexão após todas as tentativas');
+          console.error('âŒ [SOCKET] Falha na reconexÃ£o apÃ³s todas as tentativas');
           setIsConnected(false);
         });
 
-        // Event listeners específicos para o app
-        newSocket.on('new_request', (data) => {
-          console.log('🔔 [SOCKET] Nova solicitação recebida:', data);
-          if (user.user_type === 1) { // Prestador
+        // Event listeners alinhados com o backend atual
+        newSocket.on('request_offer', (data) => {
+          console.log('[SOCKET] request_offer:', data);
+          if (user.user_type === 1) { // Provider
             Alert.alert(
-              '🔔 Nova Solicitação!',
-              `Cliente: ${data.client_name}\nServiço: ${data.category}\nValor: R$ ${data.price}`,
+              'Nova solicitacao!',
+              `Cliente: ${data.client_name || ''}\nServico: ${data.category || ''}\nValor: R$ ${data.price || ''}`,
               [{ text: 'OK' }]
             );
           }
         });
 
-        newSocket.on('request_accepted', (data) => {
-          console.log('✅ [SOCKET] Solicitação aceita:', data);
-          if (user.user_type === 2) { // Cliente
+        newSocket.on('job_accepted', (data) => {
+          console.log('[SOCKET] job_accepted:', data);
+          if (user.user_type === 2) { // Customer
             Alert.alert(
-              '✅ Solicitação Aceita!',
-              `O prestador aceitou seu serviço de ${data.category}`,
+              'Solicitacao aceita!',
+              'Um prestador aceitou seu servico.',
               [{ text: 'OK' }]
             );
           }
         });
 
-        newSocket.on('request_completed', (data) => {
-          console.log('🎉 [SOCKET] Serviço concluído:', data);
-          if (user.user_type === 2) { // Cliente
-            Alert.alert(
-              '🎉 Serviço Concluído!',
-              'O prestador finalizou o serviço. Avalie a qualidade!',
-              [{ text: 'OK' }]
-            );
-          }
+        newSocket.on('job_status_update', (data) => {
+          console.log('[SOCKET] job_status_update:', data);
         });
 
-        newSocket.on('location_updated', (data) => {
-          console.log('📍 [SOCKET] Localização atualizada:', data);
+        newSocket.on('location_update', (data) => {
+          console.log('[SOCKET] location_update:', data);
         });
 
         setSocket(newSocket);
 
         return () => {
-          console.log('🔌 [SOCKET] Limpando conexão...');
+          console.log('ðŸ”Œ [SOCKET] Limpando conexÃ£o...');
           newSocket.disconnect();
           setSocket(null);
           setIsConnected(false);
         };
       } catch (error) {
-        console.error('❌ [SOCKET] Erro ao criar Socket.io:', error);
+        console.error('âŒ [SOCKET] Erro ao criar Socket.io:', error);
         setIsConnected(false);
       }
     } else {
-      console.log('⏳ [SOCKET] Aguardando autenticação...');
+      console.log('â³ [SOCKET] Aguardando autenticaÃ§Ã£o...');
     }
   }, [user, token]);
 
   const sendMessage = (event: string, data: any) => {
     if (socket && isConnected) {
-      console.log(`📤 [SOCKET] Enviando ${event}:`, data);
+      console.log(`ðŸ“¤ [SOCKET] Enviando ${event}:`, data);
       socket.emit(event, data);
     } else {
-      console.warn('⚠️ [SOCKET] Não conectado. Não foi possível enviar:', event);
+      console.warn('âš ï¸ [SOCKET] NÃ£o conectado. NÃ£o foi possÃ­vel enviar:', event);
     }
   };
 
@@ -159,3 +158,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 };
+
+
+
+
+

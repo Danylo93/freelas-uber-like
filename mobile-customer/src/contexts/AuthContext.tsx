@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('🔑 [AUTH] Tentando login para:', email);
       setIsLoading(true);
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.login(email, password);
 
       // Handle both response formats
       const token = response.data.token || response.data.access_token;
@@ -96,8 +96,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await AsyncStorage.setItem('user', JSON.stringify(userData));
 
     } catch (error: any) {
-      console.error('❌ [AUTH] Erro no login:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.detail || 'Erro ao fazer login');
+      console.error('❌ [AUTH] Erro no login:', error.message);
+      throw new Error(error.message || 'Erro ao fazer login');
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('📝 [AUTH] Tentando registrar usuário:', userData.email);
       setIsLoading(true);
-      const response = await api.post('/auth/register', userData);
+      const response = await api.register(userData);
 
       const { access_token, user_data } = response.data;
       console.log('✅ [AUTH] Registro bem-sucedido:', user_data.name);
@@ -119,8 +119,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await AsyncStorage.setItem('user', JSON.stringify(user_data));
 
     } catch (error: any) {
-      console.error('❌ [AUTH] Erro no registro:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.detail || 'Erro ao fazer registro');
+      console.error('❌ [AUTH] Erro no registro:', error.message);
+      throw new Error(error.message || 'Erro ao fazer registro');
     } finally {
       setIsLoading(false);
     }
