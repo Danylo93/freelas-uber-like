@@ -83,7 +83,6 @@ export default function ProviderScreen() {
   useEffect(() => {
     getCurrentLocation();
     setupSocketListeners();
-    loadRequests();
 
     // Fade in intro
     Animated.timing(fadeAnim, {
@@ -341,7 +340,7 @@ export default function ProviderScreen() {
       {/* Top Status Card */}
       <View style={styles.topCardContainer}>
         <View style={styles.topCard}>
-          <View style={styles.userInfo}>
+          <TouchableOpacity style={styles.userInfo} onPress={() => router.push('/profile')}>
             <Image
               source={{ uri: 'https://i.pravatar.cc/150?img=11' }}
               style={styles.avatar}
@@ -350,9 +349,23 @@ export default function ProviderScreen() {
               <Text style={styles.welcomeText}>Bem-vindo,</Text>
               <Text style={styles.userName}>{user?.name || 'Prestador'}</Text>
             </View>
-          </View>
-          <TouchableOpacity style={styles.bellButton}>
-            <Ionicons name="notifications-outline" size={24} color="#333" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bellButton}
+            onPress={() =>
+              Alert.alert(
+                'Menu',
+                undefined,
+                [
+                  { text: 'Perfil', onPress: () => router.push('/profile') },
+                  __DEV__ ? { text: 'Debug', onPress: () => router.push('/debug') } : null,
+                  { text: 'Sair', style: 'destructive', onPress: logout },
+                  { text: 'Cancelar', style: 'cancel' },
+                ].filter(Boolean) as any
+              )
+            }
+          >
+            <Ionicons name="menu" size={24} color="#333" />
             {requests.length > 0 && <View style={styles.badge} />}
           </TouchableOpacity>
         </View>
@@ -549,7 +562,7 @@ export default function ProviderScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="provider-home-screen">
       <StatusBar barStyle="dark-content" />
 
       {/* Background Map - Always Visible */}

@@ -12,10 +12,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../../src/contexts/AuthContext';
-import axios from 'axios';
 
-export default function ProfileScreen({ onBack }: { onBack: () => void }) {
+export default function ProfileScreen({ onBack }: { onBack?: () => void }) {
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,8 +30,6 @@ export default function ProfileScreen({ onBack }: { onBack: () => void }) {
   const scaleAnim = new Animated.Value(0);
   const slideAnim = new Animated.Value(-50);
   const fadeAnim = new Animated.Value(0);
-
-  const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL + '/api';
 
   useEffect(() => {
     // Animação de entrada
@@ -137,7 +136,7 @@ export default function ProfileScreen({ onBack }: { onBack: () => void }) {
           }
         ]}
       >
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <TouchableOpacity onPress={onBack ?? (() => router.back())} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Meu Perfil</Text>

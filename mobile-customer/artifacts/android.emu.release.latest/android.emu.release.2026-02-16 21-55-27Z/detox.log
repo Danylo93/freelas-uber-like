@@ -1,0 +1,1714 @@
+18:55:27.169 detox[6004] B lifecycle node_modules\detox\local-cli\cli.js test --config-path ./e2e/.detoxrc.js -c android.emu.release --record-logs all --loglevel trace --artifacts-location artifacts/android.emu.release.latest
+  data: {
+    "id": "42ee3581-aee1-c84c-701d-3b10c2f61bee",
+    "detoxConfig": {
+      "configurationName": "android.emu.release",
+      "apps": {
+        "default": {
+          "type": "android.apk",
+          "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
+          "testBinaryPath": "android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk",
+          "build": "node e2e/scripts/build-android.js"
+        }
+      },
+      "artifacts": {
+        "rootDir": "artifacts\\android.emu.release.latest\\android.emu.release.2026-02-16 21-55-27Z",
+        "plugins": {
+          "log": {
+            "enabled": true,
+            "keepOnlyFailedTestsArtifacts": false
+          },
+          "screenshot": {
+            "enabled": true,
+            "shouldTakeAutomaticSnapshots": false,
+            "keepOnlyFailedTestsArtifacts": false
+          },
+          "video": {
+            "enabled": false,
+            "keepOnlyFailedTestsArtifacts": false
+          },
+          "instruments": {
+            "enabled": false,
+            "keepOnlyFailedTestsArtifacts": false
+          },
+          "uiHierarchy": {
+            "enabled": false,
+            "keepOnlyFailedTestsArtifacts": false
+          }
+        }
+      },
+      "behavior": {
+        "init": {
+          "keepLockFile": false,
+          "reinstallApp": true,
+          "exposeGlobals": true
+        },
+        "cleanup": {
+          "shutdownDevice": false
+        },
+        "launchApp": "auto"
+      },
+      "cli": {
+        "artifactsLocation": "artifacts/android.emu.release.latest",
+        "recordLogs": "all",
+        "configPath": "./e2e/.detoxrc.js",
+        "configuration": "android.emu.release",
+        "loglevel": "trace",
+        "start": true
+      },
+      "commands": [
+        {
+          "appName": "default",
+          "build": "node e2e/scripts/build-android.js"
+        }
+      ],
+      "device": {
+        "type": "android.emulator",
+        "device": {
+          "avdName": "Pixel_8_Pro"
+        }
+      },
+      "logger": {
+        "level": "trace",
+        "overrideConsole": true,
+        "options": {
+          "showLoggerName": true,
+          "showPid": true,
+          "showLevel": false,
+          "showMetadata": false,
+          "basepath": "X:\\mobile-customer\\node_modules\\detox\\src",
+          "prefixers": {},
+          "stringifiers": {}
+        }
+      },
+      "testRunner": {
+        "retries": 0,
+        "forwardEnv": false,
+        "detached": false,
+        "bail": false,
+        "noRetryArgs": [
+          "shard"
+        ],
+        "jest": {
+          "setupTimeout": 180000,
+          "teardownTimeout": 30000,
+          "retryAfterCircusRetries": false,
+          "reportWorkerAssign": true
+        },
+        "args": {
+          "$0": "jest",
+          "_": [],
+          "config": "e2e/jest.config.js",
+          "--": []
+        }
+      },
+      "session": {
+        "autoStart": true,
+        "debugSynchronization": 10000
+      }
+    },
+    "detoxIPCServer": "primary-6004",
+    "testResults": [],
+    "testSessionIndex": 0,
+    "workersCount": 0
+  }
+18:55:27.184 detox[6004] i ipc Server path not specified, so defaulting to ipc.config.socketRoot + ipc.config.appspace + ipc.config.id /tmp/detox.primary-6004
+18:55:27.186 detox[6004] i ipc starting server on  /tmp/detox.primary-6004 
+18:55:27.186 detox[6004] i ipc starting TLS server false
+18:55:27.186 detox[6004] i ipc starting server as Unix || Windows Socket
+18:55:27.189 detox[6004] i ws-server Detox server listening on localhost:53907...
+18:55:27.194 detox[6004] i lifecycle Serialized the session state at: C:\Users\DANYLO~1\AppData\Local\Temp\42ee3581-aee1-c84c-701d-3b10c2f61bee.detox.json
+18:55:27.196 detox[6004] B lifecycle DETOX_AVD_NAME="Pixel_8_Pro" jest --config e2e/jest.config.js
+18:55:27.884 detox[9388] i ipc Service path not specified, so defaulting to ipc.config.socketRoot + ipc.config.appspace + id 
+18:55:27.886 detox[9388] i ipc requested connection to  primary-6004 /tmp/detox.primary-6004
+18:55:27.886 detox[9388] i ipc Connecting client on Unix Socket : /tmp/detox.primary-6004
+18:55:27.888 detox[6004] i ipc ## socket connection to server detected ##
+18:55:27.888 detox[9388] i ipc retrying reset
+18:55:27.889 detox[9388] i ipc dispatching event to  primary-6004 /tmp/detox.primary-6004  :  registerContext , { id: 'secondary-9388' }
+18:55:27.890 detox[6004] i ipc received event of :  registerContext { id: 'secondary-9388' }
+18:55:27.891 detox[6004] i ipc dispatching event to socket  :  registerContextDone {
+  testResults: [],
+  testSessionIndex: 0,
+  unsafe_earlyTeardown: undefined
+}
+18:55:27.891 detox[9388] i ipc ## received events ##
+18:55:27.892 detox[9388] i ipc detected event registerContextDone { testResults: [], testSessionIndex: 0 }
+18:55:28.016 detox[9388] B lifecycle C:\Users\danylo-oliveira\Documents\freelas-uber-like\mobile-customer\e2e\navigation.test.js
+18:55:28.040 detox[9388] B lifecycle set up environment
+18:55:28.042 detox[9388] i ipc dispatching event to  primary-6004 /tmp/detox.primary-6004  :  registerWorker , { workerId: 'w1' }
+18:55:28.043 detox[6004] i ipc received event of :  registerWorker { workerId: 'w1' }
+18:55:28.043 detox[9388] i ipc ## received events ##
+18:55:28.044 detox[6004] i ipc dispatching event to socket  :  registerWorkerDone { workersCount: 1 }
+18:55:28.044 detox[6004] i ipc broadcasting event to all known sockets listening to  \\.\pipe\tmp-detox.primary-6004  :   sessionStateUpdate { workersCount: 1 }
+18:55:28.044 detox[9388] i ipc detected event registerWorkerDone { workersCount: 1 }
+18:55:28.255 detox[9388] i ipc ## received events ##
+18:55:28.255 detox[9388] i ipc detected event sessionStateUpdate { workersCount: 1 }
+18:55:28.261 detox[6004] B ws-server@53909 connection :53907<->:53909
+18:55:28.261 detox[9388] i ws-client opened web socket to: ws://localhost:53907
+18:55:28.263 detox[9388] i ws-client send message
+  data: {"type":"login","params":{"sessionId":"d61a1645-fafd-2fa9-1e8b-b5f0a887a155","role":"tester"},"messageId":0}
+18:55:28.265 detox[6004] i ws-server@53909 get
+  data: {"type":"login","params":{"sessionId":"d61a1645-fafd-2fa9-1e8b-b5f0a887a155","role":"tester"},"messageId":0}
+18:55:28.265 detox[6004] i ws-server created session d61a1645-fafd-2fa9-1e8b-b5f0a887a155
+18:55:28.266 detox[6004] i ws-server@53909 send
+  data: {
+    "type": "loginSuccess",
+    "params": {
+      "testerConnected": true,
+      "appConnected": false
+    },
+    "messageId": 0
+  }
+18:55:28.267 detox[6004] i ws-server tester joined session d61a1645-fafd-2fa9-1e8b-b5f0a887a155
+18:55:28.267 detox[9388] i ws-client get message
+  data: {"type":"loginSuccess","params":{"testerConnected":true,"appConnected":false},"messageId":0}
+   
+18:55:28.318 detox[9388] i ipc dispatching event to  primary-6004 /tmp/detox.primary-6004  :  allocateDevice , {
+  deviceConfig: { type: 'android.emulator', device: { avdName: 'Pixel_8_Pro' } }
+}
+18:55:28.320 detox[6004] i ipc received event of :  allocateDevice {
+  deviceConfig: { type: 'android.emulator', device: { avdName: 'Pixel_8_Pro' } }
+}
+18:55:28.357 detox[6004] B device init
+  args: ()
+18:55:28.360 detox[6004] E device init
+18:55:28.360 detox[6004] B device@0 allocate
+  data: {
+    "type": "android.emulator",
+    "device": {
+      "avdName": "Pixel_8_Pro"
+    }
+  }
+18:55:28.520 detox[6004] i device Detected emulator binary version { major: 36, minor: 2, patch: 12, toString: [Function: toString] }
+18:55:28.522 detox[6004] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE"  devices
+18:55:28.559 detox[6004] i child-process:EXEC_SUCCESS List of devices attached
+emulator-5554	device
+
+
+18:55:28.560 detox[6004] i device:TELNET_CONNECTING port: 5554, host: localhost
+18:55:28.572 detox[6004] i device:DEVICE_LOOKUP Found a matching & free device emulator-5554
+18:55:28.573 detox[6004] i device settled on emulator-5554 (Pixel_8_Pro)
+  data: {
+    "id": "emulator-5554",
+    "adbName": "emulator-5554",
+    "name": "emulator-5554 (Pixel_8_Pro)"
+  }
+18:55:28.573 detox[6004] E device@0 allocate
+18:55:28.573 detox[6004] B device@0 post-allocate: emulator-5554
+  data: {
+    "id": "emulator-5554",
+    "adbName": "emulator-5554",
+    "name": "emulator-5554 (Pixel_8_Pro)"
+  }
+18:55:28.574 detox[6004] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "getprop dev.bootcomplete"
+18:55:28.617 detox[6004] i child-process:EXEC_SUCCESS 1
+
+18:55:28.618 detox[6004] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "getprop ro.build.version.sdk"
+18:55:28.660 detox[6004] i child-process:EXEC_SUCCESS 36
+
+18:55:28.661 detox[6004] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "settings put global animator_duration_scale 0"
+18:55:28.712 detox[6004] i child-process:EXEC_SUCCESS 
+18:55:28.712 detox[6004] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "settings put global window_animation_scale 0"
+18:55:28.762 detox[6004] i child-process:EXEC_SUCCESS 
+18:55:28.763 detox[6004] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "settings put global transition_animation_scale 0"
+18:55:28.814 detox[6004] i child-process:EXEC_SUCCESS 
+18:55:28.815 detox[6004] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "dumpsys power | grep \"^[ ]*m[UW].*=\""
+18:55:28.875 detox[6004] i child-process:EXEC_SUCCESS   mWakefulness=Awake
+  mWakefulnessChanging=false
+  mUseAutoSuspend=true
+  mWakeLockSummary=0x0
+  mWakeUpWhenPluggedOrUnpluggedConfig=false
+  mWakeUpWhenPluggedOrUnpluggedInTheaterModeConfig=false
+  mDreamsBatteryLevelMinimumWhenPoweredConfig=-1
+  mDreamsBatteryLevelMinimumWhenNotPoweredConfig=15
+  mUserActivityTimeoutOverrideFromWindowManager=-1
+  mUserInactiveOverrideFromWindowManager=false
+  mUseNormalBrightnessForDoze=false
+  mUserId=0
+  mWakeLockSummary=0x0
+  mUserInteractionBackoffMillis=60000
+
+18:55:28.875 detox[6004] E device@0 post-allocate: emulator-5554
+18:55:28.875 detox[9388] i ipc ## received events ##
+18:55:28.876 detox[6004] i ipc dispatching event to socket  :  allocateDeviceDone {
+  deviceCookie: {
+    id: 'emulator-5554',
+    adbName: 'emulator-5554',
+    name: 'emulator-5554 (Pixel_8_Pro)'
+  }
+}
+18:55:28.876 detox[9388] i ipc detected event allocateDeviceDone {
+  deviceCookie: {
+    id: 'emulator-5554',
+    adbName: 'emulator-5554',
+    name: 'emulator-5554 (Pixel_8_Pro)'
+  }
+}
+18:55:28.907 detox[9388] B artifacts-manager onBootDevice
+  args: ({"deviceId":"emulator-5554"})
+18:55:28.908 detox[9388] E artifacts-manager onBootDevice
+18:55:28.909 detox[9388] B device installUtilBinaries
+  args: ()
+18:55:28.909 detox[9388] E device installUtilBinaries
+18:55:28.910 detox[9388] B device selectApp
+  args: ("default")
+18:55:28.912 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\build-tools\36.1.0\aapt.EXE" dump badging "X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk"
+18:55:28.939 detox[9388] i child-process:EXEC_SUCCESS package: name='com.danylo.oliveira.servicoapp' versionCode='1' versionName='1.0.0' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+sdkVersion:'24'
+targetSdkVersion:'36'
+uses-permission: name='android.permission.ACCESS_COARSE_LOCATION'
+uses-permission: name='android.permission.ACCESS_FINE_LOCATION'
+uses-permission: name='android.permission.CAMERA'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.READ_EXTERNAL_STORAGE' maxSdkVersion='32'
+uses-permission: name='android.permission.RECORD_AUDIO'
+uses-permission: name='android.permission.SYSTEM_ALERT_WINDOW'
+uses-permission: name='android.permission.VIBRATE'
+uses-permission: name='android.permission.WRITE_EXTERNAL_STORAGE'
+uses-permission: name='android.permission.ACCESS_NETWORK_STATE'
+uses-permission: name='android.permission.RECEIVE_BOOT_COMPLETED'
+uses-permission: name='android.permission.POST_NOTIFICATIONS'
+uses-permission: name='android.permission.WAKE_LOCK'
+uses-permission: name='com.google.android.c2dm.permission.RECEIVE'
+uses-permission: name='android.permission.USE_BIOMETRIC'
+uses-permission: name='android.permission.USE_FINGERPRINT'
+uses-permission: name='android.permission.FOREGROUND_SERVICE'
+uses-permission: name='com.danylo.oliveira.servicoapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+uses-permission: name='com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE'
+uses-permission: name='com.sec.android.provider.badge.permission.READ'
+uses-permission: name='com.sec.android.provider.badge.permission.WRITE'
+uses-permission: name='com.htc.launcher.permission.READ_SETTINGS'
+uses-permission: name='com.htc.launcher.permission.UPDATE_SHORTCUT'
+uses-permission: name='com.sonyericsson.home.permission.BROADCAST_BADGE'
+uses-permission: name='com.sonymobile.home.permission.PROVIDER_INSERT_BADGE'
+uses-permission: name='com.anddoes.launcher.permission.UPDATE_COUNT'
+uses-permission: name='com.majeur.launcher.permission.UPDATE_BADGE'
+uses-permission: name='com.huawei.android.launcher.permission.CHANGE_BADGE'
+uses-permission: name='com.huawei.android.launcher.permission.READ_SETTINGS'
+uses-permission: name='com.huawei.android.launcher.permission.WRITE_SETTINGS'
+uses-permission: name='android.permission.READ_APP_BADGE'
+uses-permission: name='com.oppo.launcher.permission.READ_SETTINGS'
+uses-permission: name='com.oppo.launcher.permission.WRITE_SETTINGS'
+uses-permission: name='me.everything.badger.permission.BADGE_COUNT_READ'
+uses-permission: name='me.everything.badger.permission.BADGE_COUNT_WRITE'
+application-label:'ServiçoApp'
+application-label-af:'ServiçoApp'
+application-label-am:'ServiçoApp'
+application-label-ar:'ServiçoApp'
+application-label-as:'ServiçoApp'
+application-label-az:'ServiçoApp'
+application-label-be:'ServiçoApp'
+application-label-bg:'ServiçoApp'
+application-label-bn:'ServiçoApp'
+application-label-bs:'ServiçoApp'
+application-label-ca:'ServiçoApp'
+application-label-cs:'ServiçoApp'
+application-label-da:'ServiçoApp'
+application-label-de:'ServiçoApp'
+application-label-el:'ServiçoApp'
+application-label-en-AU:'ServiçoApp'
+application-label-en-CA:'ServiçoApp'
+application-label-en-GB:'ServiçoApp'
+application-label-en-IN:'ServiçoApp'
+application-label-en-XC:'ServiçoApp'
+application-label-es:'ServiçoApp'
+application-label-es-419:'ServiçoApp'
+application-label-es-ES:'ServiçoApp'
+application-label-es-GT:'ServiçoApp'
+application-label-es-US:'ServiçoApp'
+application-label-et:'ServiçoApp'
+application-label-eu:'ServiçoApp'
+application-label-fa:'ServiçoApp'
+application-label-fi:'ServiçoApp'
+application-label-fr:'ServiçoApp'
+application-label-fr-CA:'ServiçoApp'
+application-label-gl:'ServiçoApp'
+application-label-gu:'ServiçoApp'
+application-label-hi:'ServiçoApp'
+application-label-hr:'ServiçoApp'
+application-label-hu:'ServiçoApp'
+application-label-hy:'ServiçoApp'
+application-label-in:'ServiçoApp'
+application-label-is:'ServiçoApp'
+application-label-it:'ServiçoApp'
+application-label-iw:'ServiçoApp'
+application-label-ja:'ServiçoApp'
+application-label-ka:'ServiçoApp'
+application-label-kk:'ServiçoApp'
+application-label-km:'ServiçoApp'
+application-label-kn:'ServiçoApp'
+application-label-ko:'ServiçoApp'
+application-label-ky:'ServiçoApp'
+application-label-lo:'ServiçoApp'
+application-label-lt:'ServiçoApp'
+application-label-lv:'ServiçoApp'
+application-label-mk:'ServiçoApp'
+application-label-ml:'ServiçoApp'
+application-label-mn:'ServiçoApp'
+application-label-mr:'ServiçoApp'
+application-label-ms:'ServiçoApp'
+application-label-my:'ServiçoApp'
+application-label-nb:'ServiçoApp'
+application-label-ne:'ServiçoApp'
+application-label-nl:'ServiçoApp'
+application-label-or:'ServiçoApp'
+application-label-pa:'ServiçoApp'
+application-label-pl:'ServiçoApp'
+application-label-pt:'ServiçoApp'
+application-label-pt-BR:'ServiçoApp'
+application-label-pt-PT:'ServiçoApp'
+application-label-ro:'ServiçoApp'
+application-label-ru:'ServiçoApp'
+application-label-ru-RU:'ServiçoApp'
+application-label-si:'ServiçoApp'
+application-label-sk:'ServiçoApp'
+application-label-sl:'ServiçoApp'
+application-label-sq:'ServiçoApp'
+application-label-sr:'ServiçoApp'
+application-label-sr-Latn:'ServiçoApp'
+application-label-sv:'ServiçoApp'
+application-label-sw:'ServiçoApp'
+application-label-ta:'ServiçoApp'
+application-label-te:'ServiçoApp'
+application-label-th:'ServiçoApp'
+application-label-tl:'ServiçoApp'
+application-label-tr:'ServiçoApp'
+application-label-uk:'ServiçoApp'
+application-label-ur:'ServiçoApp'
+application-label-uz:'ServiçoApp'
+application-label-vi:'ServiçoApp'
+application-label-zh:'ServiçoApp'
+application-label-zh-CN:'ServiçoApp'
+application-label-zh-HK:'ServiçoApp'
+application-label-zh-TW:'ServiçoApp'
+application-label-zu:'ServiçoApp'
+application-icon-120:'res/BW.xml'
+application-icon-160:'res/BW.xml'
+application-icon-240:'res/BW.xml'
+application-icon-320:'res/BW.xml'
+application-icon-480:'res/BW.xml'
+application-icon-640:'res/BW.xml'
+application-icon-65534:'res/BW.xml'
+application: label='ServiçoApp' icon='res/BW.xml'
+launchable-activity: name='com.danylo.oliveira.servicoapp.MainActivity'  label='' icon=''
+uses-library-not-required:'org.apache.http.legacy'
+feature-group: label=''
+  uses-gl-es: '0x20000'
+  uses-feature: name='android.hardware.camera'
+  uses-implied-feature: name='android.hardware.camera' reason='requested android.permission.CAMERA permission'
+  uses-feature: name='android.hardware.faketouch'
+  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'
+  uses-feature: name='android.hardware.location'
+  uses-implied-feature: name='android.hardware.location' reason='requested android.permission.ACCESS_COARSE_LOCATION permission, and requested android.permission.ACCESS_FINE_LOCATION permission'
+  uses-feature: name='android.hardware.microphone'
+  uses-implied-feature: name='android.hardware.microphone' reason='requested android.permission.RECORD_AUDIO permission'
+  uses-feature: name='android.hardware.screen.portrait'
+  uses-implied-feature: name='android.hardware.screen.portrait' reason='one or more activities have specified a portrait orientation'
+main
+other-activities
+other-receivers
+other-services
+supports-screens: 'small' 'normal' 'large' 'xlarge'
+supports-any-density: 'true'
+locales: '--_--' 'af' 'am' 'ar' 'as' 'az' 'be' 'bg' 'bn' 'bs' 'ca' 'cs' 'da' 'de' 'el' 'en-AU' 'en-CA' 'en-GB' 'en-IN' 'en-XC' 'es' 'es-419' 'es-ES' 'es-GT' 'es-US' 'et' 'eu' 'fa' 'fi' 'fr' 'fr-CA' 'gl' 'gu' 'hi' 'hr' 'hu' 'hy' 'in' 'is' 'it' 'iw' 'ja' 'ka' 'kk' 'km' 'kn' 'ko' 'ky' 'lo' 'lt' 'lv' 'mk' 'ml' 'mn' 'mr' 'ms' 'my' 'nb' 'ne' 'nl' 'or' 'pa' 'pl' 'pt' 'pt-BR' 'pt-PT' 'ro' 'ru' 'ru-RU' 'si' 'sk' 'sl' 'sq' 'sr' 'sr-Latn' 'sv' 'sw' 'ta' 'te' 'th' 'tl' 'tr' 'uk' 'ur' 'uz' 'vi' 'zh' 'zh-CN' 'zh-HK' 'zh-TW' 'zu'
+densities: '120' '160' '240' '320' '480' '640' '65534'
+native-code: 'x86_64'
+
+18:55:28.939 detox[9388] E device selectApp
+18:55:28.940 detox[9388] B device uninstallApp
+  args: ()
+18:55:28.940 detox[9388] B artifacts-manager onBeforeUninstallApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:28.941 detox[9388] E artifacts-manager onBeforeUninstallApp
+18:55:28.941 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list packages com.danylo.oliveira.servicoapp"
+18:55:28.996 detox[9388] i child-process:EXEC_SUCCESS package:com.danylo.oliveira.servicoapp
+package:com.danylo.oliveira.servicoapp.test
+
+18:55:28.996 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 uninstall com.danylo.oliveira.servicoapp
+18:55:29.114 detox[9388] i child-process:EXEC_SUCCESS Success
+
+18:55:29.114 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list packages com.danylo.oliveira.servicoapp.test"
+18:55:29.195 detox[9388] i child-process:EXEC_SUCCESS package:com.danylo.oliveira.servicoapp.test
+
+18:55:29.196 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 uninstall com.danylo.oliveira.servicoapp.test
+18:55:29.387 detox[9388] i child-process:EXEC_SUCCESS Success
+
+18:55:29.388 detox[9388] E device uninstallApp
+18:55:29.388 detox[9388] B device selectApp
+  args: ("default")
+18:55:29.389 detox[9388] B device terminateApp
+  args: ()
+18:55:29.390 detox[9388] B artifacts-manager onBeforeTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:29.390 detox[9388] E artifacts-manager onBeforeTerminateApp
+18:55:29.390 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "am force-stop com.danylo.oliveira.servicoapp"
+18:55:29.462 detox[9388] i child-process:EXEC_SUCCESS 
+18:55:29.462 detox[9388] B artifacts-manager onTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:29.463 detox[9388] E artifacts-manager onTerminateApp
+18:55:29.463 detox[9388] E device terminateApp
+18:55:29.463 detox[9388] E device selectApp
+18:55:29.464 detox[9388] B device installApp
+  args: ()
+18:55:29.465 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\build-tools\36.1.0\aapt.EXE" dump xmlstrings "X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk" AndroidManifest.xml
+18:55:29.493 detox[9388] i child-process:EXEC_SUCCESS String pool of 222 unique UTF-16 non-sorted strings, 222 entries and 0 styles using 17380 bytes:
+String #0: theme
+String #1: label
+String #2: icon
+String #3: name
+String #4: permission
+String #5: protectionLevel
+String #6: enabled
+String #7: exported
+String #8: taskAffinity
+String #9: excludeFromRecents
+String #10: authorities
+String #11: initOrder
+String #12: grantUriPermissions
+String #13: priority
+String #14: launchMode
+String #15: screenOrientation
+String #16: configChanges
+String #17: value
+String #18: resource
+String #19: mimeType
+String #20: scheme
+String #21: minSdkVersion
+String #22: versionCode
+String #23: versionName
+String #24: windowSoftInputMode
+String #25: noHistory
+String #26: targetSdkVersion
+String #27: maxSdkVersion
+String #28: allowBackup
+String #29: glEsVersion
+String #30: required
+String #31: supportsRtl
+String #32: extractNativeLibs
+String #33: fullBackupContent
+String #34: directBootAware
+String #35: roundIcon
+String #36: compileSdkVersion
+String #37: compileSdkVersionCodename
+String #38: appComponentFactory
+String #39: foregroundServiceType
+String #40: dataExtractionRules
+String #41: enableOnBackInvokedCallback
+String #42: 
+String #43: */*
+String #44: 1.0.0
+String #45: 16
+String #46: AIzaSyB8x9PUYy7zZNtHy8i4VUofIt5Av9cTYrk
+String #47: ALWAYS
+String #48: GlideModule
+String #49: action
+String #50: activity
+String #51: android
+String #52: android.intent.action.ACTION_POWER_CONNECTED
+String #53: android.intent.action.ACTION_POWER_DISCONNECTED
+String #54: android.intent.action.BATTERY_LOW
+String #55: android.intent.action.BATTERY_OKAY
+String #56: android.intent.action.BOOT_COMPLETED
+String #57: android.intent.action.DEVICE_STORAGE_LOW
+String #58: android.intent.action.DEVICE_STORAGE_OK
+String #59: android.intent.action.GET_CONTENT
+String #60: android.intent.action.MAIN
+String #61: android.intent.action.MY_PACKAGE_REPLACED
+String #62: android.intent.action.OPEN_DOCUMENT_TREE
+String #63: android.intent.action.QUICKBOOT_POWERON
+String #64: android.intent.action.REBOOT
+String #65: android.intent.action.TIMEZONE_CHANGED
+String #66: android.intent.action.TIME_SET
+String #67: android.intent.action.VIEW
+String #68: android.intent.category.BROWSABLE
+String #69: android.intent.category.DEFAULT
+String #70: android.intent.category.LAUNCHER
+String #71: android.intent.category.OPENABLE
+String #72: android.media.action.ACTION_VIDEO_CAPTURE
+String #73: android.media.action.IMAGE_CAPTURE
+String #74: android.net.conn.CONNECTIVITY_CHANGE
+String #75: android.permission.ACCESS_COARSE_LOCATION
+String #76: android.permission.ACCESS_FINE_LOCATION
+String #77: android.permission.ACCESS_NETWORK_STATE
+String #78: android.permission.BIND_JOB_SERVICE
+String #79: android.permission.CAMERA
+String #80: android.permission.DUMP
+String #81: android.permission.FOREGROUND_SERVICE
+String #82: android.permission.INTERNET
+String #83: android.permission.POST_NOTIFICATIONS
+String #84: android.permission.READ_APP_BADGE
+String #85: android.permission.READ_EXTERNAL_STORAGE
+String #86: android.permission.RECEIVE_BOOT_COMPLETED
+String #87: android.permission.RECORD_AUDIO
+String #88: android.permission.SYSTEM_ALERT_WINDOW
+String #89: android.permission.USE_BIOMETRIC
+String #90: android.permission.USE_FINGERPRINT
+String #91: android.permission.VIBRATE
+String #92: android.permission.WAKE_LOCK
+String #93: android.permission.WRITE_EXTERNAL_STORAGE
+String #94: android.support.FILE_PROVIDER_PATHS
+String #95: android.support.customtabs.action.CustomTabsService
+String #96: androidx.core.app.CoreComponentFactory
+String #97: androidx.emoji2.text.EmojiCompatInitializer
+String #98: androidx.lifecycle.ProcessLifecycleInitializer
+String #99: androidx.profileinstaller.ProfileInstallReceiver
+String #100: androidx.profileinstaller.ProfileInstallerInitializer
+String #101: androidx.profileinstaller.action.BENCHMARK_OPERATION
+String #102: androidx.profileinstaller.action.INSTALL_PROFILE
+String #103: androidx.profileinstaller.action.SAVE_PROFILE
+String #104: androidx.profileinstaller.action.SKIP_FILE
+String #105: androidx.room.MultiInstanceInvalidationService
+String #106: androidx.startup
+String #107: androidx.startup.InitializationProvider
+String #108: androidx.work.WorkManagerInitializer
+String #109: androidx.work.diagnostics.REQUEST_DIAGNOSTICS
+String #110: androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy
+String #111: androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy
+String #112: androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy
+String #113: androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy
+String #114: androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver
+String #115: androidx.work.impl.background.systemalarm.RescheduleReceiver
+String #116: androidx.work.impl.background.systemalarm.SystemAlarmService
+String #117: androidx.work.impl.background.systemalarm.UpdateProxies
+String #118: androidx.work.impl.background.systemjob.SystemJobService
+String #119: androidx.work.impl.diagnostics.DiagnosticsReceiver
+String #120: androidx.work.impl.foreground.SystemForegroundService
+String #121: androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver
+String #122: application
+String #123: backend:com.google.android.datatransport.cct.CctBackendFactory
+String #124: category
+String #125: cct
+String #126: com.anddoes.launcher.permission.UPDATE_COUNT
+String #127: com.bumptech.glide.integration.okhttp3.OkHttpGlideModule
+String #128: com.canhub.cropper.CropFileProvider
+String #129: com.canhub.cropper.CropImageActivity
+String #130: com.danylo.oliveira.servicoapp
+String #131: com.danylo.oliveira.servicoapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+String #132: com.danylo.oliveira.servicoapp.FileSystemFileProvider
+String #133: com.danylo.oliveira.servicoapp.ImagePickerFileProvider
+String #134: com.danylo.oliveira.servicoapp.MainActivity
+String #135: com.danylo.oliveira.servicoapp.MainApplication
+String #136: com.danylo.oliveira.servicoapp.androidx-startup
+String #137: com.danylo.oliveira.servicoapp.cropper.fileprovider
+String #138: com.danylo.oliveira.servicoapp.fileprovider
+String #139: com.danylo.oliveira.servicoapp.firebaseinitprovider
+String #140: com.facebook.soloader.enabled
+String #141: com.google.android.apps.maps
+String #142: com.google.android.c2dm.intent.RECEIVE
+String #143: com.google.android.c2dm.permission.RECEIVE
+String #144: com.google.android.c2dm.permission.SEND
+String #145: com.google.android.datatransport.runtime.backends.TransportBackendDiscovery
+String #146: com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver
+String #147: com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService
+String #148: com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE
+String #149: com.google.android.geo.API_KEY
+String #150: com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED
+String #151: com.google.android.gms.common.api.GoogleApiActivity
+String #152: com.google.android.gms.metadata.MODULE_DEPENDENCIES
+String #153: com.google.android.gms.metadata.ModuleDependencies
+String #154: com.google.android.gms.version
+String #155: com.google.firebase.MESSAGING_EVENT
+String #156: com.google.firebase.components.ComponentDiscoveryService
+String #157: com.google.firebase.components.ComponentRegistrar
+String #158: com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar
+String #159: com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar
+String #160: com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar
+String #161: com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar
+String #162: com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar
+String #163: com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar
+String #164: com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar
+String #165: com.google.firebase.iid.FirebaseInstanceIdReceiver
+String #166: com.google.firebase.messaging.FirebaseMessagingService
+String #167: com.google.firebase.provider.FirebaseInitProvider
+String #168: com.htc.intent.action.QUICKBOOT_POWERON
+String #169: com.htc.launcher.permission.READ_SETTINGS
+String #170: com.htc.launcher.permission.UPDATE_SHORTCUT
+String #171: com.huawei.android.launcher.permission.CHANGE_BADGE
+String #172: com.huawei.android.launcher.permission.READ_SETTINGS
+String #173: com.huawei.android.launcher.permission.WRITE_SETTINGS
+String #174: com.majeur.launcher.permission.UPDATE_BADGE
+String #175: com.oppo.launcher.permission.READ_SETTINGS
+String #176: com.oppo.launcher.permission.WRITE_SETTINGS
+String #177: com.reactnativecommunity.webview.RNCWebViewFileProvider
+String #178: com.sec.android.provider.badge.permission.READ
+String #179: com.sec.android.provider.badge.permission.WRITE
+String #180: com.sonyericsson.home.permission.BROADCAST_BADGE
+String #181: com.sonymobile.home.permission.PROVIDER_INSERT_BADGE
+String #182: data
+String #183: expo.modules.adapters.react.apploader.RNHeadlessAppLoader
+String #184: expo.modules.filesystem.FileSystemFileProvider
+String #185: expo.modules.imagepicker.ExpoCropImageActivity
+String #186: expo.modules.imagepicker.fileprovider.ImagePickerFileProvider
+String #187: expo.modules.location.services.LocationTaskService
+String #188: expo.modules.notifications.NOTIFICATION_EVENT
+String #189: expo.modules.notifications.service.ExpoFirebaseMessagingService
+String #190: expo.modules.notifications.service.NotificationForwarderActivity
+String #191: expo.modules.notifications.service.NotificationsService
+String #192: expo.modules.updates.ENABLED
+String #193: expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH
+String #194: expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS
+String #195: http://schemas.android.com/apk/res/android
+String #196: https
+String #197: intent
+String #198: intent-filter
+String #199: manifest
+String #200: me.everything.badger.permission.BADGE_COUNT_READ
+String #201: me.everything.badger.permission.BADGE_COUNT_WRITE
+String #202: meta-data
+String #203: org.apache.http.legacy
+String #204: org.chromium.intent.action.IS_READY_TO_PAY
+String #205: org.chromium.intent.action.PAY
+String #206: org.chromium.intent.action.UPDATE_PAYMENT_DETAILS
+String #207: org.unimodules.core.AppLoader#react-native-headless
+String #208: package
+String #209: permission
+String #210: photopicker_activity:0:required
+String #211: platformBuildVersionCode
+String #212: platformBuildVersionName
+String #213: provider
+String #214: queries
+String #215: receiver
+String #216: service
+String #217: servico-app
+String #218: uses-feature
+String #219: uses-library
+String #220: uses-permission
+String #221: uses-sdk
+
+18:55:29.494 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\build-tools\36.1.0\aapt.EXE" dump xmlstrings "X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk" AndroidManifest.xml
+18:55:29.520 detox[9388] i child-process:EXEC_SUCCESS String pool of 42 unique UTF-16 non-sorted strings, 42 entries and 0 styles using 2176 bytes:
+String #0: theme
+String #1: label
+String #2: name
+String #3: exported
+String #4: priority
+String #5: targetPackage
+String #6: handleProfiling
+String #7: functionalTest
+String #8: minSdkVersion
+String #9: targetSdkVersion
+String #10: extractNativeLibs
+String #11: compileSdkVersion
+String #12: compileSdkVersionCodename
+String #13: 16
+String #14: Tests for com.danylo.oliveira.servicoapp
+String #15: activity
+String #16: android
+String #17: android.intent.category.LAUNCHER
+String #18: android.permission.REORDER_TASKS
+String #19: android.test.runner
+String #20: androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity
+String #21: androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity
+String #22: androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity
+String #23: androidx.test.orchestrator
+String #24: androidx.test.runner.AndroidJUnitRunner
+String #25: androidx.test.services
+String #26: application
+String #27: category
+String #28: com.danylo.oliveira.servicoapp
+String #29: com.danylo.oliveira.servicoapp.test
+String #30: com.google.android.apps.common.testing.services
+String #31: http://schemas.android.com/apk/res/android
+String #32: instrumentation
+String #33: intent-filter
+String #34: manifest
+String #35: package
+String #36: platformBuildVersionCode
+String #37: platformBuildVersionName
+String #38: queries
+String #39: uses-library
+String #40: uses-permission
+String #41: uses-sdk
+
+18:55:29.521 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "rm -fr /data/local/tmp/detox"
+18:55:29.611 detox[9388] i child-process:EXEC_SUCCESS 
+18:55:29.612 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "mkdir -p /data/local/tmp/detox"
+18:55:29.670 detox[9388] i child-process:EXEC_SUCCESS 
+18:55:29.671 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 push "X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk" "/data/local/tmp/detox/Application.apk"
+18:55:30.002 detox[9388] i child-process:EXEC_SUCCESS X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk: 1 file pushed, 0 skipped. 133.0 MB/s (36694137 bytes in 0.263s)
+
+18:55:30.003 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "getprop ro.build.version.sdk"
+18:55:30.054 detox[9388] i child-process:EXEC_SUCCESS 36
+
+18:55:30.059 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Application.apk
+18:55:32.157 detox[9388] i child-process:SPAWN_STDOUT Success
+
+18:55:32.162 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Application.apk exited with code #0
+18:55:32.163 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 push "X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk" "/data/local/tmp/detox/Test.apk"
+18:55:32.230 detox[9388] i child-process:EXEC_SUCCESS X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk: 1 file pushed, 0 skipped. 130.8 MB/s (3220378 bytes in 0.023s)
+
+18:55:32.235 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Test.apk
+18:55:33.044 detox[9388] i child-process:SPAWN_STDOUT Success
+
+18:55:33.050 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Test.apk exited with code #0
+18:55:33.050 detox[9388] E device installApp
+18:55:33.051 detox[9388] B device selectApp
+  args: ("default")
+18:55:33.051 detox[9388] B device terminateApp
+  args: ()
+18:55:33.052 detox[9388] B artifacts-manager onBeforeTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:33.052 detox[9388] E artifacts-manager onBeforeTerminateApp
+18:55:33.052 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "am force-stop com.danylo.oliveira.servicoapp"
+18:55:33.128 detox[9388] i child-process:EXEC_SUCCESS 
+18:55:33.129 detox[9388] B artifacts-manager onTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:33.129 detox[9388] E artifacts-manager onTerminateApp
+18:55:33.129 detox[9388] E device terminateApp
+18:55:33.129 detox[9388] E device selectApp
+18:55:33.130 detox[9388] E lifecycle set up environment
+18:55:33.511 detox[9388] i lifecycle navigation.test.js is assigned to emulator-5554 (Pixel_8_Pro)
+18:55:33.512 detox[9388] B lifecycle run the tests
+18:55:33.512 detox[9388] B artifacts-manager onRunDescribeStart
+  args: ({"name":"ROOT_DESCRIBE_BLOCK"})
+18:55:33.513 detox[9388] E artifacts-manager onRunDescribeStart
+18:55:33.513 detox[9388] B lifecycle Customer app smoke
+18:55:33.514 detox[9388] B artifacts-manager onRunDescribeStart
+  args: ({"name":"Customer app smoke"})
+18:55:33.514 detox[9388] E artifacts-manager onRunDescribeStart
+18:55:33.515 detox[9388] B lifecycle shows splash screen
+18:55:33.515 detox[9388] i lifecycle Customer app smoke: shows splash screen
+18:55:33.517 detox[9388] B artifacts-manager onTestStart
+  args: ({"title":"shows splash screen","fullName":"Customer app smoke shows splash screen","status":"running","invocations":1})
+18:55:33.518 detox[9388] i artifact:ARTIFACT_START starting ADBLogcatRecording
+18:55:33.522 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -f /sdcard/185528306_0.log"
+18:55:33.523 detox[9388] E artifacts-manager onTestStart
+18:55:33.523 detox[9388] B lifecycle beforeEach
+18:55:33.524 detox[9388] E lifecycle beforeEach
+18:55:33.524 detox[9388] B lifecycle beforeEach
+18:55:33.528 detox[9388] B device launchApp
+  args: ({"delete":true,"newInstance":true})
+18:55:33.528 detox[9388] B device terminateApp
+  args: ("com.danylo.oliveira.servicoapp")
+18:55:33.529 detox[9388] B artifacts-manager onBeforeTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:33.529 detox[9388] E artifacts-manager onBeforeTerminateApp
+18:55:33.529 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "am force-stop com.danylo.oliveira.servicoapp"
+18:55:33.604 detox[9388] i child-process:EXEC_SUCCESS 
+18:55:33.604 detox[9388] B artifacts-manager onTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:33.605 detox[9388] E artifacts-manager onTerminateApp
+18:55:33.605 detox[9388] E device terminateApp
+18:55:33.605 detox[9388] B device uninstallApp
+  args: ()
+18:55:33.606 detox[9388] B artifacts-manager onBeforeUninstallApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:55:33.606 detox[9388] E artifacts-manager onBeforeUninstallApp
+18:55:33.606 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list packages com.danylo.oliveira.servicoapp"
+18:55:33.666 detox[9388] i child-process:EXEC_SUCCESS package:com.danylo.oliveira.servicoapp
+package:com.danylo.oliveira.servicoapp.test
+
+18:55:33.667 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 uninstall com.danylo.oliveira.servicoapp
+18:55:33.760 detox[9388] i child-process:EXEC_SUCCESS Success
+
+18:55:33.760 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list packages com.danylo.oliveira.servicoapp.test"
+18:55:33.827 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell du /sdcard/185528306_0.log
+18:55:33.835 detox[9388] i child-process:EXEC_SUCCESS package:com.danylo.oliveira.servicoapp.test
+
+18:55:33.836 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 uninstall com.danylo.oliveira.servicoapp.test
+18:55:33.889 detox[9388] i child-process:EXEC_SUCCESS 4	/sdcard/185528306_0.log
+
+18:55:33.985 detox[9388] i child-process:EXEC_SUCCESS Success
+
+18:55:33.985 detox[9388] E device uninstallApp
+18:55:33.986 detox[9388] B device installApp
+  args: ()
+18:55:33.986 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\build-tools\36.1.0\aapt.EXE" dump xmlstrings "X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk" AndroidManifest.xml
+18:55:34.009 detox[9388] i child-process:EXEC_SUCCESS String pool of 222 unique UTF-16 non-sorted strings, 222 entries and 0 styles using 17380 bytes:
+String #0: theme
+String #1: label
+String #2: icon
+String #3: name
+String #4: permission
+String #5: protectionLevel
+String #6: enabled
+String #7: exported
+String #8: taskAffinity
+String #9: excludeFromRecents
+String #10: authorities
+String #11: initOrder
+String #12: grantUriPermissions
+String #13: priority
+String #14: launchMode
+String #15: screenOrientation
+String #16: configChanges
+String #17: value
+String #18: resource
+String #19: mimeType
+String #20: scheme
+String #21: minSdkVersion
+String #22: versionCode
+String #23: versionName
+String #24: windowSoftInputMode
+String #25: noHistory
+String #26: targetSdkVersion
+String #27: maxSdkVersion
+String #28: allowBackup
+String #29: glEsVersion
+String #30: required
+String #31: supportsRtl
+String #32: extractNativeLibs
+String #33: fullBackupContent
+String #34: directBootAware
+String #35: roundIcon
+String #36: compileSdkVersion
+String #37: compileSdkVersionCodename
+String #38: appComponentFactory
+String #39: foregroundServiceType
+String #40: dataExtractionRules
+String #41: enableOnBackInvokedCallback
+String #42: 
+String #43: */*
+String #44: 1.0.0
+String #45: 16
+String #46: AIzaSyB8x9PUYy7zZNtHy8i4VUofIt5Av9cTYrk
+String #47: ALWAYS
+String #48: GlideModule
+String #49: action
+String #50: activity
+String #51: android
+String #52: android.intent.action.ACTION_POWER_CONNECTED
+String #53: android.intent.action.ACTION_POWER_DISCONNECTED
+String #54: android.intent.action.BATTERY_LOW
+String #55: android.intent.action.BATTERY_OKAY
+String #56: android.intent.action.BOOT_COMPLETED
+String #57: android.intent.action.DEVICE_STORAGE_LOW
+String #58: android.intent.action.DEVICE_STORAGE_OK
+String #59: android.intent.action.GET_CONTENT
+String #60: android.intent.action.MAIN
+String #61: android.intent.action.MY_PACKAGE_REPLACED
+String #62: android.intent.action.OPEN_DOCUMENT_TREE
+String #63: android.intent.action.QUICKBOOT_POWERON
+String #64: android.intent.action.REBOOT
+String #65: android.intent.action.TIMEZONE_CHANGED
+String #66: android.intent.action.TIME_SET
+String #67: android.intent.action.VIEW
+String #68: android.intent.category.BROWSABLE
+String #69: android.intent.category.DEFAULT
+String #70: android.intent.category.LAUNCHER
+String #71: android.intent.category.OPENABLE
+String #72: android.media.action.ACTION_VIDEO_CAPTURE
+String #73: android.media.action.IMAGE_CAPTURE
+String #74: android.net.conn.CONNECTIVITY_CHANGE
+String #75: android.permission.ACCESS_COARSE_LOCATION
+String #76: android.permission.ACCESS_FINE_LOCATION
+String #77: android.permission.ACCESS_NETWORK_STATE
+String #78: android.permission.BIND_JOB_SERVICE
+String #79: android.permission.CAMERA
+String #80: android.permission.DUMP
+String #81: android.permission.FOREGROUND_SERVICE
+String #82: android.permission.INTERNET
+String #83: android.permission.POST_NOTIFICATIONS
+String #84: android.permission.READ_APP_BADGE
+String #85: android.permission.READ_EXTERNAL_STORAGE
+String #86: android.permission.RECEIVE_BOOT_COMPLETED
+String #87: android.permission.RECORD_AUDIO
+String #88: android.permission.SYSTEM_ALERT_WINDOW
+String #89: android.permission.USE_BIOMETRIC
+String #90: android.permission.USE_FINGERPRINT
+String #91: android.permission.VIBRATE
+String #92: android.permission.WAKE_LOCK
+String #93: android.permission.WRITE_EXTERNAL_STORAGE
+String #94: android.support.FILE_PROVIDER_PATHS
+String #95: android.support.customtabs.action.CustomTabsService
+String #96: androidx.core.app.CoreComponentFactory
+String #97: androidx.emoji2.text.EmojiCompatInitializer
+String #98: androidx.lifecycle.ProcessLifecycleInitializer
+String #99: androidx.profileinstaller.ProfileInstallReceiver
+String #100: androidx.profileinstaller.ProfileInstallerInitializer
+String #101: androidx.profileinstaller.action.BENCHMARK_OPERATION
+String #102: androidx.profileinstaller.action.INSTALL_PROFILE
+String #103: androidx.profileinstaller.action.SAVE_PROFILE
+String #104: androidx.profileinstaller.action.SKIP_FILE
+String #105: androidx.room.MultiInstanceInvalidationService
+String #106: androidx.startup
+String #107: androidx.startup.InitializationProvider
+String #108: androidx.work.WorkManagerInitializer
+String #109: androidx.work.diagnostics.REQUEST_DIAGNOSTICS
+String #110: androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy
+String #111: androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy
+String #112: androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy
+String #113: androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy
+String #114: androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver
+String #115: androidx.work.impl.background.systemalarm.RescheduleReceiver
+String #116: androidx.work.impl.background.systemalarm.SystemAlarmService
+String #117: androidx.work.impl.background.systemalarm.UpdateProxies
+String #118: androidx.work.impl.background.systemjob.SystemJobService
+String #119: androidx.work.impl.diagnostics.DiagnosticsReceiver
+String #120: androidx.work.impl.foreground.SystemForegroundService
+String #121: androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver
+String #122: application
+String #123: backend:com.google.android.datatransport.cct.CctBackendFactory
+String #124: category
+String #125: cct
+String #126: com.anddoes.launcher.permission.UPDATE_COUNT
+String #127: com.bumptech.glide.integration.okhttp3.OkHttpGlideModule
+String #128: com.canhub.cropper.CropFileProvider
+String #129: com.canhub.cropper.CropImageActivity
+String #130: com.danylo.oliveira.servicoapp
+String #131: com.danylo.oliveira.servicoapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+String #132: com.danylo.oliveira.servicoapp.FileSystemFileProvider
+String #133: com.danylo.oliveira.servicoapp.ImagePickerFileProvider
+String #134: com.danylo.oliveira.servicoapp.MainActivity
+String #135: com.danylo.oliveira.servicoapp.MainApplication
+String #136: com.danylo.oliveira.servicoapp.androidx-startup
+String #137: com.danylo.oliveira.servicoapp.cropper.fileprovider
+String #138: com.danylo.oliveira.servicoapp.fileprovider
+String #139: com.danylo.oliveira.servicoapp.firebaseinitprovider
+String #140: com.facebook.soloader.enabled
+String #141: com.google.android.apps.maps
+String #142: com.google.android.c2dm.intent.RECEIVE
+String #143: com.google.android.c2dm.permission.RECEIVE
+String #144: com.google.android.c2dm.permission.SEND
+String #145: com.google.android.datatransport.runtime.backends.TransportBackendDiscovery
+String #146: com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver
+String #147: com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService
+String #148: com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE
+String #149: com.google.android.geo.API_KEY
+String #150: com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED
+String #151: com.google.android.gms.common.api.GoogleApiActivity
+String #152: com.google.android.gms.metadata.MODULE_DEPENDENCIES
+String #153: com.google.android.gms.metadata.ModuleDependencies
+String #154: com.google.android.gms.version
+String #155: com.google.firebase.MESSAGING_EVENT
+String #156: com.google.firebase.components.ComponentDiscoveryService
+String #157: com.google.firebase.components.ComponentRegistrar
+String #158: com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar
+String #159: com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar
+String #160: com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar
+String #161: com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar
+String #162: com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar
+String #163: com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar
+String #164: com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar
+String #165: com.google.firebase.iid.FirebaseInstanceIdReceiver
+String #166: com.google.firebase.messaging.FirebaseMessagingService
+String #167: com.google.firebase.provider.FirebaseInitProvider
+String #168: com.htc.intent.action.QUICKBOOT_POWERON
+String #169: com.htc.launcher.permission.READ_SETTINGS
+String #170: com.htc.launcher.permission.UPDATE_SHORTCUT
+String #171: com.huawei.android.launcher.permission.CHANGE_BADGE
+String #172: com.huawei.android.launcher.permission.READ_SETTINGS
+String #173: com.huawei.android.launcher.permission.WRITE_SETTINGS
+String #174: com.majeur.launcher.permission.UPDATE_BADGE
+String #175: com.oppo.launcher.permission.READ_SETTINGS
+String #176: com.oppo.launcher.permission.WRITE_SETTINGS
+String #177: com.reactnativecommunity.webview.RNCWebViewFileProvider
+String #178: com.sec.android.provider.badge.permission.READ
+String #179: com.sec.android.provider.badge.permission.WRITE
+String #180: com.sonyericsson.home.permission.BROADCAST_BADGE
+String #181: com.sonymobile.home.permission.PROVIDER_INSERT_BADGE
+String #182: data
+String #183: expo.modules.adapters.react.apploader.RNHeadlessAppLoader
+String #184: expo.modules.filesystem.FileSystemFileProvider
+String #185: expo.modules.imagepicker.ExpoCropImageActivity
+String #186: expo.modules.imagepicker.fileprovider.ImagePickerFileProvider
+String #187: expo.modules.location.services.LocationTaskService
+String #188: expo.modules.notifications.NOTIFICATION_EVENT
+String #189: expo.modules.notifications.service.ExpoFirebaseMessagingService
+String #190: expo.modules.notifications.service.NotificationForwarderActivity
+String #191: expo.modules.notifications.service.NotificationsService
+String #192: expo.modules.updates.ENABLED
+String #193: expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH
+String #194: expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS
+String #195: http://schemas.android.com/apk/res/android
+String #196: https
+String #197: intent
+String #198: intent-filter
+String #199: manifest
+String #200: me.everything.badger.permission.BADGE_COUNT_READ
+String #201: me.everything.badger.permission.BADGE_COUNT_WRITE
+String #202: meta-data
+String #203: org.apache.http.legacy
+String #204: org.chromium.intent.action.IS_READY_TO_PAY
+String #205: org.chromium.intent.action.PAY
+String #206: org.chromium.intent.action.UPDATE_PAYMENT_DETAILS
+String #207: org.unimodules.core.AppLoader#react-native-headless
+String #208: package
+String #209: permission
+String #210: photopicker_activity:0:required
+String #211: platformBuildVersionCode
+String #212: platformBuildVersionName
+String #213: provider
+String #214: queries
+String #215: receiver
+String #216: service
+String #217: servico-app
+String #218: uses-feature
+String #219: uses-library
+String #220: uses-permission
+String #221: uses-sdk
+
+18:55:34.009 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\build-tools\36.1.0\aapt.EXE" dump xmlstrings "X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk" AndroidManifest.xml
+18:55:34.030 detox[9388] i child-process:EXEC_SUCCESS String pool of 42 unique UTF-16 non-sorted strings, 42 entries and 0 styles using 2176 bytes:
+String #0: theme
+String #1: label
+String #2: name
+String #3: exported
+String #4: priority
+String #5: targetPackage
+String #6: handleProfiling
+String #7: functionalTest
+String #8: minSdkVersion
+String #9: targetSdkVersion
+String #10: extractNativeLibs
+String #11: compileSdkVersion
+String #12: compileSdkVersionCodename
+String #13: 16
+String #14: Tests for com.danylo.oliveira.servicoapp
+String #15: activity
+String #16: android
+String #17: android.intent.category.LAUNCHER
+String #18: android.permission.REORDER_TASKS
+String #19: android.test.runner
+String #20: androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity
+String #21: androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity
+String #22: androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity
+String #23: androidx.test.orchestrator
+String #24: androidx.test.runner.AndroidJUnitRunner
+String #25: androidx.test.services
+String #26: application
+String #27: category
+String #28: com.danylo.oliveira.servicoapp
+String #29: com.danylo.oliveira.servicoapp.test
+String #30: com.google.android.apps.common.testing.services
+String #31: http://schemas.android.com/apk/res/android
+String #32: instrumentation
+String #33: intent-filter
+String #34: manifest
+String #35: package
+String #36: platformBuildVersionCode
+String #37: platformBuildVersionName
+String #38: queries
+String #39: uses-library
+String #40: uses-permission
+String #41: uses-sdk
+
+18:55:34.031 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "rm -fr /data/local/tmp/detox"
+18:55:34.090 detox[9388] i child-process:EXEC_SUCCESS 
+18:55:34.091 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "mkdir -p /data/local/tmp/detox"
+18:55:34.145 detox[9388] i child-process:EXEC_SUCCESS 
+18:55:34.145 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 push "X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk" "/data/local/tmp/detox/Application.apk"
+18:55:34.509 detox[9388] i child-process:EXEC_SUCCESS X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk: 1 file pushed, 0 skipped. 113.0 MB/s (36694137 bytes in 0.310s)
+
+18:55:34.513 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Application.apk
+18:55:36.593 detox[9388] i child-process:SPAWN_STDOUT Success
+
+18:55:36.599 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Application.apk exited with code #0
+18:55:36.599 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 push "X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk" "/data/local/tmp/detox/Test.apk"
+18:55:36.660 detox[9388] i child-process:EXEC_SUCCESS X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk: 1 file pushed, 0 skipped. 130.2 MB/s (3220378 bytes in 0.024s)
+
+18:55:36.664 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Test.apk
+18:55:37.445 detox[9388] i child-process:SPAWN_STDOUT Success
+
+18:55:37.455 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Test.apk exited with code #0
+18:55:37.456 detox[9388] E device installApp
+18:55:37.457 detox[9388] B artifacts-manager onBeforeLaunchApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp","launchArgs":{"detoxServer":"ws://localhost:53907","detoxSessionId":"d61a1645-fafd-2fa9-1e8b-b5f0a887a155"}})
+18:55:37.457 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "date +\"%m-%d %T.000\""
+18:55:37.511 detox[9388] i child-process:EXEC_SUCCESS 02-16 21:55:36.000
+
+18:55:37.512 detox[9388] E artifacts-manager onBeforeLaunchApp
+18:55:37.512 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 reverse tcp:53907 tcp:53907
+18:55:37.546 detox[9388] i child-process:EXEC_SUCCESS 53907
+
+18:55:37.547 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list instrumentation"
+18:55:37.630 detox[9388] i child-process:EXEC_SUCCESS instrumentation:com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner (target=com.danylo.oliveira.servicoapp)
+
+18:55:37.635 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell am instrument -w -r -e detoxServer ws://localhost:53907 -e detoxSessionId d61a1645-fafd-2fa9-1e8b-b5f0a887a155 -e debug false com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner
+18:55:38.147 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "ps | grep \"com\.danylo\.oliveira\.servicoapp$\""
+18:55:38.222 detox[9388] i child-process:EXEC_SUCCESS u0_a247       6798   481   16914600 127028 0                   0 S com.danylo.oliveira.servicoapp
+
+18:55:38.223 detox[9388] B artifacts-manager onLaunchApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp","launchArgs":{"detoxServer":"ws://localhost:53907","detoxSessionId":"d61a1645-fafd-2fa9-1e8b-b5f0a887a155"},"pid":6798})
+18:55:38.224 detox[9388] i artifact:ARTIFACT_START starting ADBLogcatRecording
+18:55:38.224 detox[9388] i artifact:ARTIFACT_STOP stopping ADBLogcatRecording
+18:55:38.225 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "date +\"%m-%d %T.000\""
+18:55:38.268 detox[9388] i child-process:EXEC_SUCCESS 02-16 21:55:37.000
+
+18:55:38.273 detox[9388] i child-process:SPAWN_KILL sending SIGINT to: C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell logcat -f /sdcard/185528306_0.log
+18:55:38.276 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -f /sdcard/185528306_0.log" terminated with SIGINT
+18:55:38.280 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -T \"02-16 21:55:37.000\" --pid=6798 -f /sdcard/185528306_0.log"
+18:55:38.281 detox[9388] E artifacts-manager onLaunchApp
+18:55:38.310 detox[9388] i child-process:SPAWN_STDOUT INSTRUMENTATION_STATUS: class=com.danylo.oliveira.servicoapp.DetoxTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.danylo.oliveira.servicoapp.DetoxTest:
+INSTRUMENTATION_STATUS: test=runDetoxTests
+INSTRUMENTATION_STATUS_CODE: 1
+
+18:55:38.589 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell du /sdcard/185528306_0.log
+18:55:38.626 detox[9388] i child-process:EXEC_SUCCESS 8376	/sdcard/185528306_0.log
+
+18:57:33.535 detox[9388] B artifacts-manager onHookFailure
+  args: ({"error":"Exceeded timeout of 120000 ms for a hook.\nAdd a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout.","hook":"beforeEach"})
+18:57:33.536 detox[9388] E artifacts-manager onHookFailure
+18:57:33.536 detox[9388] E lifecycle beforeEach
+  error: 'Exceeded timeout of 120000 ms for a hook.\n' +
+    'Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout.'
+18:57:33.537 detox[9388] B lifecycle test_fn
+18:57:33.538 detox[9388] B artifacts-manager onTestDone
+  args: ({"title":"shows splash screen","fullName":"Customer app smoke shows splash screen","status":"failed","invocations":1,"timedOut":true})
+18:57:33.539 detox[9388] i artifact:ARTIFACT_STOP stopping ADBLogcatRecording
+18:57:33.539 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "date +\"%m-%d %T.000\""
+18:57:33.652 detox[9388] i child-process:EXEC_SUCCESS 02-16 21:57:32.000
+
+18:57:33.659 detox[9388] i child-process:SPAWN_KILL sending SIGINT to: C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell logcat -T "02-16 21:55:37.000" --pid=6798 -f /sdcard/185528306_0.log
+18:57:33.661 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -T \"02-16 21:55:37.000\" --pid=6798 -f /sdcard/185528306_0.log" terminated with SIGINT
+18:57:33.662 detox[9388] E artifacts-manager onTestDone
+18:57:33.663 detox[9388] i ws-client:APP_UNREACHABLE Detox can't seem to connect to the test app(s)!
+
+HINT: 
+
+The test app might have crashed prematurely, or has had trouble setting up the connection.
+Refer to our troubleshooting guide, for full details: https://wix.github.io/Detox/docs/troubleshooting/running-tests#tests-execution-hangs 
+
+
+
+18:57:33.664 detox[9388] E lifecycle test_fn
+18:57:33.664 detox[9388] i lifecycle Customer app smoke: shows splash screen [FAIL]
+18:57:33.670 detox[9388] B lifecycle opens login screen after splash
+18:57:33.670 detox[9388] i lifecycle Customer app smoke: opens login screen after splash
+18:57:33.671 detox[9388] B artifacts-manager onTestStart
+  args: ({"title":"opens login screen after splash","fullName":"Customer app smoke opens login screen after splash","status":"running","invocations":1})
+18:57:33.671 detox[9388] i artifact:ARTIFACT_START starting ADBLogcatRecording
+18:57:33.675 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -T \"02-16 21:57:32.000\" --pid=6798 -f /sdcard/185528306_1.log"
+18:57:33.675 detox[9388] E artifacts-manager onTestStart
+18:57:33.676 detox[9388] B lifecycle beforeEach
+18:57:33.676 detox[9388] E lifecycle beforeEach
+18:57:33.677 detox[9388] B lifecycle beforeEach
+18:57:33.677 detox[9388] B device launchApp
+  args: ({"delete":true,"newInstance":true})
+18:57:33.678 detox[9388] B device terminateApp
+  args: ("com.danylo.oliveira.servicoapp")
+18:57:33.678 detox[9388] B artifacts-manager onBeforeTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:57:33.679 detox[9388] E artifacts-manager onBeforeTerminateApp
+18:57:33.680 detox[9388] i child-process:SPAWN_KILL sending SIGINT to: C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell am instrument -w -r -e detoxServer ws://localhost:53907 -e detoxSessionId d61a1645-fafd-2fa9-1e8b-b5f0a887a155 -e debug false com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner
+18:57:33.681 detox[9388] i artifact:ARTIFACT_SAVE saving ADBLogcatRecording to: artifacts\android.emu.release.latest\android.emu.release.2026-02-16 21-55-27Z\✗ Customer app smoke shows splash screen\device.log
+18:57:33.681 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 pull "/sdcard/185528306_0.log" "artifacts\android.emu.release.latest\android.emu.release.2026-02-16 21-55-27Z\✗ Customer app smoke shows splash screen\device.log"
+18:57:33.689 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell am instrument -w -r -e detoxServer ws://localhost:53907 -e detoxSessionId d61a1645-fafd-2fa9-1e8b-b5f0a887a155 -e debug false com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner terminated with SIGINT
+18:57:33.689 detox[9388] i device An error occurred while waiting for the app to become ready. Waiting for disconnection...
+  error: Failed to run application on the device
+  
+  HINT: Most likely, your tests have timed out and called detox.cleanup() while it was waiting for "ready" message (over WebSocket) from the instrumentation process.
+18:57:33.690 detox[9388] i device The app disconnected.
+18:57:33.690 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "am force-stop com.danylo.oliveira.servicoapp"
+18:57:33.693 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 reverse --remove tcp:53907
+18:57:33.701 detox[9388] E device terminateApp
+  error: Failed to run application on the device
+  
+  HINT: Most likely, your tests have timed out and called detox.cleanup() while it was waiting for "ready" message (over WebSocket) from the instrumentation process.
+18:57:33.734 detox[9388] i child-process:EXEC_SUCCESS 
+18:57:33.815 detox[9388] i child-process:EXEC_SUCCESS /sdcard/185528306_0.log: 1 file pulled, 0 skipped. 91.1 MB/s (8597504 bytes in 0.090s)
+
+18:57:33.815 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "rm  \"/sdcard/185528306_0.log\""
+18:57:33.829 detox[9388] i child-process:EXEC_SUCCESS 
+18:57:33.829 detox[9388] B artifacts-manager onTerminateApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:57:33.830 detox[9388] E artifacts-manager onTerminateApp
+18:57:33.830 detox[9388] E device launchApp
+18:57:33.831 detox[9388] B device uninstallApp
+  args: ()
+18:57:33.831 detox[9388] B artifacts-manager onBeforeUninstallApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp"})
+18:57:33.832 detox[9388] E artifacts-manager onBeforeUninstallApp
+18:57:33.832 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list packages com.danylo.oliveira.servicoapp"
+18:57:33.888 detox[9388] i child-process:EXEC_SUCCESS package:com.danylo.oliveira.servicoapp
+package:com.danylo.oliveira.servicoapp.test
+
+18:57:33.889 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 uninstall com.danylo.oliveira.servicoapp
+18:57:33.893 detox[9388] i child-process:EXEC_SUCCESS 
+18:57:33.989 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell du /sdcard/185528306_1.log
+18:57:34.009 detox[9388] i child-process:EXEC_SUCCESS Success
+
+18:57:34.009 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list packages com.danylo.oliveira.servicoapp.test"
+18:57:34.060 detox[9388] i child-process:EXEC_SUCCESS 4	/sdcard/185528306_1.log
+
+18:57:34.080 detox[9388] i child-process:EXEC_SUCCESS package:com.danylo.oliveira.servicoapp.test
+
+18:57:34.081 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 uninstall com.danylo.oliveira.servicoapp.test
+18:57:34.270 detox[9388] i child-process:EXEC_SUCCESS Success
+
+18:57:34.271 detox[9388] E device uninstallApp
+18:57:34.271 detox[9388] B device installApp
+  args: ()
+18:57:34.272 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\build-tools\36.1.0\aapt.EXE" dump xmlstrings "X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk" AndroidManifest.xml
+18:57:34.295 detox[9388] i child-process:EXEC_SUCCESS String pool of 222 unique UTF-16 non-sorted strings, 222 entries and 0 styles using 17380 bytes:
+String #0: theme
+String #1: label
+String #2: icon
+String #3: name
+String #4: permission
+String #5: protectionLevel
+String #6: enabled
+String #7: exported
+String #8: taskAffinity
+String #9: excludeFromRecents
+String #10: authorities
+String #11: initOrder
+String #12: grantUriPermissions
+String #13: priority
+String #14: launchMode
+String #15: screenOrientation
+String #16: configChanges
+String #17: value
+String #18: resource
+String #19: mimeType
+String #20: scheme
+String #21: minSdkVersion
+String #22: versionCode
+String #23: versionName
+String #24: windowSoftInputMode
+String #25: noHistory
+String #26: targetSdkVersion
+String #27: maxSdkVersion
+String #28: allowBackup
+String #29: glEsVersion
+String #30: required
+String #31: supportsRtl
+String #32: extractNativeLibs
+String #33: fullBackupContent
+String #34: directBootAware
+String #35: roundIcon
+String #36: compileSdkVersion
+String #37: compileSdkVersionCodename
+String #38: appComponentFactory
+String #39: foregroundServiceType
+String #40: dataExtractionRules
+String #41: enableOnBackInvokedCallback
+String #42: 
+String #43: */*
+String #44: 1.0.0
+String #45: 16
+String #46: AIzaSyB8x9PUYy7zZNtHy8i4VUofIt5Av9cTYrk
+String #47: ALWAYS
+String #48: GlideModule
+String #49: action
+String #50: activity
+String #51: android
+String #52: android.intent.action.ACTION_POWER_CONNECTED
+String #53: android.intent.action.ACTION_POWER_DISCONNECTED
+String #54: android.intent.action.BATTERY_LOW
+String #55: android.intent.action.BATTERY_OKAY
+String #56: android.intent.action.BOOT_COMPLETED
+String #57: android.intent.action.DEVICE_STORAGE_LOW
+String #58: android.intent.action.DEVICE_STORAGE_OK
+String #59: android.intent.action.GET_CONTENT
+String #60: android.intent.action.MAIN
+String #61: android.intent.action.MY_PACKAGE_REPLACED
+String #62: android.intent.action.OPEN_DOCUMENT_TREE
+String #63: android.intent.action.QUICKBOOT_POWERON
+String #64: android.intent.action.REBOOT
+String #65: android.intent.action.TIMEZONE_CHANGED
+String #66: android.intent.action.TIME_SET
+String #67: android.intent.action.VIEW
+String #68: android.intent.category.BROWSABLE
+String #69: android.intent.category.DEFAULT
+String #70: android.intent.category.LAUNCHER
+String #71: android.intent.category.OPENABLE
+String #72: android.media.action.ACTION_VIDEO_CAPTURE
+String #73: android.media.action.IMAGE_CAPTURE
+String #74: android.net.conn.CONNECTIVITY_CHANGE
+String #75: android.permission.ACCESS_COARSE_LOCATION
+String #76: android.permission.ACCESS_FINE_LOCATION
+String #77: android.permission.ACCESS_NETWORK_STATE
+String #78: android.permission.BIND_JOB_SERVICE
+String #79: android.permission.CAMERA
+String #80: android.permission.DUMP
+String #81: android.permission.FOREGROUND_SERVICE
+String #82: android.permission.INTERNET
+String #83: android.permission.POST_NOTIFICATIONS
+String #84: android.permission.READ_APP_BADGE
+String #85: android.permission.READ_EXTERNAL_STORAGE
+String #86: android.permission.RECEIVE_BOOT_COMPLETED
+String #87: android.permission.RECORD_AUDIO
+String #88: android.permission.SYSTEM_ALERT_WINDOW
+String #89: android.permission.USE_BIOMETRIC
+String #90: android.permission.USE_FINGERPRINT
+String #91: android.permission.VIBRATE
+String #92: android.permission.WAKE_LOCK
+String #93: android.permission.WRITE_EXTERNAL_STORAGE
+String #94: android.support.FILE_PROVIDER_PATHS
+String #95: android.support.customtabs.action.CustomTabsService
+String #96: androidx.core.app.CoreComponentFactory
+String #97: androidx.emoji2.text.EmojiCompatInitializer
+String #98: androidx.lifecycle.ProcessLifecycleInitializer
+String #99: androidx.profileinstaller.ProfileInstallReceiver
+String #100: androidx.profileinstaller.ProfileInstallerInitializer
+String #101: androidx.profileinstaller.action.BENCHMARK_OPERATION
+String #102: androidx.profileinstaller.action.INSTALL_PROFILE
+String #103: androidx.profileinstaller.action.SAVE_PROFILE
+String #104: androidx.profileinstaller.action.SKIP_FILE
+String #105: androidx.room.MultiInstanceInvalidationService
+String #106: androidx.startup
+String #107: androidx.startup.InitializationProvider
+String #108: androidx.work.WorkManagerInitializer
+String #109: androidx.work.diagnostics.REQUEST_DIAGNOSTICS
+String #110: androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy
+String #111: androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy
+String #112: androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy
+String #113: androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy
+String #114: androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver
+String #115: androidx.work.impl.background.systemalarm.RescheduleReceiver
+String #116: androidx.work.impl.background.systemalarm.SystemAlarmService
+String #117: androidx.work.impl.background.systemalarm.UpdateProxies
+String #118: androidx.work.impl.background.systemjob.SystemJobService
+String #119: androidx.work.impl.diagnostics.DiagnosticsReceiver
+String #120: androidx.work.impl.foreground.SystemForegroundService
+String #121: androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver
+String #122: application
+String #123: backend:com.google.android.datatransport.cct.CctBackendFactory
+String #124: category
+String #125: cct
+String #126: com.anddoes.launcher.permission.UPDATE_COUNT
+String #127: com.bumptech.glide.integration.okhttp3.OkHttpGlideModule
+String #128: com.canhub.cropper.CropFileProvider
+String #129: com.canhub.cropper.CropImageActivity
+String #130: com.danylo.oliveira.servicoapp
+String #131: com.danylo.oliveira.servicoapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+String #132: com.danylo.oliveira.servicoapp.FileSystemFileProvider
+String #133: com.danylo.oliveira.servicoapp.ImagePickerFileProvider
+String #134: com.danylo.oliveira.servicoapp.MainActivity
+String #135: com.danylo.oliveira.servicoapp.MainApplication
+String #136: com.danylo.oliveira.servicoapp.androidx-startup
+String #137: com.danylo.oliveira.servicoapp.cropper.fileprovider
+String #138: com.danylo.oliveira.servicoapp.fileprovider
+String #139: com.danylo.oliveira.servicoapp.firebaseinitprovider
+String #140: com.facebook.soloader.enabled
+String #141: com.google.android.apps.maps
+String #142: com.google.android.c2dm.intent.RECEIVE
+String #143: com.google.android.c2dm.permission.RECEIVE
+String #144: com.google.android.c2dm.permission.SEND
+String #145: com.google.android.datatransport.runtime.backends.TransportBackendDiscovery
+String #146: com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver
+String #147: com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService
+String #148: com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE
+String #149: com.google.android.geo.API_KEY
+String #150: com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED
+String #151: com.google.android.gms.common.api.GoogleApiActivity
+String #152: com.google.android.gms.metadata.MODULE_DEPENDENCIES
+String #153: com.google.android.gms.metadata.ModuleDependencies
+String #154: com.google.android.gms.version
+String #155: com.google.firebase.MESSAGING_EVENT
+String #156: com.google.firebase.components.ComponentDiscoveryService
+String #157: com.google.firebase.components.ComponentRegistrar
+String #158: com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar
+String #159: com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar
+String #160: com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar
+String #161: com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar
+String #162: com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar
+String #163: com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar
+String #164: com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar
+String #165: com.google.firebase.iid.FirebaseInstanceIdReceiver
+String #166: com.google.firebase.messaging.FirebaseMessagingService
+String #167: com.google.firebase.provider.FirebaseInitProvider
+String #168: com.htc.intent.action.QUICKBOOT_POWERON
+String #169: com.htc.launcher.permission.READ_SETTINGS
+String #170: com.htc.launcher.permission.UPDATE_SHORTCUT
+String #171: com.huawei.android.launcher.permission.CHANGE_BADGE
+String #172: com.huawei.android.launcher.permission.READ_SETTINGS
+String #173: com.huawei.android.launcher.permission.WRITE_SETTINGS
+String #174: com.majeur.launcher.permission.UPDATE_BADGE
+String #175: com.oppo.launcher.permission.READ_SETTINGS
+String #176: com.oppo.launcher.permission.WRITE_SETTINGS
+String #177: com.reactnativecommunity.webview.RNCWebViewFileProvider
+String #178: com.sec.android.provider.badge.permission.READ
+String #179: com.sec.android.provider.badge.permission.WRITE
+String #180: com.sonyericsson.home.permission.BROADCAST_BADGE
+String #181: com.sonymobile.home.permission.PROVIDER_INSERT_BADGE
+String #182: data
+String #183: expo.modules.adapters.react.apploader.RNHeadlessAppLoader
+String #184: expo.modules.filesystem.FileSystemFileProvider
+String #185: expo.modules.imagepicker.ExpoCropImageActivity
+String #186: expo.modules.imagepicker.fileprovider.ImagePickerFileProvider
+String #187: expo.modules.location.services.LocationTaskService
+String #188: expo.modules.notifications.NOTIFICATION_EVENT
+String #189: expo.modules.notifications.service.ExpoFirebaseMessagingService
+String #190: expo.modules.notifications.service.NotificationForwarderActivity
+String #191: expo.modules.notifications.service.NotificationsService
+String #192: expo.modules.updates.ENABLED
+String #193: expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH
+String #194: expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS
+String #195: http://schemas.android.com/apk/res/android
+String #196: https
+String #197: intent
+String #198: intent-filter
+String #199: manifest
+String #200: me.everything.badger.permission.BADGE_COUNT_READ
+String #201: me.everything.badger.permission.BADGE_COUNT_WRITE
+String #202: meta-data
+String #203: org.apache.http.legacy
+String #204: org.chromium.intent.action.IS_READY_TO_PAY
+String #205: org.chromium.intent.action.PAY
+String #206: org.chromium.intent.action.UPDATE_PAYMENT_DETAILS
+String #207: org.unimodules.core.AppLoader#react-native-headless
+String #208: package
+String #209: permission
+String #210: photopicker_activity:0:required
+String #211: platformBuildVersionCode
+String #212: platformBuildVersionName
+String #213: provider
+String #214: queries
+String #215: receiver
+String #216: service
+String #217: servico-app
+String #218: uses-feature
+String #219: uses-library
+String #220: uses-permission
+String #221: uses-sdk
+
+18:57:34.296 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\build-tools\36.1.0\aapt.EXE" dump xmlstrings "X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk" AndroidManifest.xml
+18:57:34.318 detox[9388] i child-process:EXEC_SUCCESS String pool of 42 unique UTF-16 non-sorted strings, 42 entries and 0 styles using 2176 bytes:
+String #0: theme
+String #1: label
+String #2: name
+String #3: exported
+String #4: priority
+String #5: targetPackage
+String #6: handleProfiling
+String #7: functionalTest
+String #8: minSdkVersion
+String #9: targetSdkVersion
+String #10: extractNativeLibs
+String #11: compileSdkVersion
+String #12: compileSdkVersionCodename
+String #13: 16
+String #14: Tests for com.danylo.oliveira.servicoapp
+String #15: activity
+String #16: android
+String #17: android.intent.category.LAUNCHER
+String #18: android.permission.REORDER_TASKS
+String #19: android.test.runner
+String #20: androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity
+String #21: androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity
+String #22: androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity
+String #23: androidx.test.orchestrator
+String #24: androidx.test.runner.AndroidJUnitRunner
+String #25: androidx.test.services
+String #26: application
+String #27: category
+String #28: com.danylo.oliveira.servicoapp
+String #29: com.danylo.oliveira.servicoapp.test
+String #30: com.google.android.apps.common.testing.services
+String #31: http://schemas.android.com/apk/res/android
+String #32: instrumentation
+String #33: intent-filter
+String #34: manifest
+String #35: package
+String #36: platformBuildVersionCode
+String #37: platformBuildVersionName
+String #38: queries
+String #39: uses-library
+String #40: uses-permission
+String #41: uses-sdk
+
+18:57:34.319 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "rm -fr /data/local/tmp/detox"
+18:57:34.396 detox[9388] i child-process:EXEC_SUCCESS 
+18:57:34.396 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "mkdir -p /data/local/tmp/detox"
+18:57:34.454 detox[9388] i child-process:EXEC_SUCCESS 
+18:57:34.454 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 push "X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk" "/data/local/tmp/detox/Application.apk"
+18:57:34.824 detox[9388] i child-process:EXEC_SUCCESS X:\mobile-customer\android\app\build\outputs\apk\release\app-release.apk: 1 file pushed, 0 skipped. 120.7 MB/s (36694137 bytes in 0.290s)
+
+18:57:34.828 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Application.apk
+18:57:36.954 detox[9388] i child-process:SPAWN_STDOUT Success
+
+18:57:36.959 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Application.apk exited with code #0
+18:57:36.960 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 push "X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk" "/data/local/tmp/detox/Test.apk"
+18:57:37.020 detox[9388] i child-process:EXEC_SUCCESS X:\mobile-customer\android\app\build\outputs\apk\androidTest\release\app-release-androidTest.apk: 1 file pushed, 0 skipped. 126.7 MB/s (3220378 bytes in 0.024s)
+
+18:57:37.024 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Test.apk
+18:57:37.886 detox[9388] i child-process:SPAWN_STDOUT Success
+
+18:57:37.892 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell pm install -r -g -t /data/local/tmp/detox/Test.apk exited with code #0
+18:57:37.893 detox[9388] E device installApp
+18:57:37.893 detox[9388] B artifacts-manager onBeforeLaunchApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp","launchArgs":{"detoxServer":"ws://localhost:53907","detoxSessionId":"d61a1645-fafd-2fa9-1e8b-b5f0a887a155"}})
+18:57:37.893 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "date +\"%m-%d %T.000\""
+18:57:37.943 detox[9388] i child-process:EXEC_SUCCESS 02-16 21:57:37.000
+
+18:57:37.943 detox[9388] E artifacts-manager onBeforeLaunchApp
+18:57:37.943 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 reverse tcp:53907 tcp:53907
+18:57:37.972 detox[9388] i child-process:EXEC_SUCCESS 53907
+
+18:57:37.972 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "pm list instrumentation"
+18:57:38.047 detox[9388] i child-process:EXEC_SUCCESS instrumentation:com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner (target=com.danylo.oliveira.servicoapp)
+
+18:57:38.051 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell am instrument -w -r -e detoxServer ws://localhost:53907 -e detoxSessionId d61a1645-fafd-2fa9-1e8b-b5f0a887a155 -e debug false com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner
+18:57:38.553 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "ps | grep \"com\.danylo\.oliveira\.servicoapp$\""
+18:57:38.623 detox[9388] i child-process:EXEC_SUCCESS u0_a249       7112   481   16924840 125496 0                   0 S com.danylo.oliveira.servicoapp
+
+18:57:38.624 detox[9388] B artifacts-manager onLaunchApp
+  args: ({"deviceId":"emulator-5554","bundleId":"com.danylo.oliveira.servicoapp","launchArgs":{"detoxServer":"ws://localhost:53907","detoxSessionId":"d61a1645-fafd-2fa9-1e8b-b5f0a887a155"},"pid":7112})
+18:57:38.624 detox[9388] i artifact:ARTIFACT_START starting ADBLogcatRecording
+18:57:38.624 detox[9388] i artifact:ARTIFACT_STOP stopping ADBLogcatRecording
+18:57:38.625 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "date +\"%m-%d %T.000\""
+18:57:38.671 detox[9388] i child-process:EXEC_SUCCESS 02-16 21:57:37.000
+
+18:57:38.676 detox[9388] i child-process:SPAWN_KILL sending SIGINT to: C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell logcat -T "02-16 21:57:32.000" --pid=6798 -f /sdcard/185528306_1.log
+18:57:38.678 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -T \"02-16 21:57:32.000\" --pid=6798 -f /sdcard/185528306_1.log" terminated with SIGINT
+18:57:38.682 detox[9388] i child-process:SPAWN_CMD C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -T \"02-16 21:57:37.000\" --pid=7112 -f /sdcard/185528306_1.log"
+18:57:38.682 detox[9388] E artifacts-manager onLaunchApp
+18:57:38.732 detox[9388] i child-process:SPAWN_STDOUT INSTRUMENTATION_STATUS: class=com.danylo.oliveira.servicoapp.DetoxTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.danylo.oliveira.servicoapp.DetoxTest:
+INSTRUMENTATION_STATUS: test=runDetoxTests
+INSTRUMENTATION_STATUS_CODE: 1
+
+18:57:38.990 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell du /sdcard/185528306_1.log
+18:57:39.028 detox[9388] i child-process:EXEC_SUCCESS 4	/sdcard/185528306_1.log
+
+18:59:33.692 detox[9388] B artifacts-manager onHookFailure
+  args: ({"error":"Exceeded timeout of 120000 ms for a hook.\nAdd a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout.","hook":"beforeEach"})
+18:59:33.692 detox[9388] E artifacts-manager onHookFailure
+18:59:33.693 detox[9388] E lifecycle beforeEach
+  error: 'Exceeded timeout of 120000 ms for a hook.\n' +
+    'Add a timeout value to this test to increase the timeout, if this is a long-running test. See https://jestjs.io/docs/api#testname-fn-timeout.'
+18:59:33.693 detox[9388] B lifecycle test_fn
+18:59:33.694 detox[9388] B artifacts-manager onTestDone
+  args: ({"title":"opens login screen after splash","fullName":"Customer app smoke opens login screen after splash","status":"failed","invocations":1,"timedOut":true})
+18:59:33.694 detox[9388] i artifact:ARTIFACT_STOP stopping ADBLogcatRecording
+18:59:33.695 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "date +\"%m-%d %T.000\""
+18:59:33.734 detox[9388] i child-process:EXEC_SUCCESS 02-16 21:59:33.000
+
+18:59:33.739 detox[9388] i child-process:SPAWN_KILL sending SIGINT to: C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell logcat -T "02-16 21:57:37.000" --pid=7112 -f /sdcard/185528306_1.log
+18:59:33.741 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell "logcat -T \"02-16 21:57:37.000\" --pid=7112 -f /sdcard/185528306_1.log" terminated with SIGINT
+18:59:33.741 detox[9388] E artifacts-manager onTestDone
+18:59:33.742 detox[9388] i ws-client:APP_UNREACHABLE Detox can't seem to connect to the test app(s)!
+
+HINT: 
+
+The test app might have crashed prematurely, or has had trouble setting up the connection.
+Refer to our troubleshooting guide, for full details: https://wix.github.io/Detox/docs/troubleshooting/running-tests#tests-execution-hangs 
+
+
+
+18:59:33.742 detox[9388] E lifecycle test_fn
+18:59:33.742 detox[9388] i lifecycle Customer app smoke: opens login screen after splash [FAIL]
+18:59:33.743 detox[9388] B artifacts-manager onRunDescribeFinish
+  args: ({"name":"Customer app smoke"})
+18:59:33.743 detox[9388] E artifacts-manager onRunDescribeFinish
+18:59:33.744 detox[9388] E lifecycle opens login screen after splash
+18:59:33.744 detox[9388] B artifacts-manager onRunDescribeFinish
+  args: ({"name":"ROOT_DESCRIBE_BLOCK"})
+18:59:33.745 detox[9388] E artifacts-manager onRunDescribeFinish
+18:59:33.745 detox[9388] E lifecycle shows splash screen
+18:59:33.762 detox[9388] B lifecycle tear down environment
+18:59:33.762 detox[9388] B artifacts-manager onBeforeCleanup
+  args: ()
+18:59:33.764 detox[9388] i artifact:ARTIFACT_SAVE saving ADBLogcatRecording to: artifacts\android.emu.release.latest\android.emu.release.2026-02-16 21-55-27Z\✗ Customer app smoke opens login screen after splash\device.log
+18:59:33.764 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 pull "/sdcard/185528306_1.log" "artifacts\android.emu.release.latest\android.emu.release.2026-02-16 21-55-27Z\✗ Customer app smoke opens login screen after splash\device.log"
+18:59:33.800 detox[9388] i child-process:EXEC_SUCCESS /sdcard/185528306_1.log: 1 file pulled, 0 skipped. 13.5 MB/s (24576 bytes in 0.002s)
+
+18:59:33.801 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 shell "rm  \"/sdcard/185528306_1.log\""
+18:59:33.851 detox[9388] i child-process:EXEC_SUCCESS 
+18:59:33.853 detox[9388] i artifact:ARTIFACT_SAVE saving FileArtifact to: artifacts\android.emu.release.latest\android.emu.release.2026-02-16 21-55-27Z\detox_pid_9388.json.log { append: true }
+18:59:33.853 detox[9388] i artifact:ARTIFACT_SAVE saving FileArtifact to: artifacts\android.emu.release.latest\android.emu.release.2026-02-16 21-55-27Z\detox_pid_9388.log { append: true }
+18:59:33.853 detox[9388] E artifacts-manager onBeforeCleanup
+18:59:33.854 detox[9388] i ws-client:APP_UNREACHABLE Detox can't seem to connect to the test app(s)!
+
+HINT: 
+
+The test app might have crashed prematurely, or has had trouble setting up the connection.
+Refer to our troubleshooting guide, for full details: https://wix.github.io/Detox/docs/troubleshooting/running-tests#tests-execution-hangs 
+
+
+
+18:59:33.856 detox[6004] i ws-server tester exited session d61a1645-fafd-2fa9-1e8b-b5f0a887a155
+18:59:33.856 detox[6004] E ws-server@53909 connection :53907<->:53909
+18:59:33.866 detox[9388] i child-process:SPAWN_KILL sending SIGINT to: C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell am instrument -w -r -e detoxServer ws://localhost:53907 -e detoxSessionId d61a1645-fafd-2fa9-1e8b-b5f0a887a155 -e debug false com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner
+18:59:33.869 detox[9388] i child-process:SPAWN_END C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE -s emulator-5554 shell am instrument -w -r -e detoxServer ws://localhost:53907 -e detoxSessionId d61a1645-fafd-2fa9-1e8b-b5f0a887a155 -e debug false com.danylo.oliveira.servicoapp.test/androidx.test.runner.AndroidJUnitRunner terminated with SIGINT
+18:59:33.870 detox[9388] i device An error occurred while waiting for the app to become ready. Waiting for disconnection...
+  error: Failed to run application on the device
+  
+  HINT: Most likely, your tests have timed out and called detox.cleanup() while it was waiting for "ready" message (over WebSocket) from the instrumentation process.
+18:59:33.870 detox[9388] i device The app disconnected.
+18:59:33.870 detox[9388] i child-process:EXEC_CMD "C:\Users\danylo-oliveira\AppData\Local\Android\Sdk\platform-tools\adb.EXE" -s emulator-5554 reverse --remove tcp:53907
+18:59:33.874 detox[9388] E device launchApp
+  error: Failed to run application on the device
+  
+  HINT: Most likely, your tests have timed out and called detox.cleanup() while it was waiting for "ready" message (over WebSocket) from the instrumentation process.
+18:59:33.874 detox[9388] i ipc dispatching event to  primary-6004 /tmp/detox.primary-6004  :  deallocateDevice , {
+  deviceCookie: {
+    id: 'emulator-5554',
+    adbName: 'emulator-5554',
+    name: 'emulator-5554 (Pixel_8_Pro)'
+  }
+}
+18:59:33.875 detox[6004] i ipc received event of :  deallocateDevice {
+  deviceCookie: {
+    id: 'emulator-5554',
+    adbName: 'emulator-5554',
+    name: 'emulator-5554 (Pixel_8_Pro)'
+  }
+}
+18:59:33.876 detox[6004] B device@0 free: emulator-5554
+  data: {}
+18:59:33.878 detox[6004] E device@0 free: emulator-5554
+18:59:33.878 detox[6004] i ipc dispatching event to socket  :  deallocateDeviceDone {}
+18:59:33.879 detox[9388] i ipc ## received events ##
+18:59:33.880 detox[9388] i ipc detected event deallocateDeviceDone {}
+18:59:33.880 detox[9388] E lifecycle tear down environment
+18:59:33.881 detox[9388] E lifecycle Customer app smoke
+18:59:33.888 detox[9388] i ipc dispatching event to  primary-6004 /tmp/detox.primary-6004  :  reportTestResults , {
+  testResults: [
+    {
+      success: false,
+      testFilePath: 'C:\\Users\\danylo-oliveira\\Documents\\freelas-uber-like\\mobile-customer\\e2e\\navigation.test.js',
+      testExecError: undefined,
+      isPermanentFailure: false
+    }
+  ]
+}
+18:59:33.889 detox[6004] i ipc received event of :  reportTestResults {
+  testResults: [
+    {
+      success: false,
+      testFilePath: 'C:\\Users\\danylo-oliveira\\Documents\\freelas-uber-like\\mobile-customer\\e2e\\navigation.test.js',
+      isPermanentFailure: false
+    }
+  ]
+}
+18:59:33.890 detox[6004] i ipc dispatching event to socket  :  reportTestResultsDone {
+  testResults: [
+    {
+      success: false,
+      testFilePath: 'C:\\Users\\danylo-oliveira\\Documents\\freelas-uber-like\\mobile-customer\\e2e\\navigation.test.js',
+      isPermanentFailure: false
+    }
+  ]
+}
+18:59:33.890 detox[6004] i ipc broadcasting event to all known sockets listening to  \\.\pipe\tmp-detox.primary-6004  :   sessionStateUpdate {
+  testResults: [
+    {
+      success: false,
+      testFilePath: 'C:\\Users\\danylo-oliveira\\Documents\\freelas-uber-like\\mobile-customer\\e2e\\navigation.test.js',
+      isPermanentFailure: false
+    }
+  ]
+}
+18:59:33.890 detox[9388] i ipc ## received events ##
+18:59:33.891 detox[9388] i ipc detected event reportTestResultsDone {
+  testResults: [
+    {
+      success: false,
+      testFilePath: 'C:\\Users\\danylo-oliveira\\Documents\\freelas-uber-like\\mobile-customer\\e2e\\navigation.test.js',
+      isPermanentFailure: false
+    }
+  ]
+}
+18:59:33.893 detox[6004] i ipc socket disconnected secondary-9388
+18:59:33.893 detox[9388] i ipc connection closed primary-6004 /tmp/detox.primary-6004 0 tries remaining of 0
+18:59:33.893 detox[9388] i ipc secondary-9388 exceeded connection rety amount of  or stopRetrying flag set.
+18:59:33.901 detox[9388] i child-process:EXEC_SUCCESS 
+18:59:34.024 detox[6004] E lifecycle Command failed with exit code = 1:
+DETOX_AVD_NAME="Pixel_8_Pro" jest --config e2e/jest.config.js
+18:59:34.025 detox[6004] B device cleanup
+  args: ()
+18:59:34.027 detox[6004] E device cleanup
+18:59:34.028 detox[6004] i ws-server Detox server has been closed gracefully
+18:59:34.029 detox[6004] E lifecycle node_modules\detox\local-cli\cli.js test --config-path ./e2e/.detoxrc.js -c android.emu.release --record-logs all --loglevel trace --artifacts-location artifacts/android.emu.release.latest

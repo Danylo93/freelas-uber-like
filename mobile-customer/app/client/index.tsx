@@ -363,7 +363,7 @@ export default function ClientScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="customer-home-screen">
       <StatusBar barStyle="dark-content" />
 
       {/* BACKGROUND MAP */}
@@ -425,14 +425,29 @@ export default function ClientScreen() {
       {/* Search Bar - Hidden if request active */}
       {!currentRequest && (
         <Animated.View style={[styles.searchContainer, { transform: [{ translateY: searchBarAnim }] }]}>
-          <TouchableOpacity style={styles.menuButton} onPress={() => logout()}>
+          <TouchableOpacity
+            style={styles.menuButton}
+            onPress={() =>
+              Alert.alert(
+                'Menu',
+                undefined,
+                [
+                  { text: 'Perfil', onPress: () => router.push('/profile') },
+                  { text: 'Histórico', onPress: () => router.push('/client/history') },
+                  __DEV__ ? { text: 'Debug', onPress: () => router.push('/debug') } : null,
+                  { text: 'Sair', style: 'destructive', onPress: logout },
+                  { text: 'Cancelar', style: 'cancel' },
+                ].filter(Boolean) as any
+              )
+            }
+          >
             <Ionicons name="menu" size={24} color="#333" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.searchBar}>
             <Ionicons name="search" size={20} color="#666" />
             <Text style={styles.placeholderText}>De qual serviço você precisa?</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileButton}>
+          <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/profile')}>
             <Image source={{ uri: `https://ui-avatars.com/api/?name=${user?.name}` }} style={styles.profileAvatar} />
           </TouchableOpacity>
         </Animated.View>

@@ -44,13 +44,14 @@ const ClientLoginView = ({
           bounces={false}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.loginCard}>
+          <View style={styles.loginCard} testID="customer-auth-login-screen">
             <Text style={styles.loginTitle}>Ajuda a um toque de distância</Text>
             <Text style={styles.loginSubtitle}>Entre para acessar serviços sob demanda</Text>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email</Text>
               <TextInput
+                testID="customer-auth-email-input"
                 style={styles.input}
                 placeholder="Digite seu email"
                 placeholderTextColor="#999"
@@ -69,6 +70,7 @@ const ClientLoginView = ({
               <Text style={styles.label}>Senha</Text>
               <TextInput
                 ref={passwordInputRef}
+                testID="customer-auth-password-input"
                 style={styles.input}
                 placeholder="Digite sua senha"
                 placeholderTextColor="#999"
@@ -85,7 +87,12 @@ const ClientLoginView = ({
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
+            <TouchableOpacity
+              testID="customer-auth-login-button"
+              style={styles.primaryButton}
+              onPress={handleLogin}
+              disabled={loading}
+            >
               {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Entrar</Text>}
             </TouchableOpacity>
 
@@ -108,7 +115,10 @@ const ClientLoginView = ({
 
             <View style={styles.footerRow}>
               <Text style={styles.footerText}>Não tem uma conta? </Text>
-              <TouchableOpacity onPress={() => setCurrentView('client_register')}>
+              <TouchableOpacity
+                testID="customer-auth-go-register-button"
+                onPress={() => setCurrentView('client_register')}
+              >
                 <Text style={styles.linkText}>Criar uma conta</Text>
               </TouchableOpacity>
             </View>
@@ -141,9 +151,12 @@ const ClientRegisterView = ({
       style={{ flex: 1 }}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
-      <View style={styles.whiteContainer}>
+      <View style={styles.whiteContainer} testID="customer-auth-register-screen">
         <View style={styles.navHeader}>
-          <TouchableOpacity onPress={() => setCurrentView('client_login')}>
+          <TouchableOpacity
+            testID="customer-auth-register-back-button"
+            onPress={() => setCurrentView('client_login')}
+          >
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
           <Text style={styles.navTitle}>Criar Conta</Text>
@@ -162,7 +175,8 @@ const ClientRegisterView = ({
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Nome Completo</Text>
-          <TextInput 
+          <TextInput
+            testID="customer-auth-register-name-input"
             style={styles.input} 
             value={formData.name} 
             onChangeText={handleNameChange}
@@ -176,6 +190,7 @@ const ClientRegisterView = ({
           <Text style={styles.label}>Email</Text>
           <TextInput 
             ref={emailInputRef}
+            testID="customer-auth-register-email-input"
             style={styles.input} 
             value={formData.email} 
             onChangeText={handleEmailChange} 
@@ -191,6 +206,7 @@ const ClientRegisterView = ({
           <Text style={styles.label}>Telefone</Text>
           <TextInput 
             ref={phoneInputRef}
+            testID="customer-auth-register-phone-input"
             style={styles.input} 
             value={formData.phone} 
             onChangeText={handlePhoneChange} 
@@ -205,6 +221,7 @@ const ClientRegisterView = ({
           <Text style={styles.label}>Senha</Text>
           <TextInput 
             ref={passwordInputRef}
+            testID="customer-auth-register-password-input"
             style={styles.input} 
             value={formData.password} 
             onChangeText={handlePasswordChange} 
@@ -219,6 +236,7 @@ const ClientRegisterView = ({
           <Text style={styles.label}>Confirmar Senha</Text>
           <TextInput 
             ref={confirmPasswordInputRef}
+            testID="customer-auth-register-confirm-password-input"
             style={styles.input} 
             value={formData.confirmPassword} 
             onChangeText={handleConfirmPasswordChange} 
@@ -230,7 +248,12 @@ const ClientRegisterView = ({
           />
         </View>
 
-        <TouchableOpacity style={styles.primaryButton} onPress={handleRegister} disabled={loading}>
+        <TouchableOpacity
+          testID="customer-auth-register-submit-button"
+          style={styles.primaryButton}
+          onPress={handleRegister}
+          disabled={loading}
+        >
           {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Cadastrar</Text>}
         </TouchableOpacity>
         </ScrollView>

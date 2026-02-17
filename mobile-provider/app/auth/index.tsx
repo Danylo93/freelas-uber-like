@@ -47,13 +47,14 @@ const LoginView = ({ formData, handleEmailChange, handlePasswordChange, handleLo
       <View style={styles.overlay}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'center' }}>
 
-          <View style={styles.loginCard}>
+          <View style={styles.loginCard} testID="provider-auth-login-screen">
             <Text style={styles.loginTitle}>Login do Profissional</Text>
             <Text style={styles.loginSubtitle}>Entre para gerenciar seus serviços</Text>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Email</Text>
               <TextInput
+                testID="provider-auth-email-input"
                 style={styles.input}
                 placeholder="Digite seu email"
                 placeholderTextColor="#999"
@@ -72,6 +73,7 @@ const LoginView = ({ formData, handleEmailChange, handlePasswordChange, handleLo
               <Text style={styles.label}>Senha</Text>
               <TextInput
                 ref={passwordInputRef}
+                testID="provider-auth-password-input"
                 style={styles.input}
                 placeholder="Digite sua senha"
                 placeholderTextColor="#999"
@@ -88,7 +90,12 @@ const LoginView = ({ formData, handleEmailChange, handlePasswordChange, handleLo
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.primaryButton} onPress={handleLogin} disabled={loading}>
+            <TouchableOpacity
+              testID="provider-auth-login-button"
+              style={styles.primaryButton}
+              onPress={handleLogin}
+              disabled={loading}
+            >
               {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Entrar</Text>}
             </TouchableOpacity>
 
@@ -111,7 +118,10 @@ const LoginView = ({ formData, handleEmailChange, handlePasswordChange, handleLo
 
             <View style={styles.footerRow}>
               <Text style={styles.footerText}>Não tem uma conta? </Text>
-              <TouchableOpacity onPress={() => setCurrentView('provider_register')}>
+              <TouchableOpacity
+                testID="provider-auth-go-register-button"
+                onPress={() => setCurrentView('provider_register')}
+              >
                 <Text style={styles.linkText}>Cadastre-se</Text>
               </TouchableOpacity>
             </View>
@@ -124,7 +134,7 @@ const LoginView = ({ formData, handleEmailChange, handlePasswordChange, handleLo
 };
 
 const ProviderWelcomeView = ({ setCurrentView, setFormData }: any) => (
-  <View style={styles.whiteContainer}>
+  <View style={styles.whiteContainer} testID="provider-auth-welcome-screen">
     <TouchableOpacity style={styles.closeButton} onPress={() => setCurrentView('login')}>
       <Ionicons name="close" size={24} color="#333" />
     </TouchableOpacity>
@@ -142,14 +152,22 @@ const ProviderWelcomeView = ({ setCurrentView, setFormData }: any) => (
     </View>
 
     <View style={styles.bottomActions}>
-      <TouchableOpacity style={styles.primaryButton} onPress={() => setCurrentView('provider_register')}>
+      <TouchableOpacity
+        testID="provider-auth-welcome-register-button"
+        style={styles.primaryButton}
+        onPress={() => setCurrentView('provider_register')}
+      >
         <Text style={styles.primaryButtonText}>Cadastre-se como Profissional</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.secondaryButton, { marginTop: 12 }]} onPress={() => {
+      <TouchableOpacity
+        testID="provider-auth-go-login-button"
+        style={[styles.secondaryButton, { marginTop: 12 }]}
+        onPress={() => {
         // Reset form for login
         setFormData((prev: any) => ({ ...prev, name: '', email: '', phone: '', password: '', confirmPassword: '', profession: '' }));
         setCurrentView('login');
-      }}>
+      }}
+      >
         <Text style={styles.secondaryButtonText}>Entrar</Text>
       </TouchableOpacity>
 
@@ -172,9 +190,12 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
       style={{ flex: 1 }}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
-      <View style={styles.whiteContainer}>
+      <View style={styles.whiteContainer} testID="provider-auth-register-screen">
         <View style={styles.navHeader}>
-          <TouchableOpacity onPress={() => setCurrentView('provider_welcome')}>
+          <TouchableOpacity
+            testID="provider-auth-register-back-button"
+            onPress={() => setCurrentView('provider_welcome')}
+          >
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
           <Text style={styles.navTitle}>Cadastro</Text>
@@ -212,6 +233,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
               {PROFESSIONS.map(p => (
                 <TouchableOpacity
                   key={p.id}
+                  testID={`provider-auth-profession-${p.id}`}
                   style={[styles.professionCard, formData.profession === p.name && styles.professionCardSelected]}
                   onPress={() => setFormData((prev: any) => ({ ...prev, profession: p.name }))}
                 >
@@ -240,6 +262,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
               <Text style={styles.label}>Nome Completo</Text>
               <TextInput 
                 ref={nameInputRef}
+                testID="provider-auth-register-name-input"
                 style={styles.input} 
                 value={formData.name} 
                 onChangeText={handleNameChange}
@@ -253,6 +276,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
               <Text style={styles.label}>Email</Text>
           <TextInput 
             ref={emailInputRef}
+            testID="provider-auth-register-email-input"
             style={styles.input} 
             value={formData.email} 
             onChangeText={handleEmailChange} 
@@ -268,6 +292,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
               <Text style={styles.label}>Senha</Text>
               <TextInput 
                 ref={passwordInputRef}
+                testID="provider-auth-register-password-input"
                 style={styles.input} 
                 value={formData.password} 
                 onChangeText={handlePasswordChange} 
@@ -282,6 +307,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
               <Text style={styles.label}>Confirmar Senha</Text>
               <TextInput 
                 ref={confirmPasswordInputRef}
+                testID="provider-auth-register-confirm-password-input"
                 style={styles.input} 
                 value={formData.confirmPassword} 
                 onChangeText={handleConfirmPasswordChange} 
@@ -296,6 +322,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
         )}
       </ScrollView>
       <TouchableOpacity
+        testID="provider-auth-register-continue-button"
         style={[styles.primaryButton, (!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))) && styles.disabledBtn]}
         disabled={!formData.profession || (!!formData.profession && (!formData.name || !formData.email || !formData.password || !formData.confirmPassword))}
         onPress={() => {
@@ -322,7 +349,7 @@ const ProviderRegisterView = ({ formData, setFormData, handleNameChange, handleE
 };
 
 const ProviderDocumentsView = ({ setCurrentView, handleRegister, loading }: any) => (
-  <View style={styles.whiteContainer}>
+  <View style={styles.whiteContainer} testID="provider-auth-documents-screen">
     <View style={styles.navHeader}>
       <TouchableOpacity onPress={() => setCurrentView('provider_register')}>
         <Ionicons name="arrow-back" size={24} color="#333" />
@@ -374,6 +401,7 @@ const ProviderDocumentsView = ({ setCurrentView, handleRegister, loading }: any)
 
     <View style={styles.bottomActions}>
       <TouchableOpacity
+        testID="provider-auth-documents-submit-button"
         style={styles.primaryButton}
         onPress={async () => {
           try {

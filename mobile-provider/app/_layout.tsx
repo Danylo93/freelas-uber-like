@@ -12,13 +12,7 @@ export default function RootLayout() {
           screenOptions={{
             headerShown: false,
           }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="auth" />
-          <Stack.Screen name="client" />
-          <Stack.Screen name="provider" />
-          <Stack.Screen name="profile" />
-        </Stack>
+        />
       </SocketProvider>
     </AuthProvider>
   );

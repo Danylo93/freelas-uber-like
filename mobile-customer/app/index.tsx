@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../src/contexts/AuthContext';
@@ -10,9 +10,9 @@ export default function Index() {
   const { user, isLoading, isAuthenticated, logout } = useAuth();
   const [showSplash, setShowSplash] = useState(true);
 
-  // Animações da splash
-  const scaleAnim = new Animated.Value(0);
-  const fadeAnim = new Animated.Value(0);
+  // Animações da splash - usando useRef para evitar recriação a cada render
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     // Se não está carregando e já temos dados de auth, esconder splash
@@ -46,7 +46,7 @@ export default function Index() {
 
   const SplashScreen = () => {
     return (
-      <View style={styles.splashContainer}>
+      <View style={styles.splashContainer} testID="customer-splash-screen">
         <Animated.View
           style={[
             styles.logoContainer,
@@ -59,8 +59,8 @@ export default function Index() {
         </Animated.View>
         
         <Animated.View style={[styles.textContainer, { opacity: fadeAnim }]}>
-          <Text style={styles.appName}>Freelas Cliente</Text>
-          <Text style={styles.tagline}>🔧 Conectando você aos melhores profissionais</Text>
+          <Text style={styles.appName} testID="customer-splash-title">Freelas Cliente</Text>
+          <Text style={styles.tagline} testID="customer-splash-tagline">🔧 Conectando você aos melhores profissionais</Text>
         </Animated.View>
       </View>
     );

@@ -33,10 +33,10 @@ export default function ServiceHistoryScreen() {
             if (!user) return;
 
             // Fetch Ongoing (PENDING, ACCEPTED)
-            const ongoingRes = await api.get(`/requests/client/${user.id}?status=PENDING,ACCEPTED`);
+            const ongoingRes = await api.get(`/requests/client/${user.id}?status=PENDING,OFFERED,ACCEPTED`);
             setActiveRequests(ongoingRes.data);
 
-            // Fetch Completed (CANCELED, EXPIRED)
+            // Fetch Completed (CANCELED, EXPIRED) - COMPLETED vem do Job no backend
             const completedRes = await api.get(`/requests/client/${user.id}?status=CANCELED,EXPIRED`);
             setCompletedRequests(completedRes.data);
 

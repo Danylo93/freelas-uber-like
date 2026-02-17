@@ -1,32 +1,63 @@
-# Testes E2E com Maestro
+# E2E com Detox - Freelas Uber-like
 
-Este projeto contém configurações de teste E2E usando [Maestro](https://maestro.mobile.dev/).
+Este repositório possui suíte Detox para os dois apps mobile:
+
+- `mobile-customer`
+- `mobile-provider`
+
+A suíte atual é focada em Android Emulator (configuração `android.emu.debug`).
 
 ## Pré-requisitos
 
-1. Instale o Maestro:
-   ```bash
-   curl -Ls "https://get.maestro.mobile.dev" | bash
-   ```
-2. Tenha os emuladores Android/iOS rodando com os apps instalados.
+- Android Studio + AVD criado (padrão: `Pixel_5_API_34`)
+- `ANDROID_HOME` configurado
+- Java/SDK Android funcionando
+- Dependências instaladas em cada app (`yarn`)
 
-## Executando os Testes
+## Comandos
 
-### Customer App
-
-```bash
-maestro test mobile-customer/e2e/flow.yaml
-```
-
-### Provider App
+### Customer
 
 ```bash
-maestro test mobile-provider/e2e/flow.yaml
+cd mobile-customer
+yarn e2e:android
 ```
 
-## Cenários Cobertos
+### Provider
 
-1. **Customer**: Login, Seleção de Categoria, Visualização de Prestadores, Tentativa de Solicitação.
-2. **Provider**: Login, Toggle Online/Offline, Navegação de Ganhos.
+```bash
+cd mobile-provider
+yarn e2e:android
+```
 
-> Nota: Para testes completos de integração (Customer solicitando -> Provider aceitando), é necessário rodar os dois fluxos simultaneamente ou usar um backend de teste com estado controlado.
+## Comandos separados
+
+```bash
+yarn e2e:build:android
+yarn e2e:test:android
+```
+
+## AVD customizado
+
+Windows:
+
+```bash
+set DETOX_AVD_NAME=SEU_AVD
+```
+
+A configuração é lida de `e2e/.detoxrc.js` em cada app.
+
+## Escopo inicial da suíte
+
+### Customer
+
+- Splash screen aparece
+- Tela de login abre após splash
+- Campos de login principais ficam visíveis
+
+### Provider
+
+- Splash screen aparece
+- Tela de boas-vindas abre após splash
+- Transição para login funciona
+- Campos de login principais ficam visíveis

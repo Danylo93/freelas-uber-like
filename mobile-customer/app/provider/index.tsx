@@ -80,7 +80,6 @@ export default function ProviderScreen() {
   useEffect(() => {
     getCurrentLocation();
     setupSocketListeners();
-    loadRequests();
 
     // Fade in intro
     Animated.timing(fadeAnim, {
