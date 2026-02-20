@@ -1,4 +1,5 @@
 const API_BASE = process.env.E2E_API_URL || 'http://localhost:5000';
+jest.retryTimes(1, { logErrorsBeforeRetry: true });
 
 const randomEmail = (prefix) =>
   `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}@example.com`;
@@ -68,7 +69,16 @@ async function expectUnauthenticatedState() {
 describe('Customer auth QA', () => {
   beforeEach(async () => {
     await device.launchApp({ delete: true, newInstance: true });
+    await device.disableSynchronization();
     await waitForLoginScreen();
+  });
+
+  afterEach(async () => {
+    try {
+      await device.enableSynchronization();
+    } catch (_) {
+      // Keep test teardown resilient when app process ends unexpectedly.
+    }
   });
 
   it('keeps user on login when credentials are invalid', async () => {

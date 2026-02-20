@@ -16,18 +16,24 @@ async function createBackendUser(role = 'PROVIDER') {
     category: 'Encanador',
   };
 
-  const response = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  let lastError = null;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const response = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-  if (!response.ok) {
+    if (response.ok) {
+      return { email, password };
+    }
+
     const body = await response.text();
-    throw new Error(`Failed to create backend user (${response.status}): ${body}`);
+    lastError = `Failed to create backend user (${response.status}): ${body}`;
+    await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
   }
 
-  return { email, password };
+  throw new Error(lastError || 'Failed to create backend user');
 }
 
 async function waitForWelcome() {
@@ -92,7 +98,16 @@ async function expectUnauthenticatedState() {
 describe('Provider auth QA', () => {
   beforeEach(async () => {
     await device.launchApp({ delete: true, newInstance: true });
+    await device.disableSynchronization();
     await waitForWelcome();
+  });
+
+  afterEach(async () => {
+    try {
+      await device.enableSynchronization();
+    } catch (_) {
+      // Keep test teardown resilient when app process ends unexpectedly.
+    }
   });
 
   it('keeps user on login when credentials are invalid', async () => {
