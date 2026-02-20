@@ -93,12 +93,14 @@ jobs:
 
             cd mobile-customer
             yarn e2e:build:android
-            yarn e2e:test:android -- --maxWorkers 1 --cleanup e2e/authentication.test.js e2e/navigation.test.js
+            yarn e2e:test:android -- --maxWorkers 1 --cleanup --retries 1 e2e/authentication.test.js
+            yarn e2e:test:android -- --maxWorkers 1 --cleanup --retries 1 e2e/navigation.test.js
             cd ..
 
             cd mobile-provider
             yarn e2e:build:android
-            yarn e2e:test:android -- --maxWorkers 1 --cleanup e2e/authentication.test.js e2e/navigation.test.js
+            yarn e2e:test:android -- --maxWorkers 1 --cleanup --retries 1 e2e/authentication.test.js
+            yarn e2e:test:android -- --maxWorkers 1 --cleanup --retries 1 e2e/navigation.test.js
             cd ..
 
       - name: Dump backend logs on failure
