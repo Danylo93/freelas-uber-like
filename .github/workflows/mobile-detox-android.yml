@@ -1,0 +1,110 @@
+name: Mobile Detox Android
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "mobile-customer/**"
+      - "mobile-provider/**"
+      - "backend/**"
+      - "docker-compose.yml"
+      - ".github/workflows/mobile-detox-android.yml"
+  push:
+    branches:
+      - main
+      - master
+      - develop
+    paths:
+      - "mobile-customer/**"
+      - "mobile-provider/**"
+      - "backend/**"
+      - "docker-compose.yml"
+      - ".github/workflows/mobile-detox-android.yml"
+
+jobs:
+  detox-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      E2E_API_URL: http://127.0.0.1:5000
+      APP_API_URL: http://10.0.2.2:5000
+      DETOX_AVD_NAME: test
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      NODE_ENV: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: |
+            mobile-customer/yarn.lock
+            mobile-provider/yarn.lock
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install mobile-customer deps
+        run: yarn install --frozen-lockfile
+        working-directory: mobile-customer
+
+      - name: Install mobile-provider deps
+        run: yarn install --frozen-lockfile
+        working-directory: mobile-provider
+
+      - name: Configure app envs for emulator
+        run: |
+          echo "EXPO_PUBLIC_API_BASE_URL=${APP_API_URL}" > mobile-customer/.env
+          echo "EXPO_PUBLIC_API_BASE_URL=${APP_API_URL}" > mobile-provider/.env
+
+      - name: Start backend stack
+        run: docker compose up -d --build backend
+
+      - name: Wait backend health
+        run: |
+          for i in {1..60}; do
+            if curl -fsS "${E2E_API_URL}/healthz" >/dev/null; then
+              echo "Backend healthy"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend did not become healthy in time"
+          docker compose ps
+          docker logs freelas-backend || true
+          exit 1
+
+      - name: Run Detox suites (customer + provider)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_5
+          target: default
+          disable-animations: true
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: |
+            adb devices
+
+            cd mobile-customer
+            yarn e2e:build:android
+            yarn e2e:test:android -- --maxWorkers 1 --cleanup e2e/authentication.test.js e2e/navigation.test.js
+            cd ..
+
+            cd mobile-provider
+            yarn e2e:build:android
+            yarn e2e:test:android -- --maxWorkers 1 --cleanup e2e/authentication.test.js e2e/navigation.test.js
+            cd ..
+
+      - name: Dump backend logs on failure
+        if: failure()
+        run: docker logs --tail 500 freelas-backend || true
+
+      - name: Shutdown stack
+        if: always()
+        run: docker compose down -v

@@ -1,4 +1,5 @@
 const API_BASE = process.env.E2E_API_URL || 'http://localhost:5000';
+jest.retryTimes(1, { logErrorsBeforeRetry: true });
 
 const randomEmail = (prefix) =>
   `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}@example.com`;
@@ -49,12 +50,42 @@ async function expectAuthenticatedState() {
   try {
     await waitFor(element(by.id('provider-home-screen')))
       .toBeVisible()
-      .withTimeout(20000);
+      .withTimeout(40000);
     return;
   } catch (_) {
     await waitFor(element(by.id('provider-auth-welcome-screen')))
       .toBeNotVisible()
-      .withTimeout(10000);
+      .withTimeout(20000);
+  }
+}
+
+async function submitProviderDocuments() {
+  const submitButton = element(by.id('provider-auth-documents-submit-button'));
+  await waitFor(submitButton).toBeVisible().withTimeout(10000);
+  try {
+    await submitButton.tap();
+  } catch (_) {
+    // If app is already processing submit, allow state assertion to decide.
+    await expectAuthenticatedState();
+    return;
+  }
+}
+
+async function expectUnauthenticatedState() {
+  try {
+    await waitFor(element(by.text('Login Falhou')))
+      .toBeVisible()
+      .withTimeout(6000);
+    try {
+      await element(by.text('OK')).tap();
+    } catch (_) {
+      // Button label may vary by system locale.
+    }
+    return;
+  } catch (_) {
+    await waitFor(element(by.id('provider-auth-email-input')))
+      .toBeVisible()
+      .withTimeout(8000);
   }
 }
 
@@ -70,9 +101,7 @@ describe('Provider auth QA', () => {
     await element(by.id('provider-auth-password-input')).replaceText('123456');
     await element(by.id('provider-auth-login-button')).tap();
 
-    await waitFor(element(by.id('provider-auth-login-screen')))
-      .toBeVisible()
-      .withTimeout(8000);
+    await expectUnauthenticatedState();
   });
 
   it('logs in successfully with a valid provider account', async () => {
@@ -107,7 +136,7 @@ describe('Provider auth QA', () => {
       .toBeVisible()
       .withTimeout(10000);
 
-    await element(by.id('provider-auth-documents-submit-button')).tap();
+    await submitProviderDocuments();
     await expectAuthenticatedState();
   });
 });

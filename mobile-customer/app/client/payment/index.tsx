@@ -2,24 +2,24 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, Platform } from 'react-native';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function PaymentMethodScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const request_id = params.request_id;
     const amount = params.amount || '45.00';
+    const provider_name = params.provider_name;
 
     const [selectedMethod, setSelectedMethod] = useState('pix');
 
     const handlePay = () => {
         if (selectedMethod === 'pix') {
-            router.push({ pathname: '/client/payment/pix', params: { request_id, amount } });
+            router.push({ pathname: '/client/payment/pix', params: { request_id, amount, provider_name } });
         } else if (selectedMethod === 'card') {
-            router.push({ pathname: '/client/payment/card', params: { request_id, amount } });
+            router.push({ pathname: '/client/payment/card', params: { request_id, amount, provider_name } });
         } else {
             // Mock Apple/Google Pay success
-            router.push({ pathname: '/client/payment/success', params: { request_id, amount } });
+            router.push({ pathname: '/client/payment/success', params: { request_id, amount, provider_name } });
         }
     };
 

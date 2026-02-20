@@ -39,7 +39,12 @@ export class CreateRequest {
                 price: validated.price
             };
             
-            await this.messageBroker.publish(KAFKA_TOPICS.REQUEST_CREATED, event);
+            try {
+                await this.messageBroker.publish(KAFKA_TOPICS.REQUEST_CREATED, event);
+            } catch (publishErr) {
+                logger.warn(`REQUEST_CREATED publish failed for request ${request.id}, continuing without event`);
+                logger.error(publishErr as any);
+            }
             logger.info(`Request created: ${request.id}`);
 
             return request;

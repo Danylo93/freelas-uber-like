@@ -40,7 +40,13 @@ export default function ReviewScreen() {
             }
 
             // Navigate back to history or home
-            router.replace('/client');
+            router.replace({
+                pathname: '/client',
+                params: {
+                    payment_confirmed: 'true',
+                    completed_request_id: String(requestId || '')
+                }
+            });
         } catch (error) {
             console.error('Error submitting review:', error);
         } finally {
@@ -127,7 +133,18 @@ export default function ReviewScreen() {
                     {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitText}>Submit Feedback</Text>}
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.skipButton} onPress={() => router.replace('/client')}>
+                <TouchableOpacity
+                    style={styles.skipButton}
+                    onPress={() =>
+                        router.replace({
+                            pathname: '/client',
+                            params: {
+                                payment_confirmed: 'true',
+                                completed_request_id: String(requestId || '')
+                            }
+                        })
+                    }
+                >
                     <Text style={styles.skipText}>Skip for now</Text>
                 </TouchableOpacity>
 

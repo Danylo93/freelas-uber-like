@@ -15,6 +15,9 @@ type ServiceRequest = {
     // In real app, we'd broaden this to include provider name/details
 };
 
+const ONGOING_STATUSES = new Set(['pending', 'offered', 'accepted', 'in_progress', 'near_client', 'started']);
+const COMPLETED_STATUSES = new Set(['completed', 'canceled', 'expired']);
+
 export default function ServiceHistoryScreen() {
     const router = useRouter();
     const { user } = useAuth();
@@ -32,13 +35,14 @@ export default function ServiceHistoryScreen() {
             setLoading(true);
             if (!user) return;
 
-            // Fetch Ongoing (PENDING, ACCEPTED)
-            const ongoingRes = await api.get(`/requests/client/${user.id}?status=PENDING,OFFERED,ACCEPTED`);
-            setActiveRequests(ongoingRes.data);
-
-            // Fetch Completed (CANCELED, EXPIRED) - COMPLETED vem do Job no backend
-            const completedRes = await api.get(`/requests/client/${user.id}?status=CANCELED,EXPIRED`);
-            setCompletedRequests(completedRes.data);
+            const res = await api.get(`/requests/client/${user.id}`);
+            const list = Array.isArray(res.data) ? res.data : [];
+            const normalized = list.map((req: ServiceRequest) => ({
+                ...req,
+                status: normalizeStatus(req.status)
+            }));
+            setActiveRequests(normalized.filter((req: ServiceRequest) => ONGOING_STATUSES.has(req.status)));
+            setCompletedRequests(normalized.filter((req: ServiceRequest) => COMPLETED_STATUSES.has(req.status)));
 
         } catch (error) {
             console.error('Error fetching history:', error);
@@ -52,6 +56,12 @@ export default function ServiceHistoryScreen() {
         if (s === 'CANCELED') return 'canceled';
         if (s === 'ACCEPTED') return 'accepted';
         if (s === 'PENDING') return 'pending';
+        if (s === 'OFFERED') return 'offered';
+        if (s === 'COMPLETED') return 'completed';
+        if (s === 'IN_PROGRESS') return 'in_progress';
+        if (s === 'NEAR_CLIENT') return 'near_client';
+        if (s === 'STARTED') return 'started';
+        if (s === 'EXPIRED') return 'expired';
         return s.toLowerCase();
     };
 

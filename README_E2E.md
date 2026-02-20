@@ -1,20 +1,20 @@
-# E2E com Detox - Freelas Uber-like
+# E2E with Detox - Freelas Uber-like
 
-Este repositório possui suíte Detox para os dois apps mobile:
+This repository has Detox suites for both mobile apps:
 
 - `mobile-customer`
 - `mobile-provider`
 
-A suíte atual é focada em Android Emulator (configuração `android.emu.debug`).
+The suite targets Android Emulator with `android.emu.release`.
 
-## Pré-requisitos
+## Prerequisites
 
-- Android Studio + AVD criado (padrão: `Pixel_5_API_34`)
-- `ANDROID_HOME` configurado
-- Java/SDK Android funcionando
-- Dependências instaladas em cada app (`yarn`)
+- Android Studio with an AVD (default used by CI: `test`)
+- `ANDROID_HOME` set
+- Android SDK and Java working
+- Dependencies installed in each app (`yarn`)
 
-## Comandos
+## Commands
 
 ### Customer
 
@@ -30,34 +30,46 @@ cd mobile-provider
 yarn e2e:android
 ```
 
-## Comandos separados
+## Build and test separately
 
 ```bash
 yarn e2e:build:android
 yarn e2e:test:android
 ```
 
-## AVD customizado
+## Custom AVD
 
 Windows:
 
 ```bash
-set DETOX_AVD_NAME=SEU_AVD
+set DETOX_AVD_NAME=YOUR_AVD
 ```
 
-A configuração é lida de `e2e/.detoxrc.js` em cada app.
+Detox config is loaded from `.detoxrc.js` at each app root.
 
-## Escopo inicial da suíte
+## Suite scope
 
 ### Customer
 
-- Splash screen aparece
-- Tela de login abre após splash
-- Campos de login principais ficam visíveis
+- Splash/login flow smoke
+- Invalid login stays unauthenticated
+- New customer registration authenticates successfully
 
 ### Provider
 
-- Splash screen aparece
-- Tela de boas-vindas abre após splash
-- Transição para login funciona
-- Campos de login principais ficam visíveis
+- Splash/welcome/login flow smoke
+- Invalid login stays unauthenticated
+- Valid login authenticates successfully
+- New provider registration authenticates successfully
+
+## CI
+
+GitHub Actions workflow:
+
+- `.github/workflows/mobile-detox-android.yml`
+
+It runs:
+
+- Docker backend startup and health check
+- Detox Android build for both apps
+- `authentication` and `navigation` tests for both apps

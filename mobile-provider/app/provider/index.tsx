@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import {
   View,
@@ -75,14 +75,18 @@ export default function ProviderScreen() {
 
   // Active Request Ref for location watcher
   const activeRequestRef = useRef<ServiceRequest | null>(null);
+  const selectedRequestRef = useRef<ServiceRequest | null>(null);
 
   useEffect(() => {
     activeRequestRef.current = activeRequest;
   }, [activeRequest]);
 
   useEffect(() => {
+    selectedRequestRef.current = selectedRequest;
+  }, [selectedRequest]);
+
+  useEffect(() => {
     getCurrentLocation();
-    setupSocketListeners();
 
     // Fade in intro
     Animated.timing(fadeAnim, {
@@ -110,7 +114,7 @@ export default function ProviderScreen() {
 
   useEffect(() => {
     if (user?.id) {
-      loadRequests();
+      void loadRequests();
     }
   }, [user?.id]);
 
@@ -172,44 +176,12 @@ export default function ProviderScreen() {
     }
   };
 
-  const setupSocketListeners = () => {
-    if (!socket) return;
-
-    // Updated Event Name: request_offer (from backend)
-    socket.on('request_offer', (data) => {
-      console.log('🔔 [SOCKET] request_offer received:', data);
-      loadRequests();
-      // Auto-select the first new request for the "Incoming" UI flow
-      // In a real app, we might queue them.
-      // For now, we assume one request comes in and we show it.
-
-      // If we received a request_offer, we might want to fetch it directly or rely on loadRequests
-      // For better UX, we could construct a partial request object from data if API is slow
-    });
-
-    socket.on('request_cancelled', (data) => {
-      loadRequests();
-      if (activeRequest?.id === data.request_id) {
-        setActiveRequest(null);
-        Alert.alert('Cancelado', 'O cliente cancelou a solicitação.');
-      }
-      if (selectedRequest?.id === data.request_id) {
-        setSelectedRequest(null);
-      }
-    });
-
-    socket.on('job_accepted', (data) => {
-       // Confirmation that job was accepted
-       console.log('✅ [SOCKET] Job accepted confirmed:', data);
-    });
-  };
-
-  const loadRequests = async () => {
+  const loadRequests = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('📋 [PROVIDER] Carregando requests...');
+      console.log('[PROVIDER] Carregando requests...');
       const response = await api.get('/requests', true); // requiresAuth = true
-      console.log('✅ [PROVIDER] Requests carregados:', response.data?.length || 0);
+      console.log('[PROVIDER] Requests carregados:', response.data?.length || 0);
       
       const normalized = (response.data || []).map((r: ServiceRequest) => ({
         ...r,
@@ -229,7 +201,6 @@ export default function ProviderScreen() {
       setActiveRequest(active || null);
 
       if (active) {
-        // Join the job room
         if (socket && active.job_id) socket.emit('join_job', active.job_id);
       } else {
         setShowServiceModal(false);
@@ -242,18 +213,64 @@ export default function ProviderScreen() {
       });
 
     } catch (e: any) {
-      console.error('❌ [PROVIDER] Erro ao carregar requests:', e.message);
-      // Não mostrar alerta - pode ser que não haja requests ainda
+      console.error('[PROVIDER] Erro ao carregar requests:', e.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [isOnline, socket, user?.id]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onRequestOffer = () => {
+      void loadRequests();
+    };
+
+    const onRequestCancelled = (data: any) => {
+      void loadRequests();
+      if (activeRequestRef.current?.id === data.request_id) {
+        setActiveRequest(null);
+        Alert.alert('Cancelado', 'O cliente cancelou a solicitacao.');
+      }
+      if (selectedRequestRef.current?.id === data.request_id) {
+        setSelectedRequest(null);
+      }
+    };
+
+    const onJobAccepted = () => {
+      console.log('[SOCKET] Job accepted confirmed');
+    };
+
+    socket.on('request_offer', onRequestOffer);
+    socket.on('request_cancelled', onRequestCancelled);
+    socket.on('job_accepted', onJobAccepted);
+
+    return () => {
+      socket.off('request_offer', onRequestOffer);
+      socket.off('request_cancelled', onRequestCancelled);
+      socket.off('job_accepted', onJobAccepted);
+    };
+  }, [loadRequests, socket]);
+
+  useEffect(() => {
+    if (socket && activeRequest?.job_id) {
+      socket.emit('join_job', activeRequest.job_id);
+    }
+  }, [activeRequest?.job_id, socket]);
+
+  useEffect(() => {
+    if (!user?.id || !isOnline || activeRequest) return;
+    const interval = setInterval(() => {
+      void loadRequests();
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [activeRequest, isOnline, loadRequests, user?.id]);
 
   const handleToggleOnline = async () => {
     const nextOnline = !isOnline;
     setIsOnline(nextOnline);
     if (!nextOnline) setSelectedRequest(null);
-    if (nextOnline) loadRequests();
+    if (nextOnline) void loadRequests();
 
     if (!userLocation) return;
 
@@ -293,6 +310,7 @@ export default function ProviderScreen() {
     try {
       await api.put(`/requests/${activeRequest.id}/update-status`, { status: newStatus });
       setActiveRequest(prev => prev ? { ...prev, status: newStatus } : null);
+      void loadRequests();
     } catch (e) {
       console.error(e);
     }
@@ -314,7 +332,7 @@ export default function ProviderScreen() {
       setServicePhoto(null);
       setServiceDescription('');
       Alert.alert('Sucesso', 'Serviço finalizado!');
-      loadRequests();
+      void loadRequests();
     } catch (e) {
       Alert.alert('Erro', 'Falha ao finalizar serviço.');
     }

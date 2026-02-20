@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import {
   View, Text, StyleSheet, TouchableOpacity, FlatList, Modal, Alert,
@@ -45,6 +45,7 @@ interface ServiceRequest {
   estimated_time?: number;
   provider_latitude?: number;
   provider_longitude?: number;
+  created_at?: string;
 }
 
 // Mock Categories for UI
@@ -57,10 +58,20 @@ const CATEGORIES = [
   { id: '6', name: 'Jardinagem', icon: 'leaf', lib: 'Ionicons' },
 ];
 
+const ACTIVE_REQUEST_STATUSES = new Set([
+  'pending',
+  'offered',
+  'accepted',
+  'in_progress',
+  'near_client',
+  'started',
+]);
+
 export default function ClientScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const paymentConfirmed = params.payment_confirmed === 'true';
+  const completedRequestId = typeof params.completed_request_id === 'string' ? params.completed_request_id : undefined;
   const { user, logout } = useAuth();
   const { socket, isConnected } = useSocket();
 
@@ -89,15 +100,72 @@ export default function ClientScreen() {
   const providerListAnim = useRef(new Animated.Value(height)).current;
   const activeRequestAnim = useRef(new Animated.Value(height)).current;
   const currentRequestRef = useRef<ServiceRequest | null>(null);
+  const hasNavigatedToPaymentRef = useRef(false);
 
   useEffect(() => {
     currentRequestRef.current = currentRequest;
   }, [currentRequest]);
 
+  const joinJobRoom = useCallback((jobId?: string) => {
+    if (socket && jobId) {
+      socket.emit('join_job', jobId);
+    }
+  }, [socket]);
+
+  const navigateToPayment = useCallback((request: ServiceRequest | null) => {
+    if (!request || hasNavigatedToPaymentRef.current) return;
+    hasNavigatedToPaymentRef.current = true;
+    router.push({
+      pathname: '/client/payment',
+      params: {
+        request_id: request.id,
+        amount: String(request.price || 0),
+        provider_name: request.provider_name || '',
+      }
+    });
+  }, [router]);
+
+  const loadActiveRequest = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const response = await api.get(`/requests/client/${user.id}`, true);
+      const requests = Array.isArray(response.data) ? response.data : [];
+      const normalizedRequests: ServiceRequest[] = requests.map((r: any) => ({
+        id: r.id,
+        job_id: r.job_id ?? r.jobId,
+        provider_id: r.provider_id ?? r.providerId ?? '',
+        status: (r.status || '').toLowerCase(),
+        provider_name: r.provider_name || '',
+        provider_phone: r.provider_phone || '',
+        category: r.category || '',
+        price: Number(r.price || 0),
+        provider_latitude: r.provider_latitude,
+        provider_longitude: r.provider_longitude,
+        created_at: r.created_at,
+      }));
+
+      const active = normalizedRequests.find((r) => ACTIVE_REQUEST_STATUSES.has((r.status || '').toLowerCase()));
+      if (!active) {
+        const current = currentRequestRef.current;
+        if (current && !ACTIVE_REQUEST_STATUSES.has((current.status || '').toLowerCase())) {
+          setCurrentRequest(null);
+        }
+        return;
+      }
+
+      setCurrentRequest((prev) => prev ? { ...prev, ...active } : active);
+      if (active.job_id) {
+        joinJobRoom(active.job_id);
+      }
+    } catch (error) {
+      console.error('Failed to load active request:', error);
+    }
+  }, [joinJobRoom, user?.id]);
+
   useEffect(() => {
     getCurrentLocation();
     loadProviders();
-    setupSocketListeners();
+    void loadActiveRequest();
 
     // Intro Animation
     Animated.parallel([
@@ -209,10 +277,10 @@ export default function ClientScreen() {
     } finally { setLoading(false); }
   };
 
-  const setupSocketListeners = () => {
+  useEffect(() => {
     if (!socket) return;
 
-    socket.on('offer_received', (data) => {
+    const onOfferReceived = (data: any) => {
       const activeRequest = currentRequestRef.current;
       const status = (activeRequest?.status || '').toLowerCase();
       if (status && status !== 'pending' && status !== 'offered') return;
@@ -220,55 +288,93 @@ export default function ClientScreen() {
       const requestId = activeRequest?.id || data.requestId;
       if (!requestId) return;
       router.push({ pathname: '/client/offers', params: { requestId } });
-    });
+    };
 
-    socket.on('job_accepted', (data) => {
-      console.log('✅ [SOCKET] job_accepted:', data);
-      setCurrentRequest(prev => prev ? {
+    const onJobAccepted = (data: any) => {
+      const jobId = data.jobId || data.job_id;
+      const providerId = data.providerId || data.provider_id;
+      setCurrentRequest((prev) => prev ? {
         ...prev,
         status: 'accepted',
-        job_id: data.jobId || data.job_id,
-        provider_id: data.providerId || prev.provider_id
-      } : null);
-
-      if (data.jobId) {
-        socket.emit('join_job', data.jobId);
+        job_id: jobId || prev.job_id,
+        provider_id: providerId || prev.provider_id
+      } : prev);
+      if (jobId) {
+        joinJobRoom(jobId);
       }
-    });
+    };
 
-    socket.on('location_update', (data) => {
-      // data: { jobId, providerId, lat, lng }
-      if (!currentRequest) return;
-      const currentJobId = currentRequest.job_id || currentRequest.id;
+    const onLocationUpdate = (data: any) => {
+      const activeRequest = currentRequestRef.current;
+      if (!activeRequest) return;
+      const currentJobId = activeRequest.job_id || activeRequest.id;
       if (data.jobId && data.jobId !== currentJobId) return;
-      setCurrentRequest(prev => prev ? {
+      setCurrentRequest((prev) => prev ? {
         ...prev,
         provider_latitude: data.lat,
         provider_longitude: data.lng,
-        // estimated_time: data.estimated_time // Calculate based on new location?
-      } : null);
-    });
+      } : prev);
+    };
 
-    socket.on('job_status_update', (data) => {
-      // data: { jobId, status }
-      if (!currentRequest) return;
-      const currentJobId = currentRequest.job_id || currentRequest.id;
+    const onJobStatusUpdate = (data: any) => {
+      const activeRequest = currentRequestRef.current;
+      if (!activeRequest) return;
+      const currentJobId = activeRequest.job_id || activeRequest.id;
       if (data.jobId && data.jobId !== currentJobId) return;
-      setCurrentRequest(prev => prev ? { ...prev, status: data.status } : null);
-      if (data.status === 'near_client') {
-        router.push({ pathname: '/client/payment', params: { request_id: currentRequest.id, amount: currentRequest.price?.toString() || '0' } });
+      const nextStatus = (data.status || '').toLowerCase();
+      setCurrentRequest((prev) => prev ? { ...prev, status: nextStatus } : prev);
+      if (nextStatus === 'completed') {
+        navigateToPayment({ ...activeRequest, status: nextStatus });
       }
-      if (data.status === 'completed') {
-        router.push({ pathname: '/client/payment', params: { request_id: currentRequest.id, amount: currentRequest.price?.toString() || '0' } });
-      }
-    });
-  };
+    };
+
+    socket.on('offer_received', onOfferReceived);
+    socket.on('job_accepted', onJobAccepted);
+    socket.on('location_update', onLocationUpdate);
+    socket.on('job_status_update', onJobStatusUpdate);
+
+    return () => {
+      socket.off('offer_received', onOfferReceived);
+      socket.off('job_accepted', onJobAccepted);
+      socket.off('location_update', onLocationUpdate);
+      socket.off('job_status_update', onJobStatusUpdate);
+    };
+  }, [joinJobRoom, navigateToPayment, router, socket]);
 
   useEffect(() => {
-    if (currentRequest && currentRequest.status === 'completed') {
-      router.push({ pathname: '/client/payment', params: { request_id: currentRequest.id, amount: currentRequest.price?.toString() || '0' } });
+    if (socket && currentRequest?.job_id) {
+      joinJobRoom(currentRequest.job_id);
     }
-  }, [currentRequest?.status]);
+  }, [currentRequest?.job_id, joinJobRoom, socket, isConnected]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    void loadActiveRequest();
+    const interval = setInterval(() => {
+      void loadActiveRequest();
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [loadActiveRequest, user?.id]);
+
+  useEffect(() => {
+    if (currentRequest?.status === 'completed') {
+      navigateToPayment(currentRequest);
+      return;
+    }
+    if (currentRequest && ACTIVE_REQUEST_STATUSES.has((currentRequest.status || '').toLowerCase())) {
+      hasNavigatedToPaymentRef.current = false;
+    }
+  }, [currentRequest, navigateToPayment]);
+
+  useEffect(() => {
+    if (!paymentConfirmed) return;
+    const current = currentRequestRef.current;
+    if (!current) return;
+    if (!completedRequestId || completedRequestId === current.id) {
+      setCurrentRequest(null);
+      hasNavigatedToPaymentRef.current = false;
+    }
+  }, [completedRequestId, paymentConfirmed]);
 
   const handleRequestService = async (provider: Provider) => {
     if (!userLocation) { Alert.alert('Erro', 'Localização necessária'); return; }
@@ -293,6 +399,7 @@ export default function ClientScreen() {
         price: provider.price,
         estimated_time: undefined
       });
+      hasNavigatedToPaymentRef.current = false;
 
       setSelectedProvider(null);
       setSelectedCategory(null);

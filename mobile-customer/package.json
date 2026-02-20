@@ -9,8 +9,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "e2e:build:android": "detox build --config-path ./e2e/.detoxrc.js -c android.emu.release",
-    "e2e:test:android": "detox test --config-path ./e2e/.detoxrc.js -c android.emu.release",
+    "e2e:build:android": "detox build -c android.emu.release",
+    "e2e:test:android": "detox test -c android.emu.release",
     "e2e:android": "yarn e2e:build:android && yarn e2e:test:android"
   },
   "dependencies": {

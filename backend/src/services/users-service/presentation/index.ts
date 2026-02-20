@@ -99,11 +99,16 @@ app.put('/location', async (req, res, next) => {
         });
 
         if (lat !== undefined && lng !== undefined) {
-            await kafkaProducer.publish(KAFKA_TOPICS.PROVIDER_LOCATION_UPDATED, {
-                providerId: payload.userId,
-                lat,
-                lng
-            });
+            try {
+                await kafkaProducer.publish(KAFKA_TOPICS.PROVIDER_LOCATION_UPDATED, {
+                    providerId: payload.userId,
+                    lat,
+                    lng
+                });
+            } catch (publishErr) {
+                logger.warn(`PROVIDER_LOCATION_UPDATED publish failed for provider ${payload.userId}, continuing`);
+                logger.error(publishErr as any);
+            }
         }
 
         res.json(updated);

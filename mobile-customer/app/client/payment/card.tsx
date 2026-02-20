@@ -9,6 +9,7 @@ export default function CardPaymentScreen() {
     const params = useLocalSearchParams();
     const request_id = params.request_id;
     const amount = params.amount;
+    const provider_name = params.provider_name;
 
     const [cardNumber, setCardNumber] = useState('');
     const [holderName, setHolderName] = useState('');
@@ -26,12 +27,12 @@ export default function CardPaymentScreen() {
             if (request_id) {
                 await api.post(`/requests/${request_id}/payment`, {
                     method: 'card',
-                    amount: parseFloat(amount as string),
+                    amount: parseFloat(String(amount || 0)),
                     transaction_id: 'card_' + Math.floor(Math.random() * 10000),
                     timestamp: new Date().toISOString()
                 });
             }
-            router.push({ pathname: '/client/payment/success', params: { request_id, amount } });
+            router.push({ pathname: '/client/payment/success', params: { request_id, amount, provider_name } });
         } catch (e) {
             Alert.alert("Error", "Payment failed");
         }

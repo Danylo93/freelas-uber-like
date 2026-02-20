@@ -42,6 +42,42 @@ const reviewRepo = new PrismaReviewRepository();
 const reviewBroker = new ReviewKafkaMessageBroker();
 const createReview = new CreateReview(reviewRepo, reviewBroker);
 
+function mapJobStatusToFrontendStatus(jobStatus?: string | null, requestStatus?: string | null): string {
+    const normalizedJobStatus = (jobStatus || '').toUpperCase();
+    if (normalizedJobStatus === 'ACCEPTED') return 'accepted';
+    if (normalizedJobStatus === 'ON_THE_WAY') return 'in_progress';
+    if (normalizedJobStatus === 'ARRIVED') return 'near_client';
+    if (normalizedJobStatus === 'STARTED') return 'started';
+    if (normalizedJobStatus === 'COMPLETED') return 'completed';
+    if (normalizedJobStatus === 'CANCELED') return 'canceled';
+    return (requestStatus || '').toLowerCase();
+}
+
+function mapFrontendStatusToJobStatus(status: string): string | null {
+    const normalized = (status || '').toLowerCase();
+    if (normalized === 'in_progress') return 'ON_THE_WAY';
+    if (normalized === 'near_client') return 'ARRIVED';
+    if (normalized === 'started') return 'STARTED';
+    if (normalized === 'completed') return 'COMPLETED';
+    if (normalized === 'canceled') return 'CANCELED';
+    return null;
+}
+
+function parseStatusFilter(input: unknown): string[] {
+    if (!input) return [];
+    return String(input)
+        .split(',')
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
+}
+
+function parseRequestStatusFilter(input: unknown): string[] {
+    const allowed = new Set(['PENDING', 'OFFERED', 'ACCEPTED', 'CANCELED', 'EXPIRED']);
+    return parseStatusFilter(input)
+        .map((s) => s.toUpperCase())
+        .filter((s) => allowed.has(s));
+}
+
 // --- Kafka Consumer Setup ---
 async function startConsumer() {
     try {
@@ -98,13 +134,12 @@ app.post('/', async (req, res, next) => {
 app.get('/', async (req, res, next) => {
     try {
         // Support status filtering
-        const { status } = req.query;
-        const statusFilter = status ? (status as string).toUpperCase().split(',') : undefined;
+        const statusFilter = parseRequestStatusFilter(req.query.status);
 
         // List all requests (for providers to see available requests)
         const requests = await prisma.serviceRequest.findMany({
             where: {
-                ...(statusFilter && { status: { in: statusFilter as any[] } })
+                ...(statusFilter.length > 0 && { status: { in: statusFilter as any[] } })
             },
             include: {
                 customer: true,
@@ -116,21 +151,7 @@ app.get('/', async (req, res, next) => {
         });
 
         res.json(requests.map((r: any) => {
-            // Helper to map job status to frontend expectations
-            // JobStatus: ACCEPTED, ON_THE_WAY, ARRIVED, STARTED, COMPLETED, CANCELED
-            // Frontend: accepted, in_progress, near_client, started, completed
-            let mappedStatus = r.status.toLowerCase(); // Default to request status
-
-            if (r.job) {
-                const js = r.job.status;
-                if (js === 'ACCEPTED') mappedStatus = 'accepted';
-                else if (js === 'ON_THE_WAY') mappedStatus = 'in_progress';
-                else if (js === 'ARRIVED') mappedStatus = 'near_client';
-                else if (js === 'STARTED') mappedStatus = 'started';
-                else if (js === 'COMPLETED') mappedStatus = 'completed';
-                else if (js === 'CANCELED') mappedStatus = 'canceled';
-            }
-
+            const mappedStatus = mapJobStatusToFrontendStatus(r.job?.status, r.status);
             return {
                 id: r.id,
                 provider_id: r.job?.providerId,
@@ -162,29 +183,46 @@ app.get('/', async (req, res, next) => {
 
 app.get('/client/:clientId', async (req, res, next) => {
     try {
-        const { status } = req.query;
-        const statusFilter = status ? (status as string).split(',') : undefined;
+        const statusFilter = parseStatusFilter(req.query.status);
 
         const requests = await prisma.serviceRequest.findMany({
             where: {
-                customerId: req.params.clientId,
-                ...(statusFilter && { status: { in: statusFilter as any[] } })
+                customerId: req.params.clientId
             },
             include: { job: { include: { provider: true } } },
             orderBy: { createdAt: 'desc' }
         });
 
-        res.json(requests.map((r: any) => ({
-            id: r.id,
-            provider_id: r.job?.providerId,
-            job_id: r.job?.id,
-            status: r.status,
-            provider_name: r.job?.provider?.name || '',
-            provider_phone: r.job?.provider?.phone || '',
-            category: r.categoryId,
-            price: r.price || 0,
-            description: r.description
-        })));
+        const mappedRequests = requests.map((r: any) => {
+            const mappedStatus = mapJobStatusToFrontendStatus(r.job?.status, r.status);
+            return {
+                id: r.id,
+                provider_id: r.job?.providerId,
+                job_id: r.job?.id,
+                status: mappedStatus,
+                provider_name: r.job?.provider?.name || '',
+                provider_phone: r.job?.provider?.phone || '',
+                category: r.categoryId,
+                price: r.price || 0,
+                description: r.description,
+                created_at: r.createdAt,
+                request_status: (r.status || '').toLowerCase(),
+                job_status: (r.job?.status || '').toLowerCase()
+            };
+        });
+
+        const filtered = statusFilter.length > 0
+            ? mappedRequests.filter((r: any) => {
+                const candidates = new Set<string>([
+                    r.status,
+                    r.request_status,
+                    r.job_status
+                ].filter(Boolean));
+                return statusFilter.some((f) => candidates.has(f));
+            })
+            : mappedRequests;
+
+        res.json(filtered.map(({ request_status, job_status, ...payload }: any) => payload));
     } catch (err) {
         next(err);
     }
@@ -245,6 +283,17 @@ app.put('/:id/accept', async (req, res, next) => {
         const jwt = require('jsonwebtoken');
         const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as any;
 
+        if (request.status === 'ACCEPTED' || request.status === 'CANCELED' || request.status === 'EXPIRED') {
+            return res.status(409).json({ message: 'Request is not available' });
+        }
+
+        const existingJob = await prisma.job.findUnique({
+            where: { requestId: request.id }
+        });
+        if (existingJob) {
+            return res.status(409).json({ message: 'Request already accepted', job_id: existingJob.id });
+        }
+
         // Create Job
         const job = await prisma.job.create({
             data: {
@@ -261,12 +310,17 @@ app.put('/:id/accept', async (req, res, next) => {
             data: { status: 'ACCEPTED' }
         });
 
-        await kafkaProducer.publish(KAFKA_TOPICS.JOB_ACCEPTED, {
-            requestId: request.id,
-            jobId: job.id,
-            providerId: payload.userId,
-            customerId: request.customerId
-        });
+        try {
+            await kafkaProducer.publish(KAFKA_TOPICS.JOB_ACCEPTED, {
+                requestId: request.id,
+                jobId: job.id,
+                providerId: payload.userId,
+                customerId: request.customerId
+            });
+        } catch (publishErr) {
+            logger.warn(`JOB_ACCEPTED publish failed for request ${request.id}, continuing`);
+            logger.error(publishErr as any);
+        }
 
         res.json({
             id: request.id,
@@ -283,24 +337,39 @@ app.put('/:id/update-status', async (req, res, next) => {
         const { status } = req.body;
         // status comes from frontend as: in_progress, near_client, started, completed
 
-        let jobStatus: any = null;
-        if (status === 'in_progress') jobStatus = 'ON_THE_WAY';
-        else if (status === 'near_client') jobStatus = 'ARRIVED';
-        else if (status === 'started') jobStatus = 'STARTED';
-        else if (status === 'completed') jobStatus = 'COMPLETED';
-        else if (status === 'canceled') jobStatus = 'CANCELED';
+        const jobStatus = mapFrontendStatusToJobStatus(status);
 
         if (!jobStatus) {
             return res.status(400).json({ message: 'Invalid status' });
         }
 
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        const token = authHeader.split(' ')[1];
+        const jwt = require('jsonwebtoken');
+        const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as any;
+
         // Find the job linked to this request
         const job = await prisma.job.findUnique({
-            where: { requestId: req.params.id }
+            where: { requestId: req.params.id },
+            include: {
+                request: {
+                    select: {
+                        customerId: true,
+                        status: true
+                    }
+                }
+            }
         });
 
         if (!job) {
             return res.status(404).json({ message: 'Job not found for this request' });
+        }
+
+        if (job.providerId !== payload.userId) {
+            return res.status(403).json({ message: 'Forbidden: this job belongs to another provider' });
         }
 
         const updateData: any = { status: jobStatus };
@@ -320,7 +389,21 @@ app.put('/:id/update-status', async (req, res, next) => {
             });
         }
 
-        res.json({ success: true, status: jobStatus });
+        const frontendStatus = mapJobStatusToFrontendStatus(jobStatus, job.request?.status);
+        try {
+            await kafkaProducer.publish(KAFKA_TOPICS.JOB_STATUS_CHANGED, {
+                requestId: req.params.id,
+                jobId: job.id,
+                providerId: job.providerId,
+                customerId: job.request?.customerId,
+                status: frontendStatus
+            });
+        } catch (publishErr) {
+            logger.warn(`JOB_STATUS_CHANGED publish failed for request ${req.params.id}, continuing`);
+            logger.error(publishErr as any);
+        }
+
+        res.json({ success: true, status: frontendStatus, job_status: jobStatus });
     } catch (err) {
         next(err);
     }
@@ -328,21 +411,36 @@ app.put('/:id/update-status', async (req, res, next) => {
 
 app.post('/:id/payment', async (req, res, next) => {
     try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        const token = authHeader.split(' ')[1];
+        const jwt = require('jsonwebtoken');
+        const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret-key') as any;
+
         // Process payment (simplified)
         const request = await prisma.serviceRequest.findUnique({
-            where: { id: req.params.id }
+            where: { id: req.params.id },
+            include: { job: true }
         });
         if (!request) {
             return res.status(404).json({ message: 'Request not found' });
         }
 
-        // Update request status to completed
-        // Note: RequestStatus doesn't have COMPLETED, so we might keep it as ACCEPTED or OFFERED?
-        // Or assume the enum was updated. If not, we can't update.
-        // For now, let's assume we don't update RequestStatus to COMPLETED if it doesn't exist.
-        // We will just return success.
+        if (request.customerId !== payload.userId) {
+            return res.status(403).json({ message: 'Forbidden: this request belongs to another customer' });
+        }
 
-        res.json({ success: true, message: 'Payment processed' });
+        if (!request.job) {
+            return res.status(409).json({ message: 'Request has no active job' });
+        }
+
+        if (request.job.status !== 'COMPLETED') {
+            return res.status(409).json({ message: 'Service must be completed before payment' });
+        }
+
+        res.json({ success: true, message: 'Payment processed', request_id: request.id, job_id: request.job.id });
     } catch (err) {
         next(err);
     }

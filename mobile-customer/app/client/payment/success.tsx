@@ -8,11 +8,15 @@ export default function PaymentSuccessScreen() {
     const params = useLocalSearchParams();
     const request_id = params.request_id;
     const amount = params.amount;
+    const provider_name = params.provider_name;
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.content}>
-                <TouchableOpacity onPress={() => router.push({ pathname: '/client', params: { payment_confirmed: 'true' } })} style={styles.closeButton}>
+                <TouchableOpacity
+                    onPress={() => router.push({ pathname: '/client', params: { payment_confirmed: 'true', completed_request_id: String(request_id || '') } })}
+                    style={styles.closeButton}
+                >
                     <Ionicons name="close" size={24} color="#333" />
                 </TouchableOpacity>
 
@@ -34,7 +38,7 @@ export default function PaymentSuccessScreen() {
                     </View>
                     <View>
                         <Text style={styles.serviceProvider}>Service Provider</Text>
-                        <Text style={styles.serviceName}>Home Cleaners Inc.</Text>
+                        <Text style={styles.serviceName}>{provider_name || 'Prestador'}</Text>
                     </View>
                 </View>
 
@@ -43,13 +47,27 @@ export default function PaymentSuccessScreen() {
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.homeButton} onPress={() => router.push({ pathname: '/client', params: { payment_confirmed: 'true' } })}>
-                    <Text style={styles.homeButtonText}>Back to Map</Text>
-                    <Ionicons name="map" size={18} color="#fff" style={{ marginLeft: 8 }} />
+                <TouchableOpacity
+                    style={styles.homeButton}
+                    onPress={() =>
+                        router.push({
+                            pathname: '/client/review',
+                            params: {
+                                requestId: String(request_id || ''),
+                                providerName: String(provider_name || 'Prestador')
+                            }
+                        })
+                    }
+                >
+                    <Text style={styles.homeButtonText}>Rate Provider</Text>
+                    <Ionicons name="star" size={18} color="#fff" style={{ marginLeft: 8 }} />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.receiptButton} onPress={() => router.push({ pathname: '/client/receipt', params: { request_id } })}>
-                    <Text style={styles.receiptButtonText}>View Receipt</Text>
+                <TouchableOpacity
+                    style={styles.receiptButton}
+                    onPress={() => router.push({ pathname: '/client', params: { payment_confirmed: 'true', completed_request_id: String(request_id || '') } })}
+                >
+                    <Text style={styles.receiptButtonText}>Back to Map</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

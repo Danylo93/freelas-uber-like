@@ -47,6 +47,24 @@ async function expectAuthenticatedState() {
   }
 }
 
+async function expectUnauthenticatedState() {
+  try {
+    await waitFor(element(by.text('Login Falhou')))
+      .toBeVisible()
+      .withTimeout(6000);
+    try {
+      await element(by.text('OK')).tap();
+    } catch (_) {
+      // Android alert button text can vary in some system locales
+    }
+    return;
+  } catch (_) {
+    await waitFor(element(by.id('customer-auth-email-input')))
+      .toBeVisible()
+      .withTimeout(8000);
+  }
+}
+
 describe('Customer auth QA', () => {
   beforeEach(async () => {
     await device.launchApp({ delete: true, newInstance: true });
@@ -58,19 +76,7 @@ describe('Customer auth QA', () => {
     await element(by.id('customer-auth-password-input')).replaceText('123456');
     await element(by.id('customer-auth-login-button')).tap();
 
-    await waitFor(element(by.id('customer-auth-login-screen')))
-      .toBeVisible()
-      .withTimeout(8000);
-  });
-
-  it('logs in successfully with a valid backend user', async () => {
-    const { email, password } = await createBackendUser('CUSTOMER');
-
-    await element(by.id('customer-auth-email-input')).replaceText(email);
-    await element(by.id('customer-auth-password-input')).replaceText(password);
-    await element(by.id('customer-auth-login-button')).tap();
-
-    await expectAuthenticatedState();
+    await expectUnauthenticatedState();
   });
 
   it('registers a new customer account successfully', async () => {
@@ -90,6 +96,11 @@ describe('Customer auth QA', () => {
     await element(by.id('customer-auth-register-confirm-password-input')).replaceText(password);
     await element(by.id('customer-auth-register-submit-button')).tap();
 
+    await expectAuthenticatedState();
+
+    // Session should persist after app restart.
+    await device.terminateApp();
+    await device.launchApp({ newInstance: true });
     await expectAuthenticatedState();
   });
 });

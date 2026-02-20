@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, Platform, Clipboard, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import api from '@/src/services/api';
@@ -9,6 +9,7 @@ export default function PixPaymentScreen() {
     const params = useLocalSearchParams();
     const request_id = params.request_id;
     const amount = params.amount;
+    const provider_name = params.provider_name;
 
     const [timeLeft, setTimeLeft] = useState(600); // 10 mins
 
@@ -26,8 +27,7 @@ export default function PixPaymentScreen() {
     };
 
     const handleCopyCode = () => {
-        Clipboard.setString("00020126580014BR.GOV.BCB.PIX0136123e4567-e12b-12d1-a456-426655440000520400005303986540545.005802BR5913Casa Limpa Des6008Sao Paulo62070503***63041D3D");
-        Alert.alert("Copied!", "Pix code copied to clipboard.");
+        Alert.alert("Pix code ready", "Cole o codigo no seu app bancario para concluir o pagamento.");
 
         // Simulate payment success after copy for demo
         setTimeout(() => {
@@ -40,12 +40,12 @@ export default function PixPaymentScreen() {
             if (request_id) {
                 await api.post(`/requests/${request_id}/payment`, {
                     method: 'pix',
-                    amount: parseFloat(amount as string),
+                    amount: parseFloat(String(amount || 0)),
                     transaction_id: 'pix_123',
                     timestamp: new Date().toISOString()
                 });
             }
-            router.push({ pathname: '/client/payment/success', params: { request_id, amount } });
+            router.push({ pathname: '/client/payment/success', params: { request_id, amount, provider_name } });
         } catch (e) {
             Alert.alert("Error", "Payment verification failed");
         }
